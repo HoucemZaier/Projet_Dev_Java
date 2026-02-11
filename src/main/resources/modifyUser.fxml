@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefWidth="1100" prefHeight="700"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.ModifyUserController"
+      stylesheets="@login.css">
+
+    <!-- LEFT PANEL -->
+    <VBox spacing="18"
+          alignment="CENTER_LEFT"
+          styleClass="left-panel"
+          prefWidth="420">
+
+        <!-- LOGO -->
+        <ImageView fitWidth="70" fitHeight="70">
+            <image>
+                <Image url="@logo.png"/>
+            </image>
+        </ImageView>
+
+        <!-- TITLE -->
+        <Label text="Modify User" styleClass="title"/>
+
+        <!-- SUBTITLE -->
+        <Label text="Update user account information"
+               wrapText="true"
+               styleClass="subtitle"/>
+
+        <!-- SPACE -->
+        <Region prefHeight="20"/>
+
+        <!-- USER TYPE (READ-ONLY) -->
+        <TextField fx:id="userTypeField" promptText="User Type" styleClass="input" editable="false"/>
+
+        <!-- INPUTS -->
+        <TextField fx:id="nomField" promptText="Nom" styleClass="input"/>
+        <TextField fx:id="prenomField" promptText="Prenom" styleClass="input"/>
+        <TextField fx:id="emailField" promptText="Email" styleClass="input"/>
+        <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
+        <TextField fx:id="paysField" promptText="Pays" styleClass="input"/>
+        <TextField fx:id="cinField" promptText="CIN (for Client)" styleClass="input" visible="false"/>
+        <TextField fx:id="matriculeField" promptText="Matricule (for Admin)" styleClass="input" visible="false"/>
+
+        <!-- IMAGE UPLOAD -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Image:" styleClass="image-label"/>
+            <Button text="Choose Image" styleClass="image-btn" onAction="#chooseImage"/>
+        </HBox>
+
+        <!-- SPACE -->
+        <Region prefHeight="15"/>
+
+        <!-- BUTTONS -->
+        <HBox spacing="15">
+            <Button text="Update User" styleClass="login-btn" onAction="#updateUser"/>
+            <Button text="Cancel" styleClass="signup-btn" onAction="#cancel"/>
+        </HBox>
+
+    </VBox>
+
+    <!-- RIGHT IMAGE -->
+    <ImageView fitWidth="680" preserveRatio="true" smooth="true">
+        <image>
+            <Image url="@plane.jpg"/>
+        </image>
+    </ImageView>
+
+</HBox>

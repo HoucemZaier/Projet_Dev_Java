@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefHeight="900.0" prefWidth="1400.0" styleClass="root-background" stylesheets="@dashboard.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.UserManagementController">
+    <VBox prefWidth="240.0" spacing="10" styleClass="sidebar" VBox.vgrow="ALWAYS" HBox.hgrow="NEVER">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20"/>
+        </padding>
+        <children>
+            <Label prefHeight="71.0" prefWidth="185.0" styleClass="logo-text" text="Planova">
+                <graphic>
+                    <ImageView fitHeight="71.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@logo.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Label>
+
+            <VBox spacing="5" VBox.vgrow="ALWAYS">
+                <padding>
+                    <Insets top="30"/>
+                </padding>
+                <children>
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Overview">
+                        <graphic>
+                            <ImageView fitHeight="16.0" fitWidth="16.0">
+                                <image>
+                                    <Image url="https://img.icons8.com/ios-filled/50/ffffff/grid-2.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button maxWidth="Infinity" styleClass="menu-button-active" text="User Management">
+                        <graphic>
+                            <ImageView fitHeight="40.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@user.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Destinations">
+                        <graphic>
+                            <ImageView fitHeight="46.0" fitWidth="36.0">
+                                <image>
+                                    <Image url="@destination.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Billets">
+                        <graphic>
+                            <ImageView fitHeight="51.0" fitWidth="69.0">
+                                <image>
+                                    <Image url="@billets.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Hotels">
+                        <graphic>
+                            <ImageView fitHeight="49.0" fitWidth="42.0">
+                                <image>
+                                    <Image url="@hotel.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Excursions">
+                        <graphic>
+                            <ImageView fitHeight="42.0" fitWidth="43.0">
+                                <image>
+                                    <Image url="@excursion.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Blog Posts">
+                        <graphic>
+                            <ImageView fitHeight="40.0" fitWidth="41.0">
+                                <image>
+                                    <Image url="@post.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Community Forum">
+                        <graphic>
+                            <ImageView fitHeight="36.0" fitWidth="39.0">
+                                <image>
+                                    <Image url="@forum.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Activities">
+                        <graphic>
+                            <ImageView fitHeight="45.0" fitWidth="42.0">
+                                <image>
+                                    <Image url="@activité.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </children>
+            </VBox>
+
+            <VBox spacing="5">
+                <children>
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Settings">
+                        <graphic>
+                            <ImageView fitHeight="46.0" fitWidth="43.0">
+                                <image>
+                                    <Image url="@settings.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Logout">
+                        <graphic>
+                            <ImageView fitHeight="38.0" fitWidth="40.0">
+                                <image>
+                                    <Image url="@logout.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </children>
+            </VBox>
+        </children>
+    </VBox>
+    <!-- Main Content -->
+    <VBox spacing="20" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" style="-fx-background-color: #f5f5f5;">
+        <padding>
+            <Insets top="20" left="30" right="30" bottom="20"/>
+        </padding>
+
+        <!-- Header -->
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <VBox>
+                <Label text="Gestion des utilisateurs" styleClass="dashboard-title"/>
+                <Label text="Manage and monitor user accounts" styleClass="welcome-text"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="headerSearchField" promptText="Search anything..." styleClass="search-field"/>
+        </HBox>
+
+        <!-- Stats Cards -->
+        <HBox spacing="20">
+            <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                <Label text="Total Users" styleClass="card-title"/>
+                <Label fx:id="totalUsersLabel" text="8" styleClass="card-value"/>
+            </VBox>
+
+            <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                <Label text="Active Users" styleClass="card-title"/>
+                <Label fx:id="activeUsersLabel" text="6" styleClass="card-value"/>
+            </VBox>
+
+            <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                <Label text="Blocked Users" styleClass="card-title"/>
+                <Label fx:id="blockedUsersLabel" text="2" styleClass="card-value"/>
+            </VBox>
+        </HBox>
+
+        <!-- Actions -->
+        <HBox spacing="15" alignment="CENTER_LEFT" styleClass="actions-bar">
+            <Button text="+ Add New User" styleClass="new-entry-button" onAction="#addNewUser"/>
+            <Button fx:id="modifyBtn" styleClass="modify-btn" onAction="#modifyUser">
+                <graphic>
+                    <ImageView fitHeight="16.0" fitWidth="16.0">
+                        <image>
+                            <Image url="https://img.icons8.com/ios-filled/50/ffffff/edit.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="deleteBtn" styleClass="delete-btn" onAction="#deleteUser">
+                <graphic>
+                    <ImageView fitHeight="16.0" fitWidth="16.0">
+                        <image>
+                            <Image url="https://img.icons8.com/ios-filled/50/ffffff/trash.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <TextField fx:id="searchField" promptText="Search user by name or email..." styleClass="search-field"/>
+            <ComboBox fx:id="countryFilter" promptText="All Countries" styleClass="country-combo"/>
+        </HBox>
+
+        <!-- User List -->
+        <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true">
+            <VBox fx:id="userContainer" spacing="10" styleClass="user-container"/>
+        </ScrollPane>
+    </VBox>
+</HBox>

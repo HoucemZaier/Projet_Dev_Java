@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefWidth="1100" prefHeight="700"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.AddUserController"
+      stylesheets="@login.css">
+
+    <!-- LEFT PANEL -->
+    <VBox spacing="18"
+          alignment="CENTER_LEFT"
+          styleClass="left-panel"
+          prefWidth="420">
+
+        <!-- LOGO -->
+        <ImageView fitWidth="70" fitHeight="70">
+            <image>
+                <Image url="@logo.png"/>
+            </image>
+        </ImageView>
+
+        <!-- TITLE -->
+        <Label text="Add New User" styleClass="title"/>
+
+        <!-- SUBTITLE -->
+        <Label text="Create a new user account"
+               wrapText="true"
+               styleClass="subtitle"/>
+
+        <!-- SPACE -->
+        <Region prefHeight="20"/>
+
+        <!-- USER TYPE -->
+        <ComboBox fx:id="userTypeCombo" promptText="Select User Type" styleClass="input">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Client"/>
+                    <String fx:value="Admin"/>
+                    <String fx:value="Moderateur"/>
+                    <String fx:value="Guide"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+
+        <!-- INPUTS -->
+        <TextField fx:id="nomField" promptText="Nom" styleClass="input"/>
+        <TextField fx:id="prenomField" promptText="Prenom" styleClass="input"/>
+        <TextField fx:id="emailField" promptText="Email" styleClass="input"/>
+        <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
+        <TextField fx:id="paysField" promptText="Pays" styleClass="input"/>
+        <TextField fx:id="cinField" promptText="CIN (for Client)" styleClass="input" visible="false"/>
+        <TextField fx:id="matriculeField" promptText="Matricule (for Admin)" styleClass="input" visible="false"/>
+
+        <!-- IMAGE UPLOAD -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Image:" styleClass="image-label"/>
+            <Button text="Choose Image" styleClass="image-btn" onAction="#chooseImage"/>
+        </HBox>
+
+        <!-- SPACE -->
+        <Region prefHeight="15"/>
+
+        <!-- BUTTONS -->
+        <HBox spacing="15">
+            <Button text="Add User" styleClass="login-btn" onAction="#addUser"/>
+            <Button text="Cancel" styleClass="signup-btn" onAction="#cancel"/>
+        </HBox>
+
+    </VBox>
+
+    <!-- RIGHT IMAGE -->
+    <ImageView fitWidth="680" preserveRatio="true" smooth="true">
+        <image>
+            <Image url="@plane.jpg"/>
+        </image>
+    </ImageView>
+
+</HBox>
