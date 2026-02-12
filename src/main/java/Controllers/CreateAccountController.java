@@ -22,11 +22,13 @@ public class CreateAccountController {
     @FXML private ComboBox<String> userTypeComboBox;
     @FXML private TextField cinField;
     @FXML private TextField matriculeField;
+    @FXML private TextField matriculeModField;
     @FXML private Button imageButton;
     @FXML private TextField nomField;
     @FXML private TextField prenomField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
+    @FXML private PasswordField confirmPasswordField;
     @FXML private TextField paysField;
     @FXML private Button createAccountBtn;
     @FXML private Button backToLoginBtn;
@@ -38,7 +40,8 @@ public class CreateAccountController {
     private void initialize() {
         // Initialize combo box with user types
         if (userTypeComboBox != null) {
-            userTypeComboBox.getItems().addAll("Client", "Admin", "Guide", "Moderateur");
+            // Items are already populated from FXML, no need to add them again
+            // userTypeComboBox.getItems().addAll("Client", "Admin", "Guide", "Moderateur");
 
             // Initialize combo box listener for dynamic fields
             userTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -51,6 +54,7 @@ public class CreateAccountController {
         if (userType == null) {
             cinField.setVisible(false);
             matriculeField.setVisible(false);
+            matriculeModField.setVisible(false);
             return;
         }
 
@@ -58,15 +62,22 @@ public class CreateAccountController {
             case "Client":
                 cinField.setVisible(true);
                 matriculeField.setVisible(false);
+                matriculeModField.setVisible(false);
                 break;
             case "Admin":
                 cinField.setVisible(false);
                 matriculeField.setVisible(true);
+                matriculeModField.setVisible(false);
                 break;
             case "Guide":
+                cinField.setVisible(false);
+                matriculeField.setVisible(false);
+                matriculeModField.setVisible(false);
+                break;
             case "Moderateur":
                 cinField.setVisible(false);
                 matriculeField.setVisible(false);
+                matriculeModField.setVisible(true);
                 break;
         }
     }
@@ -92,16 +103,24 @@ public class CreateAccountController {
         String userType = userTypeComboBox.getValue();
         String cin = cinField.getText().trim();
         String matricule = matriculeField.getText().trim();
+        String matriculeMod = matriculeModField.getText().trim();
         String nom = nomField.getText().trim();
         String prenom = prenomField.getText().trim();
         String email = emailField.getText().trim();
         String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
         String pays = paysField.getText().trim();
 
         // Validation
         if (userType == null || nom.isEmpty() || prenom.isEmpty() ||
                 email.isEmpty() || password.isEmpty() || pays.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill all required fields!");
+            return;
+        }
+
+        // Confirm password validation
+        if (!password.equals(confirmPassword)) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", "Passwords do not match!");
             return;
         }
 
@@ -112,6 +131,36 @@ public class CreateAccountController {
         }
         if ("Admin".equals(userType) && matricule.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Validation Error", "Matricule is required for Admin!");
+            return;
+        }
+        if ("Moderateur".equals(userType) && matriculeMod.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", "Matricule is required for Moderateur!");
+            return;
+        }
+
+        // Validate matricule format for Admin and Moderateur
+        if ("Admin".equals(userType) && !isValidAdminMatricule(matricule)) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error",
+                "Admin matricule must be in format ---AMN------ (with numbers instead of dashes)!");
+            return;
+        }
+
+        if ("Moderateur".equals(userType) && !isValidModeratorMatricule(matriculeMod)) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error",
+                "Moderateur matricule must be in format ---MOD------ (with numbers instead of dashes)!");
+            return;
+        }
+
+        // Validate if matricule exists in database
+        if ("Admin".equals(userType) && !matriculeExistsInDatabase(matricule)) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error",
+                "This Admin matricule does not exist in the database. Please contact an administrator.");
+            return;
+        }
+
+        if ("Moderateur".equals(userType) && !matriculeExistsInDatabase(matriculeMod)) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error",
+                "This Moderateur matricule does not exist in the database. Please contact an administrator.");
             return;
         }
 
@@ -137,7 +186,7 @@ public class CreateAccountController {
                     newUser = new Guide(nom, prenom, email, password, pays, imagePath);
                     break;
                 case "Moderateur":
-                    newUser = new Moderateur(nom, prenom, email, password, pays, imagePath);
+                    newUser = new Moderateur(nom, prenom, email, password, pays, imagePath, matriculeMod);
                     break;
                 default:
                     showAlert(Alert.AlertType.ERROR, "Error", "Invalid user type selected!");
@@ -154,6 +203,27 @@ public class CreateAccountController {
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to create account: " + e.getMessage());
+        }
+    }
+
+    private boolean isValidAdminMatricule(String matricule) {
+        // Format: 123AMN123456 (3 digits, AMN, 6 digits)
+        // Example: 123AMN123456
+        return matricule.matches("\\d{3}AMN\\d{6}");
+    }
+
+    private boolean isValidModeratorMatricule(String matricule) {
+        // Format: 123MOD123456 (3 digits, MOD, 6 digits)
+        // Example: 123MOD123456
+        return matricule.matches("\\d{3}MOD\\d{6}");
+    }
+
+    private boolean matriculeExistsInDatabase(String matricule) {
+        try {
+            return serviceUser.matriculeExists(matricule);
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to validate matricule: " + e.getMessage());
+            return false;
         }
     }
 

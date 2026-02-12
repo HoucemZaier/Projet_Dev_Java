@@ -63,7 +63,7 @@
     </VBox>
 
     <!-- RIGHT IMAGE -->
-    <ImageView fitWidth="680" preserveRatio="true" smooth="true">
+    <ImageView fitWidth="680" fitHeight="700" preserveRatio="false" smooth="true" HBox.hgrow="ALWAYS">
         <image>
             <Image url="@plane.jpg"/>
         </image>

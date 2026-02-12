@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.*;
 import Services.ServiceUser;
+import utils.UserSession;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,6 +45,10 @@ public class UserManagementController implements Initializable {
     private Label totalUsersLabel, activeUsersLabel, blockedUsersLabel;
     @FXML
     private Button modifyBtn, deleteBtn;
+    @FXML
+    private HBox headerSection;
+    @FXML
+    private HBox actionsBar;
 
     private ServiceUser serviceUser = new ServiceUser();
     private ObservableList<User> userList = FXCollections.observableArrayList();
@@ -66,6 +71,19 @@ public class UserManagementController implements Initializable {
             }
             if (countryFilter == null) {
                 throw new RuntimeException("countryFilter not injected by FXML");
+            }
+
+            // Check user role and hide elements for Moderateur
+            if (UserSession.getInstance().isModerator()) {
+                // Hide header and actions for Moderateur
+                if (headerSection != null) {
+                    headerSection.setVisible(false);
+                    headerSection.setManaged(false);
+                }
+                if (actionsBar != null) {
+                    actionsBar.setVisible(false);
+                    actionsBar.setManaged(false);
+                }
             }
 
             loadUsers();
@@ -519,5 +537,25 @@ public class UserManagementController implements Initializable {
         if (user instanceof Moderateur) return "Moderateur";
         if (user instanceof Guide) return "Guide";
         return "User";
+    }
+
+    private void navigateToDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/dashboard.fxml"));
+            Parent root = loader.load();
+
+            dashboardController controller = loader.getController();
+            if (controller != null) {
+                controller.setCurrentUser(UserSession.getInstance().getCurrentUser());
+            }
+
+            Stage stage = (Stage) userContainer.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("PlaNova - Dashboard");
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to dashboard: " + e.getMessage());
+        }
     }
 }

@@ -152,7 +152,7 @@
         </padding>
 
         <!-- Header -->
-        <HBox spacing="20" alignment="CENTER_LEFT">
+        <HBox fx:id="headerSection" spacing="20" alignment="CENTER_LEFT">
             <VBox>
                 <Label text="Gestion des utilisateurs" styleClass="dashboard-title"/>
                 <Label text="Manage and monitor user accounts" styleClass="welcome-text"/>
@@ -180,7 +180,7 @@
         </HBox>
 
         <!-- Actions -->
-        <HBox spacing="15" alignment="CENTER_LEFT" styleClass="actions-bar">
+        <HBox fx:id="actionsBar" spacing="15" alignment="CENTER_LEFT" styleClass="actions-bar">
             <Button text="+ Add New User" styleClass="new-entry-button" onAction="#addNewUser"/>
             <Button fx:id="modifyBtn" styleClass="modify-btn" onAction="#modifyUser">
                 <graphic>

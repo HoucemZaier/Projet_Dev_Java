@@ -48,7 +48,7 @@ public class AddUserController implements Initializable {
 
     private void toggleFields(String userType) {
         cinField.setVisible("Client".equals(userType));
-        matriculeField.setVisible("Admin".equals(userType));
+        matriculeField.setVisible("Admin".equals(userType) || "Moderateur".equals(userType));
     }
 
     @FXML
@@ -85,6 +85,7 @@ public class AddUserController implements Initializable {
             String email = emailField.getText().trim();
             String password = passwordField.getText();
             String pays = paysField.getText().trim();
+            String matricule = matriculeField.getText().trim();
 
             switch (userType.toLowerCase()) {
                 case "client":
@@ -92,11 +93,10 @@ public class AddUserController implements Initializable {
                     user = new Client(nom, prenom, email, password, pays, selectedImagePath, cin);
                     break;
                 case "admin":
-                    String matricule = matriculeField.getText().trim();
                     user = new Admin(nom, prenom, email, password, pays, selectedImagePath, matricule);
                     break;
                 case "moderateur":
-                    user = new Moderateur(nom, prenom, email, password, pays, selectedImagePath);
+                    user = new Moderateur(nom, prenom, email, password, pays, selectedImagePath, matricule);
                     break;
                 case "guide":
                     user = new Guide(nom, prenom, email, password, pays, selectedImagePath);
@@ -145,6 +145,25 @@ public class AddUserController implements Initializable {
             return false;
         }
 
+        if ("Moderateur".equals(userTypeCombo.getValue()) && matriculeField.getText().trim().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", "Matricule is required for Moderateur");
+            return false;
+        }
+
+        // Check if matricule already exists in database
+        if (("Admin".equals(userTypeCombo.getValue()) || "Moderateur".equals(userTypeCombo.getValue())) &&
+            !matriculeField.getText().trim().isEmpty()) {
+            try {
+                if (serviceUser.matriculeExists(matriculeField.getText().trim())) {
+                    showAlert(Alert.AlertType.WARNING, "Validation Error", "Matricule already exists in database");
+                    return false;
+                }
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to check matricule: " + e.getMessage());
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -160,6 +179,10 @@ public class AddUserController implements Initializable {
         selectedImagePath = "";
         cinField.setVisible(false);
         matriculeField.setVisible(false);
+        // Reset field visibility based on current selection
+        if (userTypeCombo.getValue() != null) {
+            toggleFields(userTypeCombo.getValue());
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

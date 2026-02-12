@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.User;
 import Services.ServiceUser;
+import utils.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +41,17 @@ public class loginController {
             User authenticatedUser = serviceUser.authenticate(email, password);
 
             if (authenticatedUser != null) {
+                // Store user in session
+                UserSession.getInstance().setCurrentUser(authenticatedUser);
+
+                // Check if user has access to dashboard
+                if (!UserSession.getInstance().canAccessDashboard()) {
+                    UserSession.getInstance().logout();
+                    showAlert(Alert.AlertType.ERROR, "Access Denied",
+                        "Only Admin and Moderateur can access the dashboard. Client and Guide users are not allowed.");
+                    return;
+                }
+
                 // Successful login - navigate to dashboard
                 navigateToDashboard(authenticatedUser);
             } else {
@@ -108,6 +120,27 @@ public class loginController {
             e.printStackTrace();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Unexpected Error", "An unexpected error occurred: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        // Clear user session
+        UserSession.getInstance().logout();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) loginBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("PlaNova - Login");
+            stage.show();
+
+            System.out.println("Logged out successfully");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to logout: " + e.getMessage());
             e.printStackTrace();
         }
     }

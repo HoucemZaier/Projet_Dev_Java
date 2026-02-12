@@ -12,72 +12,86 @@
       fx:controller="Controllers.CreateAccountController"
       stylesheets="@login.css">
 
-    <!-- LEFT PANEL -->
-    <VBox spacing="18"
-          alignment="CENTER_LEFT"
-          styleClass="left-panel"
-          prefWidth="420">
-        <!-- LOGO -->
-        <ImageView fitWidth="70" fitHeight="70">
-            <image>
-                <Image url="@logo.png"/>
-            </image>
-        </ImageView>
+    <!-- LEFT PANEL WITH SCROLL -->
+    <ScrollPane fitToWidth="true" prefWidth="420" style="-fx-border-style: none; -fx-background-color: transparent;">
+        <VBox spacing="18"
+              alignment="TOP_LEFT"
+              styleClass="left-panel"
+              prefWidth="400">
+            <!-- LOGO -->
+            <ImageView fitWidth="70" fitHeight="70">
+                <image>
+                    <Image url="@logo.png"/>
+                </image>
+            </ImageView>
 
-        <!-- TITLE -->
-        <Label text="PlaNova" styleClass="title"/>
+            <!-- TITLE -->
+            <Label text="Create Account" styleClass="title"/>
 
-        <!-- SUBTITLE -->
-        <Label text="Votre prochaine aventure, planifiée intelligemment"
-               wrapText="true"
-               styleClass="subtitle"/>
+            <!-- SUBTITLE -->
+            <Label text="Create a new user account"
+                   wrapText="true"
+                   styleClass="subtitle"/>
 
-        <!-- SPACE -->
-        <Region prefHeight="20"/>
+            <!-- SPACE -->
+            <Region prefHeight="20"/>
 
-        <!-- USER TYPE SELECTION -->
-        <ComboBox fx:id="userTypeComboBox" promptText="Select User Type" styleClass="input"/>
+            <!-- USER TYPE SELECTION -->
+            <ComboBox fx:id="userTypeComboBox" promptText="Select User Type" styleClass="input">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Client"/>
+                        <String fx:value="Admin"/>
+                        <String fx:value="Moderateur"/>
+                        <String fx:value="Guide"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
 
-        <!-- DYNAMIC INPUTS BASED ON TYPE -->
-        <TextField fx:id="cinField" promptText="CIN" styleClass="input" visible="false"/>
-        <TextField fx:id="matriculeField" promptText="Matricule" styleClass="input" visible="false"/>
-        <TextField fx:id="nomField" promptText="Last Name" styleClass="input"/>
-        <TextField fx:id="prenomField" promptText="First Name" styleClass="input"/>
-        <TextField fx:id="emailField" promptText="Email Address" styleClass="input"/>
-        <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
-        <PasswordField promptText="Confirm Password" styleClass="input"/>
-        <TextField fx:id="paysField" promptText="Country" styleClass="input"/>
+            <!-- DYNAMIC INPUTS BASED ON TYPE -->
+            <TextField fx:id="cinField" promptText="CIN (for Client)" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeField" promptText="Matricule (format: ---AMN######)" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeModField" promptText="Matricule (format: ---MOD######)" styleClass="input" visible="false"/>
+            <TextField fx:id="nomField" promptText="Nom" styleClass="input"/>
+            <TextField fx:id="prenomField" promptText="Prenom" styleClass="input"/>
+            <TextField fx:id="emailField" promptText="Email Address" styleClass="input"/>
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" styleClass="input"/>
+            <TextField fx:id="paysField" promptText="Pays" styleClass="input"/>
 
-        <!-- IMAGE UPLOAD -->
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Profile Image:" styleClass="image-label"/>
-            <Button fx:id="imageButton" text="Choose Image" onAction="#handleImageUpload" styleClass="image-btn"/>
-        </HBox>
+            <!-- IMAGE UPLOAD -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Image:" styleClass="image-label"/>
+                <Button fx:id="imageButton" text="Choose Image" onAction="#handleImageUpload" styleClass="image-btn"/>
+            </HBox>
 
-        <!-- SPACE -->
-        <Region prefHeight="15"/>
+            <!-- SPACE -->
+            <Region prefHeight="15"/>
 
-        <!-- BUTTONS -->
-        <HBox spacing="15">
-            <Button fx:id="createAccountBtn" onAction="#handleCreateAccount" text="Create Account" styleClass="login-btn"/>
-            <Button fx:id="backToLoginBtn" onAction="#handleBackToLogin" text="Back to Login" styleClass="signup-btn"/>
-        </HBox>
+            <!-- BUTTONS -->
+            <HBox spacing="15">
+                <Button fx:id="createAccountBtn" onAction="#handleCreateAccount" text="Create Account" styleClass="login-btn"/>
+                <Button fx:id="backToLoginBtn" onAction="#handleBackToLogin" text="Back to Login" styleClass="signup-btn"/>
+            </HBox>
 
-        <!-- SPACE -->
-        <Region prefHeight="20"/>
+            <!-- SPACE -->
+            <Region prefHeight="20"/>
 
-        <!-- SOCIAL -->
-        <HBox spacing="25">
-            <Label text="Facebook" styleClass="social"/>
-            <Label text="LinkedIn" styleClass="social"/>
-            <Label text="Google" styleClass="social"/>
-        </HBox>
+            <!-- SOCIAL -->
+            <HBox spacing="25">
+                <Label text="Facebook" styleClass="social"/>
+                <Label text="LinkedIn" styleClass="social"/>
+                <Label text="Google" styleClass="social"/>
+            </HBox>
 
-    </VBox>
+        </VBox>
+    </ScrollPane>
+
     <!-- RIGHT IMAGE -->
-    <ImageView fitWidth="680" preserveRatio="true" smooth="true">
+    <ImageView fitWidth="680" fitHeight="700" preserveRatio="false" smooth="true" HBox.hgrow="ALWAYS">
         <image>
             <Image url="@plane.jpg"/>
         </image>
     </ImageView>
+
 </HBox>

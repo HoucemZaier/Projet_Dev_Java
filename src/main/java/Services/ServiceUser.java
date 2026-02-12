@@ -77,7 +77,14 @@ public class ServiceUser implements IService<User> {
             ((Guide) user).setId_guide(user.getIdUtilisateur());
 
         } else if (user instanceof Moderateur) {
-            // Si vous avez une table moderateur
+            // Insert into employee table with matricule if it has one
+            if (((Moderateur) user).getMatricule() != null) {
+                String sql = "INSERT INTO employee (id_employee, matricule) VALUES (?, ?)";
+                PreparedStatement pstmt = connection.prepareStatement(sql);
+                pstmt.setInt(1, user.getIdUtilisateur());
+                pstmt.setString(2, ((Moderateur) user).getMatricule());
+                pstmt.executeUpdate();
+            }
             ((Moderateur) user).setId_moderateur(user.getIdUtilisateur());
         }
     }
@@ -124,7 +131,11 @@ public class ServiceUser implements IService<User> {
         pstmtGuide.setInt(1, id);
         pstmtGuide.executeUpdate();
 
-        // Note: Moderateur doesn't have a specific table, so no deletion needed
+        // Delete from employee table if exists (for Moderateur)
+        String sqlEmployee = "DELETE FROM employee WHERE id_employee = ?";
+        PreparedStatement pstmtEmployee = connection.prepareStatement(sqlEmployee);
+        pstmtEmployee.setInt(1, id);
+        pstmtEmployee.executeUpdate();
     }
 
     @Override
@@ -219,6 +230,36 @@ public class ServiceUser implements IService<User> {
         return null;
     }
 
+    // Méthode supplémentaire : Vérifier si une matricule existe dans la base de données
+    public boolean matriculeExists(String matricule) throws SQLException {
+        // Check if matricule exists in admin or employee tables
+        String sqlAdmin = "SELECT COUNT(*) FROM admin WHERE matricule = ?";
+        String sqlEmployee = "SELECT COUNT(*) FROM employee WHERE matricule = ?";
+
+        try {
+            // Check in admin table
+            PreparedStatement pstmtAdmin = connection.prepareStatement(sqlAdmin);
+            pstmtAdmin.setString(1, matricule);
+            ResultSet rsAdmin = pstmtAdmin.executeQuery();
+            if (rsAdmin.next() && rsAdmin.getInt(1) > 0) {
+                return true;
+            }
+
+            // Check in employee table
+            PreparedStatement pstmtEmp = connection.prepareStatement(sqlEmployee);
+            pstmtEmp.setString(1, matricule);
+            ResultSet rsEmp = pstmtEmp.executeQuery();
+            if (rsEmp.next() && rsEmp.getInt(1) > 0) {
+                return true;
+            }
+
+            return false;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification de la matricule : " + e.getMessage());
+            throw e;
+        }
+    }
+
     // Méthode supplémentaire : Authentification
     public User authenticate(String email, String motDePasse) throws SQLException {
         if (connection == null) {
@@ -296,7 +337,8 @@ public class ServiceUser implements IService<User> {
             guide.setId_guide(id);
             user = guide;
         } else if (isModerateur(id)) {
-            Moderateur moderateur = new Moderateur(id, nom, prenom, email, motDePasse, pays, imageurl);
+            String matricule = getMatriculeModerateur(id);
+            Moderateur moderateur = new Moderateur(id, nom, prenom, email, motDePasse, pays, imageurl, matricule);
             moderateur.setId_moderateur(id);
             user = moderateur;
         } else {
@@ -329,6 +371,17 @@ public class ServiceUser implements IService<User> {
         return null;
     }
 
+    private String getMatriculeModerateur(int idModerateur) throws SQLException {
+        String sql = "SELECT matricule FROM employee WHERE id_employee = ?";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setInt(1, idModerateur);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getString("matricule");
+        }
+        return null;
+    }
+
     // Méthodes helper pour déterminer le type d'utilisateur en utilisant le polymorphisme (vérification des tables)
     private boolean isAdmin(int id) throws SQLException {
         String sql = "SELECT COUNT(*) FROM admin WHERE id_admin = ?";
@@ -356,7 +409,7 @@ public class ServiceUser implements IService<User> {
 
     private boolean isModerateur(int id) throws SQLException {
         // Pour Moderateur, on peut vérifier s'il n'est dans aucune autre table spécifique
-        // ou si vous avez une table moderateur, vérifiez-la
+        // ou si vous avez une table employee, vérifiez-la
         return !isAdmin(id) && !isClient(id) && !isGuide(id);
     }
 }

@@ -1,6 +1,7 @@
 package Controllers;
 
 import Models.User;
+import utils.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,15 +47,30 @@ public class dashboardController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Initialize controller
         System.out.println("Dashboard controller initialized");
+
+        // Hide user management button for Moderateur
+        if (UserSession.getInstance().isModerator()) {
+            userManagementBtn.setVisible(false);
+            userManagementBtn.setManaged(false);
+        }
     }
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
-        System.out.println("Current user set: " + (user != null ? user.getNom() + " " + user.getPrenom() : "null"));
+        if (user != null) {
+            UserSession.getInstance().setCurrentUser(user);
+            System.out.println("Current user set: " + user.getNom() + " " + user.getPrenom() + " (" + user.getClass().getSimpleName() + ")");
+        }
     }
 
     @FXML
     private void handleUserManagement(ActionEvent event) {
+        // Check if current user is Admin
+        if (!UserSession.getInstance().canAccessUserManagement()) {
+            showAlert(Alert.AlertType.ERROR, "Access Denied",
+                "Only Admin users can access User Management. Your role: " + UserSession.getInstance().getCurrentUserType());
+            return;
+        }
         navigateTo("/gestionUser.fxml", "User Management");
     }
 
@@ -105,6 +121,9 @@ public class dashboardController implements Initializable {
 
     @FXML
     private void handleLogout(ActionEvent event) {
+        // Clear user session
+        UserSession.getInstance().logout();
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
             Parent root = loader.load();

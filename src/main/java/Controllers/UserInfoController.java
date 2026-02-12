@@ -3,6 +3,8 @@ package Controllers;
 import Models.User;
 import Models.Client;
 import Models.Admin;
+import Models.Moderateur;
+import Models.Guide;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
@@ -84,10 +86,15 @@ public class UserInfoController implements Initializable {
                 cinLabel.setText(client.getCin() != null ? client.getCin() : "N/A");
                 matriculeLabel.setText("N/A");
             }
-            // Set Matricule if admin
+            // Set Matricule if admin or moderateur
             else if (user instanceof Admin) {
                 Admin admin = (Admin) user;
                 matriculeLabel.setText(admin.getMatricule() != null ? admin.getMatricule() : "N/A");
+                cinLabel.setText("N/A");
+            }
+            else if (user instanceof Moderateur) {
+                Moderateur moderateur = (Moderateur) user;
+                matriculeLabel.setText(moderateur.getMatricule() != null ? moderateur.getMatricule() : "N/A");
                 cinLabel.setText("N/A");
             }
             // Other types
@@ -114,8 +121,8 @@ public class UserInfoController implements Initializable {
     private String getUserType(User user) {
         if (user instanceof Client) return "Client";
         if (user instanceof Admin) return "Admin";
-        if (user instanceof Models.Guide) return "Guide";
-        if (user instanceof Models.Moderateur) return "Moderateur";
+        if (user instanceof Guide) return "Guide";
+        if (user instanceof Moderateur) return "Moderateur";
         return "User";
     }
 
