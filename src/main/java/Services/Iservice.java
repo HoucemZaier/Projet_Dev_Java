@@ -7,7 +7,7 @@ public interface Iservice<T> {
 
     void ajouter(T t) throws SQLDataException;
 
-    void supprimer(T t) throws SQLDataException;
+    void supprimer(int id) throws SQLDataException;
 
     void modifier(T t) throws SQLDataException;
 

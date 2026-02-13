@@ -1,0 +1,30 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+
+<VBox spacing="10" style="-fx-padding:20; -fx-background-color:#f8fafc;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.ListExcursionController">
+
+    <TableView fx:id="tableExcursion" prefHeight="500">
+        <columns>
+            <TableColumn text="ID" fx:id="idColumn"/>
+            <TableColumn text="Titre" fx:id="titreColumn"/>
+            <TableColumn text="Destination" fx:id="destinationColumn"/>
+            <TableColumn text="Date Départ" fx:id="dateDepartColumn"/>
+            <TableColumn text="Date Retour" fx:id="dateRetourColumn"/>
+            <TableColumn text="Prix" fx:id="prixColumn"/>
+            <TableColumn text="Nb Places" fx:id="nbPlacesColumn"/>
+            <TableColumn text="Statut" fx:id="statutColumn"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Ajouter" onAction="#ouvrirCreate"/>
+        <Button text="Modifier" onAction="#ouvrirUpdate"/>
+        <Button text="Supprimer" onAction="#handleDelete"/>
+    </HBox>
+
+</VBox>
