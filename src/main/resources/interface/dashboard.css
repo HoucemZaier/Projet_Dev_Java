@@ -1,0 +1,226 @@
+/* Définitions des couleurs */
+.root-background {
+    -fx-background-color: #F4F7FE;
+}
+
+.sidebar {
+    -fx-background-color: #111C44;
+}
+
+.logo-text {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Inter", sans-serif; /* Assurez-vous que la police est disponible */
+}
+
+.premium-admin-text {
+    -fx-text-fill: #A3AED0;
+    -fx-font-size: 12px;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.menu-button, .menu-button-active {
+    -fx-background-color: transparent;
+    -fx-text-fill: #A3AED0;
+    -fx-alignment: center-left;
+    -fx-font-size: 14px;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-padding: 10 15 10 15;
+    -fx-background-radius: 10;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1); /* Léger survol */
+    -fx-cursor: hand;
+}
+
+.menu-button-active {
+    -fx-background-color: #4318FF;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.menu-button .graphic {
+    -fx-padding: 0 10 0 0; /* Espacement entre l'icône et le texte */
+}
+
+
+/* --- Top Bar --- */
+.dashboard-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2B3674;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.welcome-text {
+    -fx-text-fill: #A3AED0;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.top-bar-right-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-padding: 5 15 5 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 5); /* Ombre subtile */
+}
+
+.search-field {
+    -fx-background-color: #F4F7FE;
+    -fx-background-radius: 20;
+    -fx-border-width: 0;
+    -fx-prompt-text-fill: #A3AED0;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-padding: 5 10 5 10;
+}
+.search-field:focused {
+     -fx-background-color: #E6E8F2; /* Légère teinte au focus */
+}
+
+.new-entry-button {
+    -fx-background-color: #111C44;
+    -fx-text-fill: white;
+    -fx-background-radius: 15;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-padding: 8 15 8 15;
+}
+
+.user-name {
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-text-fill: #2B3674;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.user-role {
+    -fx-font-size: 10px;
+    -fx-text-fill: #A3AED0;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+
+/* --- Info Cards --- */
+.info-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 5);
+}
+
+.percentage-text-positive {
+    -fx-text-fill: #05CD99;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.percentage-text-negative {
+    -fx-text-fill: #EE5D50;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.card-title {
+    -fx-text-fill: #A3AED0;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.card-value {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2B3674;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+/* --- Chart and Recent Bookings --- */
+.section-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: #2B3674;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.chart-card, .recent-bookings-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 5);
+}
+
+/* Style spécifique pour le graphique (ligne bleue et zones) */
+.chart-series-line {
+    -fx-stroke: #4318FF; /* Couleur de la ligne du graphique */
+    -fx-stroke-width: 3px;
+}
+.chart-series-area-fill {
+    -fx-fill: linear-gradient(to top, rgba(67, 24, 255, 0.1), transparent); /* Dégradé pour la zone en dessous de la ligne */
+}
+
+/* Masquer les symboles et la grille */
+.chart-line-symbol {
+    -fx-background-color: transparent, transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}
+.chart-horizontal-grid-lines, .chart-vertical-grid-lines {
+    -fx-stroke: transparent;
+}
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+.axis {
+    -fx-font-family: "Inter", sans-serif;
+    -fx-tick-label-fill: #A3AED0;
+    -fx-tick-length: 0; /* Masquer les petites marques sur l'axe */
+    -fx-minor-tick-length: 0;
+}
+.axis-label {
+    -fx-text-fill: #A3AED0;
+}
+.axis-tick-mark {
+    -fx-stroke: #E0E5F2; /* Lignes très fines pour l'axe */
+    -fx-stroke-width: 0.5;
+}
+
+
+/* --- Recent Booking Items --- */
+.booking-item-user-name {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #2B3674;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.booking-item-time {
+    -fx-text-fill: #A3AED0;
+    -fx-font-size: 10px;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.booking-item-price {
+    -fx-text-fill: #4318FF;
+    -fx-font-weight: bold;
+    -fx-font-family: "Inter", sans-serif;
+}
+
+.view-all-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #E0E5F2;
+    -fx-border-radius: 10;
+    -fx-text-fill: #2B3674;
+    -fx-font-weight: bold;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+}
+.view-all-button:hover {
+    -fx-background-color: #F4F7FE;
+}
+
+/* Pour les images d'avatar et icônes circulaires */
+.avatar-circle {
+    -fx-background-color: #DDD; /* Couleur de fond par défaut */
+    -fx-background-radius: 50%;
+}

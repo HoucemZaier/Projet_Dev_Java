@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="233.0" prefWidth="313.0" spacing="10" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controlleurs.ForumController">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+   <Label text="Créer une Nouvelle Fourms" textFill="#2c3e50">
+      <font>
+         <Font name="System Bold" size="20.0" />
+      </font>
+   </Label>
+
+    <GridPane hgap="10" prefHeight="184.0" prefWidth="300.0" vgap="10">
+        <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="txtNom" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label prefHeight="17.0" prefWidth="145.0" text="Nombre de participants:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="txtNbParticipant" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Commentaire:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="txtCommentaire" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label text="Poste:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <ComboBox fx:id="comboPoste" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <HBox alignment="CENTER_RIGHT" spacing="12.0" GridPane.rowIndex="4">
+         <children>
+            <Button mnemonicParsing="false" onAction="#annulerAction" prefWidth="80.0" style="-fx-background-color: #FF0000; -fx-text-fill: white; -fx-font-weight: bold;" text="Annuler" />
+         </children>
+      </HBox>
+      <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handleAjouter" prefWidth="100.0" style="-fx-background-color: linear-gradient(to right, #3B4CFF, #5C6BC0); -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5); -fx-text-fill: while; -fx-font-weight: bold;" text="Enregistrer" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane>
+
+</VBox>
