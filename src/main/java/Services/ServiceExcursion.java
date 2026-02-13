@@ -17,7 +17,7 @@ public class ServiceExcursion implements Iservice<Excursion> {
 
     @Override
     public void ajouter(Excursion e) throws SQLDataException {
-        String sql = "INSERT INTO Excursion (titre, destination, date_depart, date_retour, prix, nb_places, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO excursion (titre, destination, date_depart, date_retour, prix, nb_places, statut) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, e.getTitre());
             ps.setString(2, e.getDestination());
@@ -34,7 +34,7 @@ public class ServiceExcursion implements Iservice<Excursion> {
 
     @Override
     public void supprimer(int id) throws SQLDataException {
-        String sql = "DELETE FROM Excursion WHERE id_excursion = ?";
+        String sql = "DELETE FROM excursion WHERE id_excursion = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -45,7 +45,7 @@ public class ServiceExcursion implements Iservice<Excursion> {
 
     @Override
     public void modifier(Excursion e) throws SQLDataException {
-        String sql = "UPDATE Excursion SET titre=?, destination=?, date_depart=?, date_retour=?, prix=?, nb_places=?, statut=? WHERE id_excursion=?";
+        String sql = "UPDATE excursion SET titre=?, destination=?, date_depart=?, date_retour=?, prix=?, nb_places=?, statut=? WHERE id_excursion=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, e.getTitre());
             ps.setString(2, e.getDestination());
@@ -64,7 +64,7 @@ public class ServiceExcursion implements Iservice<Excursion> {
     @Override
     public List<Excursion> recuperer() throws SQLDataException {
         List<Excursion> list = new ArrayList<>();
-        String sql = "SELECT * FROM Excursion";
+        String sql = "SELECT * FROM excursion";
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 

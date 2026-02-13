@@ -17,7 +17,7 @@ public class ServiceActivite implements Iservice<Activite> {
 
     @Override
     public void ajouter(Activite a) throws SQLDataException {
-        String sql = "INSERT INTO Activite (nom, description, date_activite, heure_activite, lieu, prix, id_excursion, id_destination) " +
+        String sql = "INSERT INTO activite (nom, description, date_activite, heure_activite, lieu, prix, id_excursion, id_destination) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, a.getNom());
@@ -36,7 +36,7 @@ public class ServiceActivite implements Iservice<Activite> {
 
     @Override
     public void supprimer(int id) throws SQLDataException {
-        String sql = "DELETE FROM Activite WHERE id_activite = ?";
+        String sql = "DELETE FROM activite WHERE id_activite = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -47,7 +47,7 @@ public class ServiceActivite implements Iservice<Activite> {
 
     @Override
     public void modifier(Activite a) throws SQLDataException {
-        String sql = "UPDATE Activite SET nom=?, description=?, date_activite=?, heure_activite=?, lieu=?, prix=?, id_excursion=?, id_destination=? " +
+        String sql = "UPDATE activite SET nom=?, description=?, date_activite=?, heure_activite=?, lieu=?, prix=?, id_excursion=?, id_destination=? " +
                 "WHERE id_activite=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, a.getNom());
@@ -68,7 +68,7 @@ public class ServiceActivite implements Iservice<Activite> {
     @Override
     public List<Activite> recuperer() throws SQLDataException {
         List<Activite> list = new ArrayList<>();
-        String sql = "SELECT * FROM Activite";
+        String sql = "SELECT * FROM activite";
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
@@ -98,7 +98,7 @@ public class ServiceActivite implements Iservice<Activite> {
 
     public List<Integer> getAllExcursionIds() {
         List<Integer> ids = new ArrayList<>();
-        String sql = "SELECT id_excursion FROM Excursion"; // table excursion
+        String sql = "SELECT id_excursion FROM excursion"; // table excursion
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
@@ -112,7 +112,7 @@ public class ServiceActivite implements Iservice<Activite> {
 
     public List<Integer> getAllDestinationIds() {
         List<Integer> ids = new ArrayList<>();
-        String sql = "SELECT id_destination FROM Destination"; // table destination
+        String sql = "SELECT id_destination FROM destination"; // table destination
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
