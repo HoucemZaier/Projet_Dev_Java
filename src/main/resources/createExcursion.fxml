@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="380.0" prefWidth="458.0" spacing="10" style="-fx-padding:20; -fx-background-color:#f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.CreateExcursionController">
+<VBox prefHeight="380.0" prefWidth="465.0" spacing="10" style="-fx-padding:20; -fx-background-color:#f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.CreateExcursionController">
 
     <Label text="Ajouter Excursion">
         <font><Font size="22" /></font>
@@ -14,13 +14,13 @@
     <TextField fx:id="destinationField" promptText="Destination" />
     <DatePicker fx:id="dateDepartPicker" promptText="Date de départ" />
     <DatePicker fx:id="dateRetourPicker" promptText="Date de retour" />
-    <TextField fx:id="prixField" promptText="Prix" />
+    <TextField fx:id="prixField" prefHeight="26.0" prefWidth="126.0" promptText="Prix" />
     <TextField fx:id="nbPlacesField" promptText="Nombre de places" />
     <ComboBox fx:id="statutComboBox" promptText="Statut" />
 
     <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding:20 0 0 0;">
         <Button onAction="#handleCancel" style="-fx-background-color:#64748b; -fx-text-fill:white; -fx-background-radius:8;" text="Annuler" />
-        <Button onAction="#handleSave" style="-fx-background-color:linear-gradient(to right,#f59e0b,#d97706);                        -fx-text-fill:white; -fx-background-radius:8; -fx-font-weight:bold;" text="Enregistrer" />
+        <Button onAction="#handleSave" style="-fx-background-color:linear-gradient(to right,#10b981,#059669); -fx-text-fill:white; -fx-background-radius:8; -fx-font-weight:bold;" text="Enregistrer" />
     </HBox>
 
 </VBox>
