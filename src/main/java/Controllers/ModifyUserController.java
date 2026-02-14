@@ -140,6 +140,13 @@ public class ModifyUserController implements Initializable {
             return false;
         }
 
+        // Email validation for Admin and Moderateur - must be @planNova.tn
+        if ((currentUser instanceof Admin || currentUser instanceof Moderateur)
+                && !emailField.getText().trim().endsWith("@planNova.tn")) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", "Admin and Moderateur email must be in the format: username@planNova.tn");
+            return false;
+        }
+
         return true;
     }
 

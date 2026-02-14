@@ -156,15 +156,15 @@
                                         <Image url="https://img.icons8.com/material-outlined/48/2b3674/appointment-reminders.png" />
                                     </image>
                                 </ImageView>
-                                <HBox alignment="CENTER" spacing="10">
+                                <HBox fx:id="userProfileHBox" alignment="CENTER" spacing="10" onMouseClicked="#handleUserProfile" style="-fx-cursor: hand;">
                                     <children>
                                         <VBox alignment="CENTER_RIGHT">
                                             <children>
-                                                <Label styleClass="user-name" text="Alex Thompson" />
-                                                <Label styleClass="user-role" text="Super Admin" />
+                                                <Label fx:id="userNameLabel" styleClass="user-name" text="Alex Thompson" />
+                                                <Label fx:id="userRoleLabel" styleClass="user-role" text="Super Admin" />
                                             </children>
                                         </VBox>
-                                        <ImageView fitHeight="36.0" fitWidth="36.0">
+                                        <ImageView fx:id="userProfileImage" fitHeight="36.0" fitWidth="36.0">
                                             <image>
                                                 <Image url="https://i.pravatar.cc/100?u=admin" />
                                             </image>

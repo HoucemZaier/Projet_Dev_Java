@@ -50,8 +50,8 @@
 
             <!-- DYNAMIC INPUTS BASED ON TYPE -->
             <TextField fx:id="cinField" promptText="CIN (for Client)" styleClass="input" visible="false"/>
-            <TextField fx:id="matriculeField" promptText="Matricule (format: ---AMN######)" styleClass="input" visible="false"/>
-            <TextField fx:id="matriculeModField" promptText="Matricule (format: ---MOD######)" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeField" promptText="Matricule" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeModField" promptText="Matricule " styleClass="input" visible="false"/>
             <TextField fx:id="nomField" promptText="Nom" styleClass="input"/>
             <TextField fx:id="prenomField" promptText="Prenom" styleClass="input"/>
             <TextField fx:id="emailField" promptText="Email Address" styleClass="input"/>

@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.User;
 import Services.ServiceUser;
+import utils.PasswordUtils;
 import utils.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,6 +25,8 @@ public class loginController {
     private Button loginBtn;
     @FXML
     private Button signupBtn;
+    @FXML
+    private javafx.scene.control.Hyperlink forgotPasswordLink;
 
     private ServiceUser serviceUser = new ServiceUser();
 
@@ -31,36 +34,80 @@ public class loginController {
     private void handleLogin(ActionEvent event) {
         String email = emailField.getText().trim();
         String password = passwordField.getText();
+        if (password != null) password = password.trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password == null || password.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Validation Error", "Please enter both email and password.");
             return;
         }
 
         try {
-            User authenticatedUser = serviceUser.authenticate(email, password);
+            User userByEmail = serviceUser.findByEmail(email);
 
-            if (authenticatedUser != null) {
-                // Store user in session
-                UserSession.getInstance().setCurrentUser(authenticatedUser);
-
-                // Check if user has access to dashboard
-                if (!UserSession.getInstance().canAccessDashboard()) {
-                    UserSession.getInstance().logout();
-                    showAlert(Alert.AlertType.ERROR, "Access Denied",
-                        "Only Admin and Moderateur can access the dashboard. Client and Guide users are not allowed.");
-                    return;
-                }
-
-                // Successful login - navigate to dashboard
-                navigateToDashboard(authenticatedUser);
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid email or password.");
+            if (userByEmail == null) {
+                showAlert(Alert.AlertType.ERROR, "Connexion échouée", "Email incorrect ou inexistant. Vérifiez l'adresse email.");
+                return;
             }
 
+            String storedPassword = userByEmail.getMotDePasse();
+            if (storedPassword == null || storedPassword.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Compte invalide", "Ce compte n'a pas de mot de passe défini. Utilisez \"Mot de passe oublié\" pour en définir un.");
+                return;
+            }
+
+            if (!PasswordUtils.verifyPassword(password, storedPassword)) {
+                showAlert(Alert.AlertType.ERROR, "Connexion échouée", "Mot de passe incorrect. Réessayez ou utilisez \"Mot de passe oublié\".");
+                return;
+            }
+
+            // Store user in session
+            UserSession.getInstance().setCurrentUser(userByEmail);
+
+            // Check if user has access to dashboard
+            if (!UserSession.getInstance().canAccessDashboard()) {
+                UserSession.getInstance().logout();
+                showAlert(Alert.AlertType.ERROR, "Accès refusé",
+                    "Seuls Admin et Moderateur peuvent accéder au dashboard. Les comptes Client et Guide ne sont pas autorisés.");
+                return;
+            }
+
+            // Successful login - navigate to dashboard
+            navigateToDashboard(userByEmail);
+
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to authenticate: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur base de données", "Échec de l'authentification : " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void handleForgotPassword(ActionEvent event) {
+        TextInputDialog emailDialog = new TextInputDialog();
+        emailDialog.setTitle("Reset password");
+        emailDialog.setHeaderText("Enter your account email");
+        emailDialog.setContentText("Email:");
+        emailDialog.showAndWait().ifPresent(email -> {
+            if (email.trim().isEmpty()) return;
+            Dialog<String> passDialog = new Dialog<>();
+            passDialog.setTitle("Reset password");
+            passDialog.setHeaderText("Enter new password for " + email.trim());
+            javafx.scene.control.PasswordField newPass = new javafx.scene.control.PasswordField();
+            newPass.setPromptText("New password");
+            passDialog.getDialogPane().setContent(newPass);
+            passDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            passDialog.setResultConverter(btn -> btn == ButtonType.OK ? newPass.getText() : null);
+            passDialog.showAndWait().ifPresent(newPassword -> {
+                if (newPassword == null || newPassword.isEmpty()) return;
+                try {
+                    if (serviceUser.resetPasswordByEmail(email.trim(), newPassword)) {
+                        showAlert(Alert.AlertType.INFORMATION, "Password reset", "Password updated. You can now log in with your email and the new password.");
+                    } else {
+                        showAlert(Alert.AlertType.WARNING, "Reset failed", "No account found with that email, or error occurred.");
+                    }
+                } catch (SQLException e) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to reset password: " + e.getMessage());
+                }
+            });
+        });
     }
 
     @FXML

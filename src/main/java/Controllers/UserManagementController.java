@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.*;
 import Services.ServiceUser;
+import javafx.util.Duration;
 import utils.UserSession;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -13,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -33,6 +35,7 @@ import java.util.ResourceBundle;
 
 public class UserManagementController implements Initializable {
 
+    @FXML private Button overviewBtn;
     @FXML
     private VBox userContainer;
     @FXML
@@ -102,6 +105,58 @@ public class UserManagementController implements Initializable {
         userContainer.getChildren().clear();
         for (User user : userList) {
             userContainer.getChildren().add(createUserCard(user));
+        }
+    }
+    
+    @FXML
+    private void handleOverview(ActionEvent event) {
+        navigateToDashboard();
+    }
+    
+    private void handleDashbordManagement(ActionEvent event) {
+        // Check if current user is Admin
+        navigateTo("dashboard.fxml", "User Management");
+    }
+    private void navigateTo(String fxmlFile, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+
+            // If navigating to dashbord, set the user context
+            if (fxmlFile.equals("/dashboard.fxml")) {
+                UserManagementController controller = loader.getController();
+                if (controller != null && currentUser != null) {
+                    controller.setCurrentUser(currentUser);
+                }
+            }
+
+            // Get the stage from any button
+            Stage stage = (Stage) overviewBtn.getScene().getWindow();
+
+            // Add transition animation
+            Parent currentRoot = stage.getScene().getRoot();
+
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(200), currentRoot);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+
+            fadeOut.setOnFinished(e -> {
+                stage.setScene(new Scene(root));
+                stage.setTitle("PlaNova - " + title);
+                stage.setMaximized(true);
+
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(200), root);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
+            });
+
+            fadeOut.play();
+
+            System.out.println("Navigated to: " + title);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to " + title + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

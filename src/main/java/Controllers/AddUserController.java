@@ -150,6 +150,13 @@ public class AddUserController implements Initializable {
             return false;
         }
 
+        // Email validation for Admin and Moderateur - must be @planNova.tn
+        if (("Admin".equals(userTypeCombo.getValue()) || "Moderateur".equals(userTypeCombo.getValue()))
+                && !emailField.getText().trim().endsWith("@planNova.tn")) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", "Admin and Moderateur email must be in the format: username@planNova.tn");
+            return false;
+        }
+
         // Check if matricule already exists in database
         if (("Admin".equals(userTypeCombo.getValue()) || "Moderateur".equals(userTypeCombo.getValue())) &&
             !matriculeField.getText().trim().isEmpty()) {

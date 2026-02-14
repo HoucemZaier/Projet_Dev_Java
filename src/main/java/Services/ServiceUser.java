@@ -2,6 +2,7 @@ package Services;
 
 import Models.*;
 import utils.MyDatabase;
+import utils.PasswordUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ public class ServiceUser implements IService<User> {
             pstmt.setString(1, user.getNom());
             pstmt.setString(2, user.getPrenom());
             pstmt.setString(3, user.getEmail());
-            pstmt.setString(4, user.getMotDePasse());
+            // Hash password before saving
+            pstmt.setString(4, PasswordUtils.hashPassword(user.getMotDePasse()));
             pstmt.setString(5, user.getPays());
             pstmt.setString(6, user.getImageurl());
 
@@ -140,17 +142,38 @@ public class ServiceUser implements IService<User> {
 
     @Override
     public void modifier(User user) throws SQLException {
-        String sql = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ? WHERE id_utilisateur = ?";
+        String passwordToSave = user.getMotDePasse();
+        boolean updatePassword = passwordToSave != null && !passwordToSave.isEmpty();
+        if (updatePassword
+                && !passwordToSave.startsWith("$2")
+                && !passwordToSave.startsWith("$SHA256$")) {
+            passwordToSave = PasswordUtils.hashPassword(passwordToSave);
+        }
+
+        final String sqlWithPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ? WHERE id_utilisateur = ?";
+        final String sqlWithoutPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, pays = ?, imageurl = ? WHERE id_utilisateur = ?";
 
         try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1, user.getNom());
-            pstmt.setString(2, user.getPrenom());
-            pstmt.setString(3, user.getEmail());
-            pstmt.setString(4, user.getMotDePasse());
-            pstmt.setString(5, user.getPays());
-            pstmt.setString(6, user.getImageurl());
-            pstmt.setInt(7, user.getIdUtilisateur());
+            PreparedStatement pstmt;
+            if (updatePassword && passwordToSave != null) {
+                pstmt = connection.prepareStatement(sqlWithPassword);
+                pstmt.setString(1, user.getNom());
+                pstmt.setString(2, user.getPrenom());
+                pstmt.setString(3, user.getEmail());
+                pstmt.setString(4, passwordToSave);
+                pstmt.setString(5, user.getPays());
+                pstmt.setString(6, user.getImageurl());
+                pstmt.setInt(7, user.getIdUtilisateur());
+            } else {
+                // Do not update password (e.g. when saving account info only) so we never overwrite with null
+                pstmt = connection.prepareStatement(sqlWithoutPassword);
+                pstmt.setString(1, user.getNom());
+                pstmt.setString(2, user.getPrenom());
+                pstmt.setString(3, user.getEmail());
+                pstmt.setString(4, user.getPays());
+                pstmt.setString(5, user.getImageurl());
+                pstmt.setInt(6, user.getIdUtilisateur());
+            }
 
             int rowsAffected = pstmt.executeUpdate();
 
@@ -260,30 +283,114 @@ public class ServiceUser implements IService<User> {
         }
     }
 
-    // Méthode supplémentaire : Authentification
+    /** Find user by email only (no password check). TRIM on column so spaces in DB don't block match; case-insensitive. */
+    public User findByEmail(String email) throws SQLException {
+        if (connection == null) {
+            throw new SQLException("Database connection is not available. Check your database configuration.");
+        }
+        String emailClean = email != null ? email.trim() : "";
+        if (emailClean.isEmpty()) return null;
+        String sql = "SELECT * FROM utilisateur WHERE LOWER(TRIM(email)) = LOWER(?)";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setString(1, emailClean);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return createUserFromResultSet(rs);
+        }
+        return null;
+    }
+
+    // Méthode supplémentaire : Authentification with hashed passwords
     public User authenticate(String email, String motDePasse) throws SQLException {
+        User user = findByEmail(email);
+        if (user == null) return null;
+        String stored = user.getMotDePasse();
+        if (stored == null || stored.isEmpty()) return null;
+        if (!PasswordUtils.verifyPassword(motDePasse, stored)) return null;
+        return user;
+    }
+    
+    // Méthode supplémentaire : Mettre à jour le mot de passe
+    public boolean updatePassword(int userId, String newPassword) throws SQLException {
         if (connection == null) {
             throw new SQLException("Database connection is not available. Check your database configuration.");
         }
 
-        String sql = "SELECT * FROM utilisateur WHERE email = ? AND mot_de_passe = ?";
+        String sql = "UPDATE utilisateur SET mot_de_passe = ? WHERE id_utilisateur = ?";
+
+        try {
+            // Hash the new password before storing
+            String hashedPassword = PasswordUtils.hashPassword(newPassword);
+            
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, hashedPassword);
+            pstmt.setInt(2, userId);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                System.out.println("Mot de passe mis à jour avec succès pour l'utilisateur ID: " + userId);
+                return true;
+            }
+            
+            return false;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la mise à jour du mot de passe : " + e.getMessage());
+            throw e;
+        }
+    }
+    
+    // Méthode supplémentaire : Vérifier le mot de passe actuel
+    public boolean verifyCurrentPassword(int userId, String currentPassword) throws SQLException {
+        if (connection == null) {
+            throw new SQLException("Database connection is not available. Check your database configuration.");
+        }
+
+        String sql = "SELECT mot_de_passe FROM utilisateur WHERE id_utilisateur = ?";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1, email);
-            pstmt.setString(2, motDePasse);
+            pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                return createUserFromResultSet(rs);
+                String storedPassword = rs.getString("mot_de_passe");
+                return PasswordUtils.verifyPassword(currentPassword, storedPassword);
             }
 
         } catch (SQLException e) {
-            System.err.println("Erreur lors de l'authentification : " + e.getMessage());
+            System.err.println("Erreur lors de la vérification du mot de passe : " + e.getMessage());
             throw e;
         }
 
-        return null;
+        return false;
+    }
+
+    /** Reset password for a user by email (same email matching as login: LOWER(email) = LOWER(?), trim in Java). */
+    public boolean resetPasswordByEmail(String email, String newPlainPassword) throws SQLException {
+        if (connection == null || email == null || newPlainPassword == null || newPlainPassword.isEmpty()) {
+            return false;
+        }
+        String emailClean = email.trim();
+        if (emailClean.isEmpty()) return false;
+        String selectSql = "SELECT id_utilisateur FROM utilisateur WHERE LOWER(TRIM(email)) = LOWER(?)";
+        PreparedStatement selectStmt = connection.prepareStatement(selectSql);
+        selectStmt.setString(1, emailClean);
+        ResultSet rs = selectStmt.executeQuery();
+        if (!rs.next()) {
+            return false; // no user with this email
+        }
+        int userId = rs.getInt("id_utilisateur");
+        rs.close();
+        selectStmt.close();
+        // Update password by id
+        String updateSql = "UPDATE utilisateur SET mot_de_passe = ? WHERE id_utilisateur = ?";
+        String hashed = PasswordUtils.hashPassword(newPlainPassword);
+        PreparedStatement updateStmt = connection.prepareStatement(updateSql);
+        updateStmt.setString(1, hashed);
+        updateStmt.setInt(2, userId);
+        int rows = updateStmt.executeUpdate();
+        return rows > 0;
     }
 
     // Méthode supplémentaire : Récupérer par type
@@ -408,8 +515,12 @@ public class ServiceUser implements IService<User> {
     }
 
     private boolean isModerateur(int id) throws SQLException {
-        // Pour Moderateur, on peut vérifier s'il n'est dans aucune autre table spécifique
-        // ou si vous avez une table employee, vérifiez-la
-        return !isAdmin(id) && !isClient(id) && !isGuide(id);
+        // Check if user exists in employee table (for Moderateur)
+        String sql = "SELECT COUNT(*) FROM employee WHERE id_employee = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        }
     }
 }

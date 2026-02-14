@@ -39,7 +39,7 @@
         <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
 
         <!-- FORGOT PASSWORD -->
-        <Hyperlink text="Forgot Password?" styleClass="forgot-link"/>
+        <Hyperlink fx:id="forgotPasswordLink" text="Forgot Password?" styleClass="forgot-link" onAction="#handleForgotPassword"/>
 
         <!-- SPACE -->
         <Region prefHeight="15"/>

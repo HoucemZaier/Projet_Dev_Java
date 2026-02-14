@@ -170,6 +170,12 @@ public class CreateAccountController {
             return;
         }
 
+        // Email validation for Admin and Moderateur - must be @planNova.tn
+        if (("Admin".equals(userType) || "Moderateur".equals(userType)) && !email.endsWith("@planNova.tn")) {
+            showAlert(Alert.AlertType.WARNING, "Validation Error", "Admin and Moderateur email must be in the format: username@planNova.tn");
+            return;
+        }
+
         try {
             // Create appropriate user object based on type (using inheritance)
             String imagePath = selectedImageFile != null ? selectedImageFile.getAbsolutePath() : "";

@@ -30,7 +30,7 @@
                     <Insets top="30"/>
                 </padding>
                 <children>
-                    <Button maxWidth="Infinity" styleClass="menu-button" text="Overview">
+                    <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button" text="Overview">
                         <graphic>
                             <ImageView fitHeight="16.0" fitWidth="16.0">
                                 <image>
