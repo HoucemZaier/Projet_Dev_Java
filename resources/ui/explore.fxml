@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="800" prefWidth="1280" style="-fx-background-color: #f5f5f5;" stylesheets="@../css/explore.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+
+   <!-- Navbar -->
+   <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #071D49; -fx-padding: 15 30;">
+      <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/logo.PNG" />
+         </image>
+      </ImageView>
+
+      <!-- Logo/Brand Area (optional) -->
+      <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" text="PlaNova" />
+
+      <!-- Search Bar -->
+      <TextField prefWidth="400" promptText="Search destinations..." style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 10 20; -fx-font-size: 14px;" />
+
+      <!-- Spacer to balance -->
+      <Region HBox.hgrow="ALWAYS" />
+
+      <!-- User Profile Section -->
+      <HBox alignment="CENTER" spacing="12">
+         <Label style="-fx-text-fill: white; -fx-font-size: 14px;" text="John Doe" />
+
+         <!-- User Profile Image Circle -->
+         <VBox alignment="CENTER" style="-fx-background-color: white; -fx-background-radius: 25; -fx-pref-width: 50; -fx-pref-height: 50;">
+            <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
+               <image>
+                  <Image url="@../images/user.png" />
+               </image></ImageView>
+         </VBox>
+      </HBox>
+   </HBox>
+
+   <!-- Main Content Area -->
+   <VBox style="-fx-padding: 40 50;" VBox.vgrow="ALWAYS">
+
+      <!-- Section Title -->
+      <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Explore">
+         <VBox.margin><Insets bottom="30" /></VBox.margin>
+      </Label>
+
+      <!-- Cards Container -->
+      <HBox alignment="CENTER" spacing="20.0">
+
+         <!-- Card 1: Osaka -->
+         <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+            <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+               <image>
+                  <Image url="@../images/pexels-alexravvas-20727529.jpg" />
+               </image></ImageView>
+            <VBox spacing="12">
+               <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+
+               <Label styleClass="card-title" text="Osaka" />
+
+               <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label styleClass="card-price" text="39 €" />
+               </HBox>
+
+               <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label styleClass="card-info" text="Hotels • 4 stars" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label styleClass="card-price" text="13 €" />
+               </HBox>
+            </VBox>
+         </VBox>
+
+         <!-- Card 2: Akita -->
+         <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+            <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+               <image>
+                  <Image url="@../images/pexels-catiamatos-984862.jpg" />
+               </image></ImageView>
+            <VBox spacing="12">
+               <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+
+               <Label styleClass="card-title" text="Akita" />
+
+               <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label styleClass="card-price" text="63 €" />
+               </HBox>
+
+               <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label style="-fx-text-fill: #0066cc; -fx-underline: true; -fx-font-size: 14px;" text="Explore hotels" />
+                  <Region HBox.hgrow="ALWAYS" />
+               </HBox>
+            </VBox>
+         </VBox>
+
+         <!-- Card 3: Nagoya -->
+         <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+            <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+               <image>
+                  <Image url="@../images/pexels-cliford-mervil-988071-2398220.jpg" />
+               </image></ImageView>
+            <VBox spacing="12">
+               <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+
+               <Label styleClass="card-title" text="Nagoya" />
+
+               <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label styleClass="card-price" text="80 €" />
+               </HBox>
+
+               <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label styleClass="card-info" text="Hotels • 4 stars" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label styleClass="card-price" text="40 €" />
+               </HBox>
+            </VBox>
+         </VBox>
+
+         <!-- Card 4: Kumamoto -->
+         <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+            <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+               <image>
+                  <Image url="@../images/pexels-leeloothefirst-5227440.jpg" />
+               </image></ImageView>
+            <VBox spacing="12">
+               <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+
+               <Label styleClass="card-title" text="Kumamoto" />
+
+               <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label styleClass="card-price" text="86 €" />
+               </HBox>
+            </VBox>
+         </VBox>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="20.0" />
+         </padding>
+
+      </HBox>
+      <HBox alignment="CENTER" spacing="20">
+         <children>
+            <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+               <children>
+                  <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+                     <image>
+                        <Image url="@../images/pexels-maksim-smirnov-27565989-32234331.jpg" />
+                     </image>
+                  </ImageView>
+                  <VBox spacing="12">
+                     <padding>
+                        <Insets bottom="15" left="15" right="15" top="15" />
+                     </padding>
+                     <children>
+                        <Label styleClass="card-title" text="Osaka" />
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <children>
+                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label styleClass="card-price" text="39 €" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <children>
+                              <Label styleClass="card-info" text="Hotels • 4 stars" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label styleClass="card-price" text="13 €" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+               <children>
+                  <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+                     <image>
+                        <Image url="@../images/pexels-the-world-hopper-929714-1851481.jpg" />
+                     </image>
+                  </ImageView>
+                  <VBox spacing="12">
+                     <padding>
+                        <Insets bottom="15" left="15" right="15" top="15" />
+                     </padding>
+                     <children>
+                        <Label styleClass="card-title" text="Akita" />
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <children>
+                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label styleClass="card-price" text="63 €" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <children>
+                              <Label style="-fx-text-fill: #0066cc; -fx-underline: true; -fx-font-size: 14px;" text="Explore hotels" />
+                              <Region HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+               <children>
+                  <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+                     <image>
+                        <Image url="@../images/pexels-maksim-smirnov-27565989-32234331.jpg" />
+                     </image>
+                  </ImageView>
+                  <VBox spacing="12">
+                     <padding>
+                        <Insets bottom="15" left="15" right="15" top="15" />
+                     </padding>
+                     <children>
+                        <Label styleClass="card-title" text="Nagoya" />
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <children>
+                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label styleClass="card-price" text="80 €" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <children>
+                              <Label styleClass="card-info" text="Hotels • 4 stars" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label styleClass="card-price" text="40 €" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <VBox maxWidth="280" prefWidth="280" styleClass="bundle-card">
+               <children>
+                  <ImageView fitHeight="200" fitWidth="280" preserveRatio="false" styleClass="card-image">
+                     <image>
+                        <Image url="@../images/pexels-leeloothefirst-5227440.jpg" />
+                     </image>
+                  </ImageView>
+                  <VBox spacing="12">
+                     <padding>
+                        <Insets bottom="15" left="15" right="15" top="15" />
+                     </padding>
+                     <children>
+                        <Label styleClass="card-title" text="Kumamoto" />
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                           <children>
+                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Label styleClass="card-price" text="86 €" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+   </VBox>
+
+</VBox>
