@@ -4,7 +4,7 @@ import Models.*;
 import Services.ServiceUser;
 import javafx.util.Duration;
 import utils.UserSession;
-import javafx.animation.FadeTransition;
+import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,7 +26,8 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.application.Platform;
-
+import javafx.animation.KeyValue;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -36,6 +37,8 @@ import java.util.ResourceBundle;
 public class UserManagementController implements Initializable {
 
     @FXML private Button overviewBtn;
+    @FXML private Button transportPubliqueBtn;
+    @FXML private Button transportPriveeBtn;
     @FXML
     private VBox userContainer;
     @FXML
@@ -47,8 +50,6 @@ public class UserManagementController implements Initializable {
     @FXML
     private Label totalUsersLabel, activeUsersLabel, blockedUsersLabel;
     @FXML
-    private Button modifyBtn, deleteBtn;
-    @FXML
     private HBox headerSection;
     @FXML
     private HBox actionsBar;
@@ -56,7 +57,6 @@ public class UserManagementController implements Initializable {
     private ServiceUser serviceUser = new ServiceUser();
     private ObservableList<User> userList = FXCollections.observableArrayList();
     private User currentUser;
-    private User selectedUser;
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -75,6 +75,21 @@ public class UserManagementController implements Initializable {
             if (countryFilter == null) {
                 throw new RuntimeException("countryFilter not injected by FXML");
             }
+
+            // Configure the stage to be resizable and allow maximizing
+            Platform.runLater(() -> {
+                try {
+                    Stage stage = (Stage) userContainer.getScene().getWindow();
+                    if (stage != null) {
+                        stage.setResizable(true);
+                        stage.setMaximized(true); // Allow full screen for better visibility
+                        stage.setMinWidth(1100);
+                        stage.setMinHeight(700);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Could not configure stage: " + e.getMessage());
+                }
+            });
 
             // Check user role and hide elements for Moderateur
             if (UserSession.getInstance().isModerator()) {
@@ -103,7 +118,17 @@ public class UserManagementController implements Initializable {
 
     private void setupUserContainer() {
         userContainer.getChildren().clear();
+        User currentLoggedUser = UserSession.getInstance().getCurrentUser();
+
         for (User user : userList) {
+            // Skip showing the current logged-in admin's card to prevent self-modification
+            if (currentLoggedUser != null &&
+                currentLoggedUser instanceof Admin &&
+                user.getIdUtilisateur() == currentLoggedUser.getIdUtilisateur()) {
+                System.out.println("Skipping current admin user from list: " + user.getNom() + " " + user.getPrenom());
+                continue; // Skip adding this card
+            }
+
             userContainer.getChildren().add(createUserCard(user));
         }
     }
@@ -113,6 +138,18 @@ public class UserManagementController implements Initializable {
         navigateToDashboard();
     }
     
+    @FXML
+    private void handleTransportPublique(ActionEvent event) {
+        // Navigate to Transport Publique management
+        navigateTo("/gestionTransport.fxml", "Transport Publique Management");
+    }
+
+    @FXML
+    private void handleTransportPrivee(ActionEvent event) {
+        // Navigate to Transport Privée management
+        navigateTo("/gestionTransport.fxml", "Transport Privée Management");
+    }
+
     private void handleDashbordManagement(ActionEvent event) {
         // Check if current user is Admin
         navigateTo("dashboard.fxml", "User Management");
@@ -143,7 +180,12 @@ public class UserManagementController implements Initializable {
             fadeOut.setOnFinished(e -> {
                 stage.setScene(new Scene(root));
                 stage.setTitle("PlaNova - " + title);
+
+                // Allow full screen and resizing for better visibility
+                stage.setResizable(true);
                 stage.setMaximized(true);
+                stage.setMinWidth(1100);
+                stage.setMinHeight(700);
 
                 FadeTransition fadeIn = new FadeTransition(Duration.millis(200), root);
                 fadeIn.setFromValue(0);
@@ -168,6 +210,11 @@ public class UserManagementController implements Initializable {
 
         // Avatar with image from database
         StackPane avatarContainer = new StackPane();
+        avatarContainer.getStyleClass().add("user-avatar");
+        avatarContainer.setPrefSize(50, 50);
+        avatarContainer.setMaxSize(50, 50);
+        avatarContainer.setMinSize(50, 50);
+
         Circle avatar = new Circle(25);
 
         // Try to load user image from database
@@ -230,23 +277,35 @@ public class UserManagementController implements Initializable {
             roleLabel.setStyle(roleLabel.getStyle() + "-fx-background-color: #34495e; -fx-text-fill: white;");
         }
 
-        // Action buttons (Modify and Delete)
-        HBox actionBox = new HBox(5);
-        actionBox.setStyle("-fx-alignment: center-right;");
+        // Action buttons (Edit and Delete) - beautiful icon-only buttons
+        HBox actionBox = new HBox(8);
+        actionBox.getStyleClass().add("action-buttons-container");
 
-        Button modifyCardBtn = new Button("✏ Edit");
-        modifyCardBtn.setStyle("-fx-font-size: 11px; -fx-padding: 5 10 5 10; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
-        modifyCardBtn.setOnAction(event -> openModifyUserWindow(user));
+        // Enhanced Edit Button with beautiful icon
+        Button modifyCardBtn = new Button("✏️");
+        modifyCardBtn.getStyleClass().addAll("edit-btn", "action-btn-floating");
+        modifyCardBtn.setOnAction(event -> {
+            // Add click feedback animation
+            addClickFeedback(modifyCardBtn, "#3b82f6");
+            openModifyUserWindow(user);
+        });
+        addButtonAnimation(modifyCardBtn);
 
-        Button deleteCardBtn = new Button("🗑 Delete");
-        deleteCardBtn.setStyle("-fx-font-size: 11px; -fx-padding: 5 10 5 10; -fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
-        deleteCardBtn.setOnAction(event -> openDeleteConfirmation(user));
+        // Enhanced Delete Button with beautiful icon
+        Button deleteCardBtn = new Button("🗑️");
+        deleteCardBtn.getStyleClass().addAll("delete-btn", "action-btn-floating");
+        deleteCardBtn.setOnAction(event -> {
+            // Add click feedback animation
+            addClickFeedback(deleteCardBtn, "#ef4444");
+            openDeleteConfirmation(user);
+        });
+        addButtonAnimation(deleteCardBtn);
 
         actionBox.getChildren().addAll(modifyCardBtn, deleteCardBtn);
 
         // Add all elements to card
         card.getChildren().addAll(avatarContainer, infoBox, roleLabel);
-        HBox.setHgrow(infoBox, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(infoBox, Priority.ALWAYS);
         card.getChildren().add(actionBox);
 
         // Click handler - show user info with animations
@@ -272,6 +331,93 @@ public class UserManagementController implements Initializable {
         });
 
         return card;
+    }
+
+    private void addButtonAnimation(Button btn) {
+        // Enhanced hover animation with smooth scaling and rotation
+        btn.setOnMouseEntered(e -> {
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(200), btn);
+            scaleUp.setToX(1.15);
+            scaleUp.setToY(1.15);
+            scaleUp.setInterpolator(Interpolator.EASE_OUT);
+
+            RotateTransition rotate = new RotateTransition(Duration.millis(200), btn);
+            rotate.setToAngle(5);
+            rotate.setInterpolator(Interpolator.EASE_OUT);
+
+            ParallelTransition hoverAnimation = new ParallelTransition(scaleUp, rotate);
+            hoverAnimation.play();
+
+            // Add subtle pulse
+            addSubtlePulse(btn);
+        });
+
+        btn.setOnMouseExited(e -> {
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), btn);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            scaleDown.setInterpolator(Interpolator.EASE_OUT);
+
+            RotateTransition resetRotate = new RotateTransition(Duration.millis(200), btn);
+            resetRotate.setToAngle(0);
+            resetRotate.setInterpolator(Interpolator.EASE_OUT);
+
+            ParallelTransition exitAnimation = new ParallelTransition(scaleDown, resetRotate);
+            exitAnimation.play();
+
+            // Remove pulse
+            removeSubtlePulse(btn);
+        });
+
+        // Simple press animation
+        btn.setOnMousePressed(e -> {
+            ScaleTransition press = new ScaleTransition(Duration.millis(100), btn);
+            press.setToX(0.9);
+            press.setToY(0.9);
+            press.setInterpolator(Interpolator.EASE_IN);
+            press.play();
+        });
+
+        btn.setOnMouseReleased(e -> {
+            ScaleTransition release = new ScaleTransition(Duration.millis(150), btn);
+            release.setToX(1.15); // Return to hover state
+            release.setToY(1.15);
+            release.setInterpolator(Interpolator.EASE_OUT);
+            release.play();
+        });
+    }
+
+    // Simplified pulse effect
+    private void addSubtlePulse(Button btn) {
+        Timeline pulse = new Timeline(
+            new KeyFrame(Duration.millis(0),
+                new KeyValue(btn.opacityProperty(), 1.0)),
+            new KeyFrame(Duration.millis(1000),
+                new KeyValue(btn.opacityProperty(), 0.8, Interpolator.EASE_BOTH)),
+            new KeyFrame(Duration.millis(2000),
+                new KeyValue(btn.opacityProperty(), 1.0, Interpolator.EASE_BOTH))
+        );
+        pulse.setCycleCount(Timeline.INDEFINITE);
+        pulse.play();
+        btn.setUserData(pulse);
+    }
+
+    // Remove pulse effect
+    private void removeSubtlePulse(Button btn) {
+        Object userData = btn.getUserData();
+        if (userData instanceof Timeline) {
+            Timeline pulse = (Timeline) userData;
+            pulse.stop();
+
+            // Smooth return to normal opacity
+            Timeline resetOpacity = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                    new KeyValue(btn.opacityProperty(), 1.0, Interpolator.EASE_OUT))
+            );
+            resetOpacity.play();
+
+            btn.setUserData(null);
+        }
     }
 
     private void selectCard(HBox card, User user) {
@@ -308,7 +454,6 @@ public class UserManagementController implements Initializable {
             // Refresh list after modifying
             loadUsers();
             updateStats();
-            setupUserContainer(); // Refresh UI
             setupUserContainer(); // Refresh UI
 
         } catch (IOException e) {
@@ -412,7 +557,15 @@ public class UserManagementController implements Initializable {
                 showAlert(Alert.AlertType.WARNING, "Warning", "Failed to retrieve users: service returned null");
                 return;
             }
-            System.out.println("Successfully loaded " + users.size() + " users");
+
+            // Filter out the current admin user from the list
+            User currentLoggedUser = UserSession.getInstance().getCurrentUser();
+            if (currentLoggedUser != null && currentLoggedUser instanceof Admin) {
+                users.removeIf(user -> user.getIdUtilisateur() == currentLoggedUser.getIdUtilisateur());
+                System.out.println("Filtered out current admin user from the list");
+            }
+
+            System.out.println("Successfully loaded " + users.size() + " users (excluding current admin)");
             userList.setAll(users);
         } catch (SQLException e) {
             System.err.println("SQL Error loading users: " + e.getMessage());
@@ -459,8 +612,16 @@ public class UserManagementController implements Initializable {
         try {
             List<User> allUsers = serviceUser.recuperer();
             ObservableList<User> filteredList = FXCollections.observableArrayList();
+            User currentLoggedUser = UserSession.getInstance().getCurrentUser();
 
             for (User user : allUsers) {
+                // Skip the current logged-in admin from appearing in the filtered list
+                if (currentLoggedUser != null &&
+                    currentLoggedUser instanceof Admin &&
+                    user.getIdUtilisateur() == currentLoggedUser.getIdUtilisateur()) {
+                    continue; // Skip this user
+                }
+
                 boolean matchesSearch = searchText == null || searchText.isEmpty() ||
                     user.getNom().toLowerCase().contains(searchText.toLowerCase()) ||
                     user.getPrenom().toLowerCase().contains(searchText.toLowerCase()) ||
@@ -483,6 +644,13 @@ public class UserManagementController implements Initializable {
     private void updateStats() {
         try {
             List<User> users = serviceUser.recuperer();
+            User currentLoggedUser = UserSession.getInstance().getCurrentUser();
+
+            // Filter out current admin from stats count
+            if (currentLoggedUser != null && currentLoggedUser instanceof Admin) {
+                users.removeIf(user -> user.getIdUtilisateur() == currentLoggedUser.getIdUtilisateur());
+            }
+
             totalUsersLabel.setText(String.valueOf(users.size()));
 
             // For demo purposes, assuming all users are active
@@ -517,67 +685,6 @@ public class UserManagementController implements Initializable {
         }
     }
 
-    @FXML
-    public void modifyUser(ActionEvent event) {
-        if (selectedUser == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a user to modify.");
-            return;
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/modifyUser.fxml"));
-            Parent root = loader.load();
-
-            ModifyUserController controller = loader.getController();
-            controller.setUser(selectedUser);
-
-            Stage stage = new Stage();
-            stage.setTitle("Modify User");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-
-            // Refresh list after modifying
-            loadUsers();
-            updateStats();
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open modify user window: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void deleteUser(ActionEvent event) {
-        if (selectedUser == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a user to delete.");
-            return;
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/deleteConfirmation.fxml"));
-            Parent root = loader.load();
-
-            DeleteConfirmationController controller = loader.getController();
-            controller.setUser(selectedUser);
-            controller.setOnDeleteConfirmed(() -> {
-                loadUsers();
-                updateStats();
-                setupUserContainer(); // Refresh UI
-                showAlert(Alert.AlertType.INFORMATION, "Success", "User deleted successfully!");
-            });
-
-            Stage stage = new Stage();
-            stage.setTitle("Delete Confirmation");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setResizable(false);
-            stage.showAndWait();
-
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open delete confirmation: " + e.getMessage());
-        }
-    }
-
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -607,10 +714,49 @@ public class UserManagementController implements Initializable {
             Stage stage = (Stage) userContainer.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("PlaNova - Dashboard");
+
+            // Allow full screen and resizing for better visibility
+            stage.setResizable(true);
             stage.setMaximized(true);
+            stage.setMinWidth(1100);
+            stage.setMinHeight(700);
+
             stage.show();
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to dashboard: " + e.getMessage());
         }
+    }
+
+    // Simplified click feedback animation
+    private void addClickFeedback(Button btn, String accentColor) {
+        // Simple but elegant click animation
+        Timeline clickEffect = new Timeline(
+            new KeyFrame(Duration.ZERO,
+                new KeyValue(btn.scaleXProperty(), 1.15),
+                new KeyValue(btn.scaleYProperty(), 1.15),
+                new KeyValue(btn.opacityProperty(), 1.0)
+            ),
+            new KeyFrame(Duration.millis(100),
+                new KeyValue(btn.scaleXProperty(), 0.9, Interpolator.EASE_OUT),
+                new KeyValue(btn.scaleYProperty(), 0.9, Interpolator.EASE_OUT),
+                new KeyValue(btn.opacityProperty(), 0.8, Interpolator.EASE_OUT)
+            ),
+            new KeyFrame(Duration.millis(300),
+                new KeyValue(btn.scaleXProperty(), 1.15, Interpolator.EASE_OUT),
+                new KeyValue(btn.scaleYProperty(), 1.15, Interpolator.EASE_OUT),
+                new KeyValue(btn.opacityProperty(), 1.0, Interpolator.EASE_OUT)
+            )
+        );
+
+        // Add a gentle rotation
+        RotateTransition clickRotate = new RotateTransition(Duration.millis(300), btn);
+        clickRotate.setByAngle(15);
+        clickRotate.setInterpolator(Interpolator.EASE_OUT);
+        clickRotate.setAutoReverse(true);
+        clickRotate.setCycleCount(2);
+
+        // Play both animations
+        ParallelTransition clickAnimation = new ParallelTransition(clickEffect, clickRotate);
+        clickAnimation.play();
     }
 }

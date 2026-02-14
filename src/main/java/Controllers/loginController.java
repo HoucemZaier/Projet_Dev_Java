@@ -159,7 +159,13 @@ public class loginController {
             Stage stage = (Stage) loginBtn.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("PlaNova - Dashboard");
-            stage.setMaximized(true); // Maximize for better dashboard view
+
+            // Allow full screen and resizing for better visibility
+            stage.setResizable(true);
+            stage.setMaximized(true);
+            stage.setMinWidth(1100);
+            stage.setMinHeight(700);
+
             stage.show();
 
         } catch (IOException e) {

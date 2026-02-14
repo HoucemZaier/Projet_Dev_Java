@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -38,6 +39,10 @@ public class dashboardController implements Initializable {
     @FXML
     private Button excursionsBtn;
     @FXML
+    private Button transportPubliqueBtn;
+    @FXML
+    private Button transportPriveeBtn;
+    @FXML
     private Button blogBtn;
     @FXML
     private Button forumBtn;
@@ -61,6 +66,21 @@ public class dashboardController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Initialize controller
         System.out.println("Dashboard controller initialized");
+
+        // Configure the stage to be resizable and allow maximizing
+        javafx.application.Platform.runLater(() -> {
+            try {
+                Stage stage = (Stage) overviewBtn.getScene().getWindow();
+                if (stage != null) {
+                    stage.setResizable(true);
+                    stage.setMaximized(true); // Allow full screen for better visibility
+                    stage.setMinWidth(1100);
+                    stage.setMinHeight(700);
+                }
+            } catch (Exception e) {
+                System.err.println("Could not configure dashboard stage: " + e.getMessage());
+            }
+        });
 
         // Hide user management button for Moderateur
         if (UserSession.getInstance().isModerator()) {
@@ -113,6 +133,14 @@ public class dashboardController implements Initializable {
                     userProfileImage.setFitWidth(36);
                     userProfileImage.setFitHeight(36);
                     userProfileImage.setPreserveRatio(true);
+                    userProfileImage.setSmooth(true);  // Enable smooth scaling for better quality
+                    userProfileImage.setCache(true);   // Cache for better performance
+
+                    // Apply circular clip for better appearance
+                    Circle clip = new Circle(18);
+                    clip.setCenterX(18);
+                    clip.setCenterY(18);
+                    userProfileImage.setClip(clip);
                 }
             } catch (Exception e) {
                 System.err.println("Failed to load dashboard profile image: " + e.getMessage());
@@ -223,7 +251,8 @@ public class dashboardController implements Initializable {
             // Get the controller and pass the current user
             accountmanagement controller = loader.getController();
             if (controller != null) {
-                // The user data will be loaded automatically from session in initialize
+                // Set a callback to refresh dashboard when profile is updated
+                controller.setProfileUpdateCallback(this::refreshProfileFromSession);
                 System.out.println("Account controller initialized");
             }
 
@@ -243,6 +272,8 @@ public class dashboardController implements Initializable {
 
             // Handle close event
             accountStage.setOnCloseRequest(e -> {
+                // Refresh profile display when window closes in case anything was updated
+                refreshProfileFromSession();
                 accountStage = null;
             });
 
@@ -254,6 +285,18 @@ public class dashboardController implements Initializable {
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to open account settings: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Refreshes the profile display from the current user session
+     */
+    public void refreshProfileFromSession() {
+        User sessionUser = UserSession.getInstance().getCurrentUser();
+        if (sessionUser != null) {
+            currentUser = sessionUser;
+            updateProfileDisplay(sessionUser);
+            System.out.println("Dashboard profile display refreshed from session");
         }
     }
 
@@ -274,7 +317,13 @@ public class dashboardController implements Initializable {
             Stage stage = (Stage) overviewBtn.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("PlaNova - " + title);
+
+            // Allow full screen and resizing for better visibility
+            stage.setResizable(true);
             stage.setMaximized(true);
+            stage.setMinWidth(1100);
+            stage.setMinHeight(700);
+
             stage.show();
 
             System.out.println("Navigated to: " + title);
@@ -295,5 +344,17 @@ public class dashboardController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleTransportPublique(ActionEvent event) {
+        // Navigate to Transport Publique management
+        navigateTo("/gestionTransport.fxml", "Transport Publique Management");
+    }
+
+    @FXML
+    private void handleTransportPrivee(ActionEvent event) {
+        // Navigate to Transport Privée management
+        navigateTo("/gestionTransport.fxml", "Transport Privée Management");
     }
 }

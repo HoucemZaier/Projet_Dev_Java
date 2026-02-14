@@ -67,6 +67,15 @@ public class accountmanagement implements Initializable {
     private User currentUser;
     private ServiceUser serviceUser;
     private boolean isPanelVisible = false;
+    private Runnable profileUpdateCallback;
+
+    /**
+     * Sets a callback to be executed when the profile is updated
+     * @param callback The callback to execute
+     */
+    public void setProfileUpdateCallback(Runnable callback) {
+        this.profileUpdateCallback = callback;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -153,6 +162,8 @@ public class accountmanagement implements Initializable {
                     userAvatarImage.setFitWidth(80);
                     userAvatarImage.setFitHeight(80);
                     userAvatarImage.setPreserveRatio(true);
+                    userAvatarImage.setSmooth(true);  // Enable smooth scaling for better quality
+                    userAvatarImage.setCache(true);   // Cache for better performance
                     Circle clip = new Circle(40);
                     clip.setCenterX(40);
                     clip.setCenterY(40);
@@ -192,6 +203,12 @@ public class accountmanagement implements Initializable {
                 serviceUser.modifier(currentUser);
                 UserSession.getInstance().setCurrentUser(currentUser);
                 refreshProfileImage(absolutePath);
+
+                // Notify dashboard to refresh profile display
+                if (profileUpdateCallback != null) {
+                    profileUpdateCallback.run();
+                }
+
                 showAlert(Alert.AlertType.INFORMATION, "Profile photo", "Profile photo updated successfully.");
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Failed to update profile photo: " + e.getMessage());
@@ -283,6 +300,11 @@ public class accountmanagement implements Initializable {
 
             // Refresh header so displayed name updates immediately
             if (userFullName != null) userFullName.setText(prenom + " " + nom);
+
+            // Notify dashboard to refresh profile display
+            if (profileUpdateCallback != null) {
+                profileUpdateCallback.run();
+            }
 
             showAlert(Alert.AlertType.INFORMATION, "Success", "Account information updated successfully!");
 

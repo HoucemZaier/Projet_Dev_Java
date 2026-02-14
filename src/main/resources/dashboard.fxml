@@ -7,16 +7,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<HBox prefHeight="800.0" prefWidth="1280.0" styleClass="root-background" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.dashboardController">
+<HBox prefHeight="800.0" prefWidth="1400.0" styleClass="root-background" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.dashboardController">
     <children>
-        <VBox  maxWidth="210.0" prefWidth="210.0" spacing="8" styleClass="sidebar">
+        <VBox maxWidth="250.0" prefWidth="250.0" spacing="10" styleClass="sidebar">
             <padding>
-                <Insets bottom="15" left="15" right="15" top="15" />
+                <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
             <children>
-                <Label prefHeight="71.0" prefWidth="185.0" styleClass="logo-text" text="Planova">
+                <Label prefHeight="70.0" prefWidth="180.0" styleClass="logo-text" text="Planova">
                     <graphic>
-                        <ImageView fitHeight="71.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@logo.png" />
                             </image>
@@ -24,109 +24,188 @@
                     </graphic>
                 </Label>
 
-                <VBox spacing="5" VBox.vgrow="ALWAYS">
-                    <padding><Insets top="30" /></padding>
-                    <children>
-                        <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button-active" text="Overview">
-                            <graphic>
-                                <ImageView fitHeight="16.0" fitWidth="16.0">
-                                    <image>
-                                        <Image url="https://img.icons8.com/ios-filled/50/ffffff/grid-2.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
+                <!-- Scrollable Menu Section -->
+                <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                           style="-fx-background-color: transparent; -fx-background: transparent;">
+                    <content>
+                        <VBox spacing="6" style="-fx-background-color: transparent;">
+                            <padding>
+                                <Insets top="20"/>
+                            </padding>
+                            <children>
+                                <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button-active" text="Overview">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/dashboard-layout.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
 
-                        <Button fx:id="userManagementBtn" maxWidth="Infinity" onAction="#handleUserManagement" styleClass="menu-button" text="User Management">
-                            <graphic>
-                                <ImageView fitHeight="40.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@user.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
-                        <Button fx:id="billetsBtn" maxWidth="Infinity" onAction="#handleBillets" styleClass="menu-button" text="Billets">
-                            <graphic>
-                                <ImageView fitHeight="51.0" fitWidth="69.0">
-                                    <image>
-                                        <Image url="@billets.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
+                                <Button fx:id="userManagementBtn" maxWidth="Infinity" onAction="#handleUserManagement" styleClass="menu-button" text="User Management">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/user-group-man-man.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
 
-                        <Button fx:id="hotelsBtn" maxWidth="Infinity" onAction="#handleHotels" styleClass="menu-button" text="Hotels">
-                            <graphic>
-                                <ImageView fitHeight="49.0" fitWidth="42.0">
-                                    <image>
-                                        <Image url="@hotel.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
+                                <Button fx:id="destinationsBtn" maxWidth="Infinity" styleClass="menu-button" text="Destinations">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/compass.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
 
-                        <Button fx:id="excursionsBtn" maxWidth="Infinity" onAction="#handleExcursions" styleClass="menu-button" text="Excursions">
-                            <graphic>
-                                <ImageView fitHeight="42.0" fitWidth="43.0">
-                                    <image>
-                                        <Image url="@excursion.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
+                                <Button fx:id="billetsBtn" maxWidth="Infinity" onAction="#handleBillets" styleClass="menu-button" text="Billets">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/ticket.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
 
-                        <Button fx:id="blogBtn" maxWidth="Infinity" onAction="#handleBlog" styleClass="menu-button" text="Blog Posts">
-                            <graphic>
-                                <ImageView fitHeight="40.0" fitWidth="41.0">
-                                    <image>
-                                        <Image url="@post.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
+                                <Button fx:id="hotelsBtn" maxWidth="Infinity" onAction="#handleHotels" styleClass="menu-button" text="Hotels">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="@hotel.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
 
-                        <Button fx:id="forumBtn" maxWidth="Infinity" onAction="#handleForum" styleClass="menu-button" text="Community Forum">
-                            <graphic>
-                                <ImageView fitHeight="36.0" fitWidth="39.0">
-                                    <image>
-                                        <Image url="@forum.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
+                                <Button fx:id="excursionsBtn" maxWidth="Infinity" onAction="#handleExcursions" styleClass="menu-button" text="Excursions">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/mountain.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
 
-                        <Button fx:id="activitiesBtn" maxWidth="Infinity" onAction="#handleActivities" styleClass="menu-button" text="Activities">
-                            <graphic>
-                                <ImageView fitHeight="45.0" fitWidth="42.0">
-                                    <image>
-                                        <Image url="@activité.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                        </Button>
-                    </children>
-                </VBox>
+                                <!-- Transport Section -->
+                                <Button fx:id="transportPubliqueBtn" maxWidth="Infinity" styleClass="menu-button" text="Transport Publique" onAction="#handleTransportPublique">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/bus.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="transportPriveeBtn" maxWidth="Infinity" styleClass="menu-button" text="Transport Privée" onAction="#handleTransportPrivee">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/taxi.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="blogBtn" maxWidth="Infinity" onAction="#handleBlog" styleClass="menu-button" text="Blog Posts">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/blog.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="forumBtn" maxWidth="Infinity" onAction="#handleForum" styleClass="menu-button" text="Community Forum">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/color/48/conference-call.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="activitiesBtn" maxWidth="Infinity" onAction="#handleActivities" styleClass="menu-button" text="Activities">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/color/48/activity-feed.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
 
                 <VBox spacing="5">
                     <children>
                         <Button fx:id="settingsBtn" maxWidth="Infinity" onAction="#handleSettings" styleClass="menu-button" text="Settings">
                             <graphic>
-                                <ImageView fitHeight="46.0" fitWidth="43.0">
+                                <ImageView fitHeight="20.0" fitWidth="20.0">
                                     <image>
-                                        <Image url="@settings.png" />
+                                        <Image url="https://img.icons8.com/fluency/48/settings.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
+                            <font>
+                                <Font size="12.0"/>
+                            </font>
                         </Button>
                         <Button fx:id="logoutBtn" maxWidth="Infinity" onAction="#handleLogout" styleClass="menu-button" text="Logout">
                             <graphic>
-                                <ImageView fitHeight="38.0" fitWidth="40.0">
+                                <ImageView fitHeight="20.0" fitWidth="20.0">
                                     <image>
-                                        <Image url="@logout.png" />
+                                        <Image url="https://img.icons8.com/fluency/48/logout-rounded.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
+                            <font>
+                                <Font size="12.0"/>
+                            </font>
                         </Button>
                     </children>
                 </VBox>
@@ -153,7 +232,7 @@
                                 <Button styleClass="new-entry-button" text="+ New Entry" />
                                 <ImageView fitHeight="20.0" fitWidth="20.0">
                                     <image>
-                                        <Image url="https://img.icons8.com/material-outlined/48/2b3674/appointment-reminders.png" />
+                                        <Image url="https://img.icons8.com/fluency/48/appointment-reminders.png" />
                                     </image>
                                 </ImageView>
                                 <HBox fx:id="userProfileHBox" alignment="CENTER" spacing="10" onMouseClicked="#handleUserProfile" style="-fx-cursor: hand;">
