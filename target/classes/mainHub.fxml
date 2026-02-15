@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="mainContainer" prefHeight="700.0" prefWidth="1200.0"
+            style="-fx-background-color: #f8fafd;"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.MainHubController">
+
+    <!-- Barre latérale -->
+    <left>
+        <VBox prefWidth="220.0" style="-fx-background-color: white; -fx-border-color: #eef2f6; -fx-border-width: 0 1 0 0;">
+
+            <!-- En-tête -->
+            <VBox alignment="CENTER" prefHeight="100.0" style="-fx-background-color: #2A3B4C; -fx-padding: 20;">
+                <Label text="🏨 HÔTEL MANAGER" textFill="white" wrapText="true">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+            </VBox>
+
+            <!-- Menu -->
+            <VBox spacing="5" style="-fx-padding: 20 10;">
+                <Button fx:id="btnDashboard" onAction="#showDashboard" text="📊 Tableau de bord" maxWidth="Infinity" />
+                <Button fx:id="btnHotels" onAction="#showHotels" text="🏨 Hôtels" maxWidth="Infinity" />
+                <Button fx:id="btnChambres" onAction="#showChambres" text="🛏️ Chambres" maxWidth="Infinity" />
+                <Button fx:id="btnStats" onAction="#showStats" text="📈 Statistiques" maxWidth="Infinity" />
+            </VBox>
+
+            <!-- Actions -->
+            <VBox spacing="5" style="-fx-padding: 20 10;">
+                <Label text="ACTIONS" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;">
+                    <padding><Insets left="10" /></padding>
+                </Label>
+                <Button onAction="#handleAjouterHotel" text="➕ Nouvel hôtel" maxWidth="Infinity" />
+                <Button onAction="#handleAjouterChambre" text="➕ Nouvelle chambre" maxWidth="Infinity" />
+                <Button onAction="#handleRefresh" text="🔄 Actualiser" maxWidth="Infinity" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- Contenu principal -->
+    <center>
+        <VBox>
+            <!-- En-tête -->
+            <BorderPane style="-fx-background-color: white; -fx-padding: 15 30; -fx-border-color: #eef2f6; -fx-border-width: 0 0 1 0;">
+                <left>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Rectangle arcHeight="8.0" arcWidth="8.0" fill="#2A3B4C" height="25.0" width="5.0" />
+                        <Label fx:id="pageTitle" text="Tableau de bord">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+                    </HBox>
+                </left>
+                <right>
+                    <HBox spacing="10" style="-fx-background-color: #f1f5f9; -fx-padding: 8 15; -fx-background-radius: 8;">
+                        <Label text="👤 Admin" />
+                    </HBox>
+                </right>
+            </BorderPane>
+
+            <!-- Zone de contenu -->
+            <StackPane VBox.vgrow="ALWAYS">
+                <!-- Le contenu sera injecté dynamiquement -->
+            </StackPane>
+        </VBox>
+    </center>
+
+</BorderPane>
