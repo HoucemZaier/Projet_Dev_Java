@@ -12,13 +12,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
+import javafx.util.Callback;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import utils.Services.ServiceTransportPublique;
@@ -34,25 +35,7 @@ import java.util.ResourceBundle;
 public class affichierPublique implements Initializable {
 
     @FXML
-    private TableView<TransportPublique> tableWidget;
-
-    @FXML
-    private TableColumn<TransportPublique, Integer> colId;
-
-    @FXML
-    private TableColumn<TransportPublique, String> colImage;
-
-    @FXML
-    private TableColumn<TransportPublique, String> colType;
-
-    @FXML
-    private TableColumn<TransportPublique, Double> colTarif;
-
-    @FXML
-    private TableColumn<TransportPublique, String> colHoraire;
-
-    @FXML
-    private TableColumn<TransportPublique, Void> colActions;
+    private ListView<TransportPublique> listTransportPublique;
 
     @FXML
     private Button btnAjouter;
@@ -62,8 +45,7 @@ public class affichierPublique implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        configureTableColumns();
-        configureActionsColumn();
+        configureListView();
         loadTransportsFromDatabase();
 
         if (btnAjouter != null) {
@@ -71,100 +53,59 @@ public class affichierPublique implements Initializable {
         }
     }
 
-    private void configureTableColumns() {
-        if (colId != null) {
-            colId.setCellValueFactory(new PropertyValueFactory<>("id_transport_pub"));
-        }
-        if (colType != null) {
-            colType.setCellValueFactory(new PropertyValueFactory<>("type"));
-        }
-        if (colTarif != null) {
-            colTarif.setCellValueFactory(new PropertyValueFactory<>("tarif"));
-        }
-        if (colHoraire != null) {
-            colHoraire.setCellValueFactory(new PropertyValueFactory<>("horaire"));
-        }
-
-        if (colImage != null) {
-            colImage.setCellValueFactory(new PropertyValueFactory<>("image_path"));
-            colImage.setCellFactory(column -> new TableCell<TransportPublique, String>() {
-                private final ImageView imageView = new ImageView();
-
-                {
-                    imageView.setFitWidth(60);
-                    imageView.setFitHeight(40);
-                    imageView.setPreserveRatio(true);
-                }
-
-                @Override
-                protected void updateItem(String imagePath, boolean empty) {
-                    super.updateItem(imagePath, empty);
-                    if (empty || imagePath == null || imagePath.isEmpty()) {
-                        setGraphic(null);
-                    } else {
-                        File file = new File(imagePath);
-                        if (file.exists()) {
-                            Image image = new Image(file.toURI().toString(), 60, 40, true, true);
-                            imageView.setImage(image);
-                            setGraphic(imageView);
-                        } else {
-                            setGraphic(null);
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    private void configureActionsColumn() {
-        if (colActions == null) {
-            return;
-        }
-
-        colActions.setCellFactory(column -> new TableCell<TransportPublique, Void>() {
-
+    private void configureListView() {
+        if (listTransportPublique == null) return;
+        listTransportPublique.setCellFactory((Callback<ListView<TransportPublique>, ListCell<TransportPublique>>) listView -> new ListCell<TransportPublique>() {
+            private final HBox card = new HBox(12);
+            private final ImageView imageView = new ImageView();
+            private final VBox infos = new VBox(4);
+            private final Label lblType = new Label();
+            private final Label lblHoraire = new Label();
+            private final Label lblTarif = new Label();
+            private final HBox actions = new HBox(8);
             private final Button btnEdit = new Button("Modifier");
             private final Button btnDelete = new Button("Supprimer");
-            private final HBox container = new HBox(5, btnEdit, btnDelete);
 
             {
-                // Styles des boutons : bleu pour Modifier, rouge pour Supprimer
-                btnEdit.setStyle(
-                        "-fx-background-color: #2563eb;" +  // bleu
-                                "-fx-text-fill: white;" +
-                                "-fx-font-weight: bold;" +
-                                "-fx-background-radius: 999;"
-                );
-                btnDelete.setStyle(
-                        "-fx-background-color: #ef4444;" +  // rouge
-                                "-fx-text-fill: white;" +
-                                "-fx-font-weight: bold;" +
-                                "-fx-background-radius: 999;"
-                );
-
-                btnEdit.setOnAction(event -> {
-                    TransportPublique selected = getTableView().getItems().get(getIndex());
-                    if (selected != null) {
-                        openEditDialog(selected);
-                        reloadTable();
-                    }
-                });
-
-                btnDelete.setOnAction(event -> {
-                    TransportPublique selected = getTableView().getItems().get(getIndex());
-                    if (selected != null) {
-                        handleDeleteTransport(selected);
-                    }
-                });
+                imageView.setFitWidth(80);
+                imageView.setFitHeight(60);
+                imageView.setPreserveRatio(true);
+                lblType.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #111827;");
+                lblHoraire.setStyle("-fx-font-size: 12px; -fx-text-fill: #6b7280;");
+                lblTarif.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1976D2;");
+                infos.getChildren().addAll(lblType, lblHoraire);
+                btnEdit.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 999; -fx-cursor: hand;");
+                btnDelete.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 999; -fx-cursor: hand;");
+                actions.getChildren().addAll(btnEdit, btnDelete);
+                card.setStyle("-fx-background-color: #f9fafb; -fx-background-radius: 8; -fx-padding: 12; -fx-alignment: CENTER_LEFT;");
+                card.getChildren().addAll(imageView, infos, lblTarif, new javafx.scene.layout.Region() {{ HBox.setHgrow(this, javafx.scene.layout.Priority.ALWAYS); }}, actions);
             }
 
             @Override
-            protected void updateItem(Void item, boolean empty) {
+            protected void updateItem(TransportPublique item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
+                if (empty || item == null) {
                     setGraphic(null);
+                    setStyle("-fx-background-color: transparent;");
                 } else {
-                    setGraphic(container);
+                    lblType.setText(item.getType());
+                    lblHoraire.setText("Horaire : " + (item.getHoraire() != null ? item.getHoraire() : "—"));
+                    lblTarif.setText(String.format("%.2f DT", item.getTarif()));
+                    String imagePath = item.getImage_path();
+                    if (imagePath != null && !imagePath.isEmpty()) {
+                        File file = new File(imagePath);
+                        if (file.exists()) {
+                            imageView.setImage(new Image(file.toURI().toString(), 80, 60, true, true));
+                        } else {
+                            imageView.setImage(null);
+                        }
+                    } else {
+                        imageView.setImage(null);
+                    }
+                    btnEdit.setOnAction(e -> { openEditDialog(item); reloadTable(); });
+                    btnDelete.setOnAction(e -> handleDeleteTransport(item));
+                    setGraphic(card);
+                    setStyle("-fx-background-color: transparent; -fx-padding: 4 0;");
                 }
             }
         });
@@ -174,8 +115,8 @@ public class affichierPublique implements Initializable {
         try {
             List<TransportPublique> list = service.recuperer();
             transportData = FXCollections.observableArrayList(list);
-            if (tableWidget != null) {
-                tableWidget.setItems(transportData);
+            if (listTransportPublique != null) {
+                listTransportPublique.setItems(transportData);
             }
         } catch (SQLDataException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur de chargement", "Impossible de charger les transports publics : " + e.getMessage());

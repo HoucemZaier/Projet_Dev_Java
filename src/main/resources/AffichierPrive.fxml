@@ -74,30 +74,15 @@
             </HBox>
 
             <!-- Section liste des véhicules avec VBox pour un affichage clair -->
-            <VBox spacing="8" style="-fx-padding: 10 0 0 0;">
+            <VBox spacing="8" style="-fx-padding: 10 0 0 0;" VBox.vgrow="ALWAYS">
                 <Label text="Liste des véhicules privés"
                        style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #111827;" />
 
-                <TableView fx:id="tableTransportPrive" prefHeight="500" prefWidth="860"
-                           style="-fx-background-radius: 8;
-                                  -fx-border-radius: 8;
-                                  -fx-border-color: #e5e7eb;
-                                  -fx-border-width: 1;
-                                  -fx-table-cell-border-color: #eef2f7;">
-                    <columns>
-                        <TableColumn fx:id="colNumero" text="ID" prefWidth="60"
-                                     style="-fx-alignment: CENTER;" />
-                        <TableColumn fx:id="colImage" text="Image" prefWidth="120"
-                                     style="-fx-alignment: CENTER;" />
-                        <TableColumn fx:id="colNom" text="Marque" prefWidth="150"/>
-                        <TableColumn fx:id="colEtat" text="État" prefWidth="120"
-                                     style="-fx-alignment: CENTER;" />
-                        <TableColumn fx:id="colPrix" text="Prix Loc (DT)" prefWidth="130"
-                                     style="-fx-alignment: CENTER-RIGHT;" />
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="170"
-                                     style="-fx-alignment: CENTER;" />
-                    </columns>
-                </TableView>
+                <!-- ListView des transports privés (affichage type cartes) -->
+                <ListView fx:id="listTransportPrive" prefHeight="500" prefWidth="860" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-border-radius: 8;
+                                 -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                 -fx-padding: 0; -fx-cell-size: 120;" />
             </VBox>
         </VBox>
     </children>

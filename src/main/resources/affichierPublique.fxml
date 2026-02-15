@@ -27,7 +27,7 @@
                 <Label text="🚍"
                        style="-fx-font-size: 24;" />
                 <VBox>
-                    <Label text="Transports publics"
+                    <Label text=" Gestion des Transports publics"
                            style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #111827;" />
                     <Label text="Recherche, tri et gestion des moyens de transport publics"
                            style="-fx-font-size: 11; -fx-text-fill: #6b7280;" />
@@ -88,33 +88,15 @@
             </HBox>
 
             <!-- Section liste avec VBox pour plus de clarté -->
-            <VBox spacing="6">
+            <VBox spacing="6" VBox.vgrow="ALWAYS">
                 <Label text="Liste des transports publics"
                        style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #111827;" />
 
-                <!-- Tableau des transports -->
-                <TableView fx:id="tableWidget" prefHeight="320" prefWidth="720"
-                           style="-fx-background-radius: 8;
-                                  -fx-border-radius: 8;
-                                  -fx-border-color: #e5e7eb;
-                                  -fx-border-width: 1;
-                                  -fx-table-cell-border-color: #eef2f7;">
-                    <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="60"
-                                     style="-fx-alignment: CENTER;" />
-                        <TableColumn fx:id="colImage" text="Image" prefWidth="120"
-                                     style="-fx-alignment: CENTER;" />
-                        <TableColumn fx:id="colType" text="Type" prefWidth="120"/>
-                        <TableColumn fx:id="colTarif" text="Tarif (DT)" prefWidth="110"
-                                     style="-fx-alignment: CENTER-RIGHT;" />
-                        <TableColumn fx:id="colHoraire" text="Horaire" prefWidth="150"
-                                     style="-fx-alignment: CENTER;" />
-
-                        <!-- Colonne Actions : les boutons seront injectés par le contrôleur -->
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="160"
-                                     style="-fx-alignment: CENTER;" />
-                    </columns>
-                </TableView>
+                <!-- ListView des transports (affichage type cartes) -->
+                <ListView fx:id="listTransportPublique" prefHeight="320" prefWidth="720" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-border-radius: 8;
+                                 -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                 -fx-padding: 0; -fx-cell-size: 120;" />
             </VBox>
         </VBox>
     </children>

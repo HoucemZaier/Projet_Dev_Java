@@ -13,13 +13,16 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import utils.Services.ServiceTransportPrive;
@@ -45,25 +48,7 @@ public class affichierPrive implements Initializable {
     private Button ajouterButton;
 
     @FXML
-    private TableView<TransportPrive> tableTransportPrive;
-
-    @FXML
-    private TableColumn<TransportPrive, Integer> colNumero;
-
-    @FXML
-    private TableColumn<TransportPrive, String> colNom;
-
-    @FXML
-    private TableColumn<TransportPrive, String> colImage;
-
-    @FXML
-    private TableColumn<TransportPrive, String> colEtat;
-
-    @FXML
-    private TableColumn<TransportPrive, Double> colPrix;
-
-    @FXML
-    private TableColumn<TransportPrive, Void> colActions;
+    private ListView<TransportPrive> listTransportPrive;
 
     private final ServiceTransportPrive service = new ServiceTransportPrive();
     private final ObservableList<TransportPrive> data = FXCollections.observableArrayList();
@@ -84,83 +69,61 @@ public class affichierPrive implements Initializable {
             });
         }
 
-        // Configurer colonnes de base
-        if (colNumero != null) colNumero.setCellValueFactory(new PropertyValueFactory<>("id_transport_priv"));
-        if (colNom != null) colNom.setCellValueFactory(new PropertyValueFactory<>("marque"));
-        if (colEtat != null) colEtat.setCellValueFactory(new PropertyValueFactory<>("etat"));
-        if (colPrix != null) colPrix.setCellValueFactory(new PropertyValueFactory<>("prix_loc"));
-
-        // Colonne image : affiche la miniature de la voiture à partir de image_path
-        if (colImage != null) {
-            colImage.setCellValueFactory(new PropertyValueFactory<>("image_path"));
-            colImage.setCellFactory(column -> new TableCell<TransportPrive, String>() {
+        // Configurer ListView avec cellules type carte
+        if (listTransportPrive != null) {
+            listTransportPrive.setCellFactory((Callback<ListView<TransportPrive>, ListCell<TransportPrive>>) listView -> new ListCell<TransportPrive>() {
+                private final HBox card = new HBox(12);
                 private final ImageView imageView = new ImageView();
+                private final VBox infos = new VBox(4);
+                private final Label lblMarque = new Label();
+                private final Label lblEtat = new Label();
+                private final Label lblPrix = new Label();
+                private final HBox actions = new HBox(8);
+                private final Button btnEdit = new Button("Modifier");
+                private final Button btnDelete = new Button("Supprimer");
 
                 {
                     imageView.setFitWidth(80);
-                    imageView.setFitHeight(50);
+                    imageView.setFitHeight(60);
                     imageView.setPreserveRatio(true);
+                    lblMarque.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #111827;");
+                    lblEtat.setStyle("-fx-font-size: 12px; -fx-text-fill: #6b7280;");
+                    lblPrix.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1976D2;");
+                    infos.getChildren().addAll(lblMarque, lblEtat);
+                    btnEdit.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 999; -fx-cursor: hand;");
+                    btnDelete.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 999; -fx-cursor: hand;");
+                    actions.getChildren().addAll(btnEdit, btnDelete);
+                    card.setStyle("-fx-background-color: #f9fafb; -fx-background-radius: 8; -fx-padding: 12; -fx-alignment: CENTER_LEFT;");
+                    Region spacer = new Region();
+                    HBox.setHgrow(spacer, Priority.ALWAYS);
+                    card.getChildren().addAll(imageView, infos, lblPrix, spacer, actions);
                 }
 
                 @Override
-                protected void updateItem(String imagePath, boolean empty) {
-                    super.updateItem(imagePath, empty);
-                    if (empty || imagePath == null || imagePath.isEmpty()) {
-                        setGraphic(null);
-                    } else {
-                        File file = new File(imagePath);
-                        if (file.exists()) {
-                            Image image = new Image(file.toURI().toString(), 80, 50, true, true);
-                            imageView.setImage(image);
-                            setGraphic(imageView);
-                        } else {
-                            setGraphic(null);
-                        }
-                    }
-                }
-            });
-        }
-
-        // Colonne actions (Modifier / Supprimer)
-        if (colActions != null) {
-            colActions.setCellFactory(param -> new TableCell<>() {
-                private final Button editButton = new Button("Modifier");
-                private final Button deleteButton = new Button("Supprimer");
-                private final HBox pane = new HBox(8, editButton, deleteButton);
-
-                {
-                    // Styles des boutons : bleu pour Modifier, rouge pour Supprimer
-                    editButton.setStyle(
-                            "-fx-background-color: #2563eb;" +  // bleu
-                                    "-fx-text-fill: white;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-background-radius: 999;"
-                    );
-                    deleteButton.setStyle(
-                            "-fx-background-color: #ef4444;" +  // rouge
-                                    "-fx-text-fill: white;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-background-radius: 999;"
-                    );
-
-                    editButton.setOnAction(event -> {
-                        TransportPrive tp = getTableView().getItems().get(getIndex());
-                        openEditDialog(tp);
-                    });
-
-                    deleteButton.setOnAction(event -> {
-                        TransportPrive tp = getTableView().getItems().get(getIndex());
-                        handleDelete(tp);
-                    });
-                }
-
-                @Override
-                protected void updateItem(Void item, boolean empty) {
+                protected void updateItem(TransportPrive item, boolean empty) {
                     super.updateItem(item, empty);
-                    if (empty) {
+                    if (empty || item == null) {
                         setGraphic(null);
+                        setStyle("-fx-background-color: transparent;");
                     } else {
-                        setGraphic(pane);
+                        lblMarque.setText(item.getMarque());
+                        lblEtat.setText("État : " + (item.getEtat() != null ? item.getEtat() : "—"));
+                        lblPrix.setText(String.format("%.2f DT", item.getPrix_loc()));
+                        String imagePath = item.getImage_path();
+                        if (imagePath != null && !imagePath.isEmpty()) {
+                            File file = new File(imagePath);
+                            if (file.exists()) {
+                                imageView.setImage(new Image(file.toURI().toString(), 80, 60, true, true));
+                            } else {
+                                imageView.setImage(null);
+                            }
+                        } else {
+                            imageView.setImage(null);
+                        }
+                        btnEdit.setOnAction(e -> openEditDialog(item));
+                        btnDelete.setOnAction(e -> handleDelete(item));
+                        setGraphic(card);
+                        setStyle("-fx-background-color: transparent; -fx-padding: 4 0;");
                     }
                 }
             });
@@ -174,9 +137,9 @@ public class affichierPrive implements Initializable {
         // Charger données depuis la base
         loadData();
 
-        // Attacher la liste au TableView
-        if (tableTransportPrive != null) {
-            tableTransportPrive.setItems(data);
+        // Attacher la liste au ListView
+        if (listTransportPrive != null) {
+            listTransportPrive.setItems(data);
         }
     }
 
