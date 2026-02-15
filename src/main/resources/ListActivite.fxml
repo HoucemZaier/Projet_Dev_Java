@@ -2,13 +2,12 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
 
-<VBox prefHeight="650.0" prefWidth="1000.0" spacing="0"
-      style="-fx-background-color: #f8fafc;"
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.Rectangle?>
+<VBox prefHeight="650.0" prefWidth="1000.0"
+      style="-fx-background-color:#f1f5f9;"
       xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="Controllers.ListActiviteController">
@@ -18,111 +17,66 @@
         <left>
             <VBox spacing="5">
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Rectangle arcHeight="5.0" arcWidth="5.0"
-                               fill="#0DA2E7"
-                               height="30.0"
-                               width="4.0"/>
-                    <Label text="Gestion des Activités"
-                           style="-fx-text-fill: #1e293b;">
+                    <Rectangle arcHeight="5" arcWidth="5" fill="#10b981" height="30" width="4" />
+                    <Label style="-fx-text-fill: #1e293b;" text="Gestion des Activités">
                         <font>
-                            <Font name="Segoe UI Semibold" size="22.0"/>
+                            <Font name="Segoe UI Semibold" size="22" />
                         </font>
                     </Label>
                 </HBox>
-                <Label text="Ajoutez, modifiez ou supprimez des activités."
-                       style="-fx-text-fill: #64748b;">
+                <Label style="-fx-text-fill: #64748b;" text="Ajoutez, modifiez ou supprimez des activités.">
                     <font>
-                        <Font name="Segoe UI" size="13.0"/>
+                        <Font name="Segoe UI" size="13" />
                     </font>
                 </Label>
             </VBox>
         </left>
 
+
         <right>
-            <Button fx:id="ajouterBtn"
+            <Button text="+ Ajouter Activité"
                     onAction="#handleAjouterActivite"
-                    prefHeight="40.0"
-                    prefWidth="170.0"
-                    text="+ Ajouter Activité"
-                    style="-fx-background-color: linear-gradient(to right, #0DA2E7, #0b91d1);
-                           -fx-text-fill: white;
-                           -fx-background-radius: 8;
-                           -fx-cursor: hand;
-                           -fx-font-weight: bold;">
-                <effect>
-                    <DropShadow color="rgba(13,162,231,0.3)"
-                                offsetY="4"
-                                radius="8"/>
-                </effect>
-                <padding>
-                    <Insets bottom="10" left="20" right="20" top="10"/>
-                </padding>
-            </Button>
+                    prefHeight="50"
+                    style="-fx-background-color:#0DA2E7;
+                           -fx-text-fill:white;
+                           -fx-background-radius:8;
+                           -fx-font-weight:bold;
+                           -fx-padding:0 20;"/>
         </right>
     </BorderPane>
 
-    <!-- SEARCH BAR -->
-    <BorderPane style="-fx-background-color: white; -fx-padding: 20 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
-        <left>
-            <HBox spacing="15" alignment="CENTER_LEFT">
+    <!-- SEARCH -->
+    <HBox spacing="10"
+          alignment="CENTER_LEFT"
+          style="-fx-padding:20 45;">
 
-                <!-- TextField de recherche -->
-                <TextField fx:id="txtRecherche"
-                           prefHeight="40.0"
-                           prefWidth="300.0"
-                           promptText="Rechercher par nom, lieu ou description"
-                           style="-fx-background-radius: 8;
-                                  -fx-background-color: white;
-                                  -fx-border-color: #cbd5e1;
-                                  -fx-border-radius: 8;
-                                  -fx-border-width: 1.5;
-                                  -fx-padding: 0 15;"/>
+        <TextField fx:id="txtRecherche"
+                   promptText="Rechercher activité..."
+                   prefWidth="300"
+                   style="-fx-background-radius:8;
+                          -fx-border-radius:8;
+                          -fx-border-color:#cbd5e1;
+                          -fx-padding:15 15;"/>
 
-                <Button text="Rechercher"
-                        onAction="#handleRechercher"
-                        prefHeight="40.0"
-                        prefWidth="110.0"
-                        style="-fx-background-color: #64748b;
-                               -fx-text-fill: white;
-                               -fx-background-radius: 8;
-                               -fx-font-weight: bold;"/>
-            </HBox>
-        </left>
+        <Button text="Rechercher"
+                onAction="#handleRechercher"
+                style="-fx-background-color:#64748b;
+                       -fx-text-fill:white;
+                       -fx-font-weight:bold;
+                       -fx-background-radius:8;
+                       -fx-padding:10 30;"/>
+    </HBox>
 
-        <right>
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Label text="Filtrer par:"
-                       style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/>
-                <ComboBox fx:id="dateFilter"
-                          prefHeight="40.0"
-                          prefWidth="150.0"
-                          promptText="Date"/>
-                <ComboBox fx:id="prixFilter"
-                          prefHeight="40.0"
-                          prefWidth="150.0"
-                          promptText="Prix max"/>
-            </HBox>
-        </right>
-    </BorderPane>
+    <!-- LISTE DES CARTES -->
+    <ScrollPane fitToWidth="true"
+                style="-fx-background-color:transparent;">
 
-    <!-- TABLE -->
-    <VBox spacing="15" style="-fx-padding: 25;">
-        <TableView fx:id="tableActivite"
-                   prefHeight="400.0"
-                   style="-fx-background-radius: 10;
-                          -fx-border-radius: 10;">
-            <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-                <TableColumn fx:id="colNom" text="Nom" prefWidth="150"/>
-                <TableColumn fx:id="colDescription" text="Description" prefWidth="180"/>
-                <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
-                <TableColumn fx:id="colHeure" text="Heure" prefWidth="100"/>
-                <TableColumn fx:id="colLieu" text="Lieu" prefWidth="120"/>
-                <TableColumn fx:id="colPrix" text="Prix" prefWidth="90"/>
-                <TableColumn fx:id="colExcursion" text="Excursion ID" prefWidth="100"/>
-                <TableColumn fx:id="colDestination" text="Destination ID" prefWidth="110"/>
-                <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
-            </columns>
-        </TableView>
-    </VBox>
+        <content>
+            <VBox fx:id="containerActivites"
+                  spacing="20"
+                  style="-fx-padding:20 35;"/>
+        </content>
+
+    </ScrollPane>
+
 </VBox>

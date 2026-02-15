@@ -7,7 +7,11 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="650.0" prefWidth="1000.0" spacing="0" style="-fx-background-color: #f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ListExcursionController">
+<VBox prefHeight="650.0" prefWidth="1000.0" spacing="0"
+      style="-fx-background-color: #f8fafc;"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.ListExcursionController">
 
     <!-- HEADER -->
     <BorderPane style="-fx-background-color: white; -fx-padding: 20 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
@@ -30,7 +34,9 @@
         </left>
 
         <right>
-            <Button onAction="#handleAjouterExcursion" prefHeight="40" prefWidth="180" style="-fx-background-color: linear-gradient(to right,#10b981,#059669); -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;" text="+ Ajouter Excursion">
+            <Button onAction="#handleAjouterExcursion" prefHeight="40" prefWidth="180"
+                    style="-fx-background-color: linear-gradient(to right,#10b981,#059669); -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"
+                    text="+ Ajouter Excursion">
                 <effect>
                     <DropShadow color="rgba(16,185,129,0.3)" offsetY="4" radius="8" />
                 </effect>
@@ -45,27 +51,19 @@
     <BorderPane style="-fx-background-color: white; -fx-padding: 20 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
         <left>
             <HBox alignment="CENTER_LEFT" spacing="15">
-                <TextField fx:id="txtRecherche" prefHeight="40" prefWidth="233.0" promptText="Rechercher par titre ou destination" style="-fx-background-radius: 8; -fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 0 15;" />
-                <Button onAction="#handleRechercher" prefHeight="40" prefWidth="156.0" style="-fx-background-color: #64748b; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;" text="Rechercher" />
+                <TextField fx:id="txtRecherche" prefHeight="40" prefWidth="300" promptText="Rechercher par titre ou destination"
+                           style="-fx-background-radius: 8; -fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 0 15;" />
+                <Button onAction="#handleRechercher" prefHeight="40" prefWidth="156.0"
+                        style="-fx-background-color: #64748b; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;" text="Rechercher" />
             </HBox>
         </left>
     </BorderPane>
 
-    <!-- TABLE -->
-    <VBox spacing="15" style="-fx-padding: 25;">
-        <TableView fx:id="tableExcursion">
-            <columns>
-                <TableColumn fx:id="idColumn" text="ID" />
-                <TableColumn fx:id="titreColumn" text="Titre" />
-                <TableColumn fx:id="destinationColumn" text="Destination" />
-                <TableColumn fx:id="dateDepartColumn" text="Date Départ" />
-                <TableColumn fx:id="dateRetourColumn" text="Date Retour" />
-                <TableColumn fx:id="prixColumn" text="Prix" />
-                <TableColumn fx:id="nbPlacesColumn" text="Nb Places" />
-                <TableColumn fx:id="statutColumn" text="Statut" />
-                <TableColumn fx:id="actionColumn" text="Actions" />
-            </columns>
-        </TableView>
-    </VBox>
+    <!-- LISTE DES EXCURSIONS -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+        <content>
+            <VBox fx:id="containerExcursions" spacing="15" style="-fx-padding: 25;" />
+        </content>
+    </ScrollPane>
 
 </VBox>
