@@ -2,9 +2,12 @@ package Controllers;
 
 import Models.*;
 import Services.ServiceUser;
+import utils.PasswordValidator;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,9 +18,11 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 
-public class CreateAccountController {
+public class CreateAccountController implements Initializable {
 
     @FXML private ComboBox<String> userTypeComboBox;
     @FXML private TextField cinField;
@@ -29,15 +34,23 @@ public class CreateAccountController {
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
+    @FXML private TextField passwordTextField;
+    @FXML private TextField confirmPasswordTextField;
+    @FXML private Button passwordToggleBtn;
+    @FXML private Button confirmPasswordToggleBtn;
     @FXML private TextField paysField;
     @FXML private Button createAccountBtn;
     @FXML private Button backToLoginBtn;
+    @FXML private Label lengthReq;
+    @FXML private Label upperReq;
+    @FXML private Label numberReq;
+    @FXML private Label specialReq;
 
     private File selectedImageFile;
     private ServiceUser serviceUser = new ServiceUser();
 
     @FXML
-    private void initialize() {
+    public void initialize(URL location, ResourceBundle resources) {
         // Initialize combo box with user types
         if (userTypeComboBox != null) {
             // Items are already populated from FXML, no need to add them again
@@ -47,6 +60,92 @@ public class CreateAccountController {
             userTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
                 updateDynamicFields(newVal);
             });
+        }
+
+        // Bind password fields
+        if (passwordTextField != null) {
+            passwordTextField.textProperty().bindBidirectional(passwordField.textProperty());
+        }
+        if (confirmPasswordTextField != null) {
+            confirmPasswordTextField.textProperty().bindBidirectional(confirmPasswordField.textProperty());
+        }
+
+        // Add password validation listeners
+        if (passwordField != null && lengthReq != null) {
+            passwordField.textProperty().addListener((obs, oldVal, newVal) -> {
+                PasswordValidator.updatePasswordRequirements(newVal, lengthReq, upperReq, numberReq, specialReq);
+            });
+        }
+
+        // Force buttons to be visible - add a delay to ensure FXML is fully loaded
+        Platform.runLater(() -> {
+            forceButtonsVisible();
+        });
+
+        System.out.println("CreateAccountController initialized successfully");
+    }
+
+    private void forceButtonsVisible() {
+        System.out.println("=== Forcing buttons visibility ===");
+
+        if (createAccountBtn != null) {
+            createAccountBtn.setVisible(true);
+            createAccountBtn.setManaged(true);
+            createAccountBtn.setDisable(false);
+            createAccountBtn.toFront();
+            System.out.println("Create button forced visible - Text: " + createAccountBtn.getText());
+        } else {
+            System.err.println("ERROR: createAccountBtn is NULL!");
+        }
+
+        if (backToLoginBtn != null) {
+            backToLoginBtn.setVisible(true);
+            backToLoginBtn.setManaged(true);
+            backToLoginBtn.setDisable(false);
+            backToLoginBtn.toFront();
+            System.out.println("Back button forced visible - Text: " + backToLoginBtn.getText());
+        } else {
+            System.err.println("ERROR: backToLoginBtn is NULL!");
+        }
+
+        System.out.println("=== Buttons visibility check complete ===");
+    }
+
+    @FXML
+    private void togglePasswordVisibility(ActionEvent event) {
+        if (passwordField.isVisible()) {
+            // Switch to visible text
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+            passwordTextField.setVisible(true);
+            passwordTextField.setManaged(true);
+            passwordToggleBtn.setText("🙈"); // closed eye
+        } else {
+            // Switch to hidden password
+            passwordTextField.setVisible(false);
+            passwordTextField.setManaged(false);
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+            passwordToggleBtn.setText("👁"); // open eye
+        }
+    }
+
+    @FXML
+    private void toggleConfirmPasswordVisibility(ActionEvent event) {
+        if (confirmPasswordField.isVisible()) {
+            // Switch to visible text
+            confirmPasswordField.setVisible(false);
+            confirmPasswordField.setManaged(false);
+            confirmPasswordTextField.setVisible(true);
+            confirmPasswordTextField.setManaged(true);
+            confirmPasswordToggleBtn.setText("🙈"); // closed eye
+        } else {
+            // Switch to hidden password
+            confirmPasswordTextField.setVisible(false);
+            confirmPasswordTextField.setManaged(false);
+            confirmPasswordField.setVisible(true);
+            confirmPasswordField.setManaged(true);
+            confirmPasswordToggleBtn.setText("👁"); // open eye
         }
     }
 
@@ -69,15 +168,16 @@ public class CreateAccountController {
                 matriculeField.setVisible(true);
                 matriculeModField.setVisible(false);
                 break;
-            case "Guide":
-                cinField.setVisible(false);
-                matriculeField.setVisible(false);
-                matriculeModField.setVisible(false);
-                break;
             case "Moderateur":
                 cinField.setVisible(false);
                 matriculeField.setVisible(false);
                 matriculeModField.setVisible(true);
+                break;
+            default:
+                // Hide all fields for unknown types
+                cinField.setVisible(false);
+                matriculeField.setVisible(false);
+                matriculeModField.setVisible(false);
                 break;
         }
     }
@@ -114,65 +214,79 @@ public class CreateAccountController {
         // Validation
         if (userType == null || nom.isEmpty() || prenom.isEmpty() ||
                 email.isEmpty() || password.isEmpty() || pays.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill all required fields!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Veuillez remplir tous les champs obligatoires!");
+            return;
+        }
+
+        // Password requirements validation
+        PasswordValidator.ValidationResult passwordResult = PasswordValidator.validatePassword(password);
+        if (!passwordResult.isValid()) {
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Le mot de passe ne respecte pas toutes les exigences. Veuillez vérifier les critères ci-dessus.");
             return;
         }
 
         // Confirm password validation
         if (!password.equals(confirmPassword)) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Passwords do not match!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Les mots de passe ne correspondent pas!");
             return;
         }
 
         // Type-specific validation
         if ("Client".equals(userType) && cin.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "CIN is required for Client!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Le CIN est requis pour les clients!");
             return;
         }
         if ("Admin".equals(userType) && matricule.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Matricule is required for Admin!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Le matricule est requis pour les administrateurs!");
             return;
         }
         if ("Moderateur".equals(userType) && matriculeMod.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Matricule is required for Moderateur!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Le matricule est requis pour les modérateurs!");
             return;
         }
 
         // Validate matricule format for Admin and Moderateur
         if ("Admin".equals(userType) && !isValidAdminMatricule(matricule)) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error",
-                "Admin matricule must be in format ---AMN------ (with numbers instead of dashes)!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation",
+                "Le matricule administrateur doit être au format ---AMN------ (avec des chiffres à la place des tirets)!\nExemple: 123AMN123456");
             return;
         }
 
         if ("Moderateur".equals(userType) && !isValidModeratorMatricule(matriculeMod)) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error",
-                "Moderateur matricule must be in format ---MOD------ (with numbers instead of dashes)!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation",
+                "Le matricule modérateur doit être au format ---MOD------ (avec des chiffres à la place des tirets)!\nExemple: 123MOD123456");
             return;
         }
 
         // Validate if matricule exists in database
         if ("Admin".equals(userType) && !matriculeExistsInDatabase(matricule)) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error",
-                "This Admin matricule does not exist in the database. Please contact an administrator.");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation",
+                "Ce matricule administrateur n'existe pas dans la base de données. Veuillez contacter un administrateur.");
             return;
         }
 
         if ("Moderateur".equals(userType) && !matriculeExistsInDatabase(matriculeMod)) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error",
-                "This Moderateur matricule does not exist in the database. Please contact an administrator.");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation",
+                "Ce matricule modérateur n'existe pas dans la base de données. Veuillez contacter un administrateur.");
             return;
         }
 
         // Email validation
         if (!email.contains("@") || !email.contains(".")) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please enter a valid email address!");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Veuillez saisir une adresse email valide!");
+            return;
+        }
+
+        // Check if email already exists in database
+        if (isEmailAlreadyExists(email)) {
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation",
+                     "Cette adresse email est déjà utilisée. Veuillez choisir une autre adresse email.");
             return;
         }
 
         // Email validation for Admin and Moderateur - must be @planNova.tn
         if (("Admin".equals(userType) || "Moderateur".equals(userType)) && !email.endsWith("@planNova.tn")) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Admin and Moderateur email must be in the format: username@planNova.tn");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "L'email des administrateurs et modérateurs doit être au format: username@planNova.tn");
             return;
         }
 
@@ -188,14 +302,11 @@ public class CreateAccountController {
                 case "Admin":
                     newUser = new Admin(nom, prenom, email, password, pays, imagePath, matricule);
                     break;
-                case "Guide":
-                    newUser = new Guide(nom, prenom, email, password, pays, imagePath);
-                    break;
                 case "Moderateur":
                     newUser = new Moderateur(nom, prenom, email, password, pays, imagePath, matriculeMod);
                     break;
                 default:
-                    showAlert(Alert.AlertType.ERROR, "Error", "Invalid user type selected!");
+                    showAlert(Alert.AlertType.ERROR, "Erreur de Type", "Type d'utilisateur non supporté: " + userType);
                     return;
             }
 
@@ -228,8 +339,22 @@ public class CreateAccountController {
         try {
             return serviceUser.matriculeExists(matricule);
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to validate matricule: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur de Base de Données", "Échec de la validation du matricule: " + e.getMessage());
             return false;
+        }
+    }
+
+    private boolean isEmailAlreadyExists(String email) {
+        try {
+            // Use the findByEmail method to check if email exists
+            User existingUser = serviceUser.findByEmail(email);
+            return existingUser != null; // If user is found, email already exists
+        } catch (SQLException e) {
+            // Log error and show alert
+            System.err.println("Erreur lors de la vérification de l'email: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur de Base de Données",
+                     "Erreur lors de la vérification de l'email. Veuillez réessayer.");
+            return true; // Return true to be safe - prevent account creation if we can't verify
         }
     }
 

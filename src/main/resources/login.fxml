@@ -35,19 +35,32 @@
         <Region prefHeight="20"/>
 
         <!-- INPUTS -->
-        <TextField fx:id="emailField" promptText="Email Address" styleClass="input"/>
-        <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
+        <TextField fx:id="emailField" promptText="Adresse Email" styleClass="input"/>
+
+        <!-- PASSWORD WITH TOGGLE -->
+        <HBox alignment="CENTER_LEFT" spacing="0" styleClass="input">
+            <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                          HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="passwordTextField" promptText="Mot de passe"
+                      style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                      visible="false" managed="false"
+                      HBox.hgrow="ALWAYS"/>
+            <Button fx:id="passwordToggleBtn" onAction="#togglePasswordVisibility"
+                   style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 5;"
+                   text="👁"/>
+        </HBox>
 
         <!-- FORGOT PASSWORD -->
-        <Hyperlink fx:id="forgotPasswordLink" text="Forgot Password?" styleClass="forgot-link" onAction="#handleForgotPassword"/>
+        <Hyperlink fx:id="forgotPasswordLink" text="Mot de passe oublié?" styleClass="forgot-link" onAction="#handleForgotPassword"/>
 
         <!-- SPACE -->
         <Region prefHeight="15"/>
 
         <!-- BUTTONS -->
         <HBox spacing="15">
-            <Button fx:id="loginBtn" onAction="#handleLogin" text="Login" styleClass="login-btn"/>
-            <Button fx:id="signupBtn" onAction="#handleSignup" text="Create Account" styleClass="signup-btn"/>
+            <Button fx:id="loginBtn" onAction="#handleLogin" text="Connexion" styleClass="login-btn"/>
+            <Button fx:id="signupBtn" onAction="#handleSignup" text="Créer un Compte" styleClass="signup-btn"/>
         </HBox>
 
         <!-- SPACE -->

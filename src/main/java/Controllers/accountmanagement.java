@@ -1,28 +1,34 @@
 package Controllers;
 
 import Models.User;
+import Models.Client;
 import Services.ServiceUser;
-import utils.PasswordUtils;
 import utils.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.input.MouseEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -31,12 +37,14 @@ public class accountmanagement implements Initializable {
     @FXML private Button saveChangesBtn;
     @FXML private Button cancelBtn;
     @FXML private Button updatePasswordBtn;
+    @FXML private Button becomeGuideBtn;
     @FXML private Button closeBtn;
     @FXML private Button minimizeBtn;
     @FXML private Label lengthReq;
     @FXML private Label upperReq;
     @FXML private Label numberReq;
     @FXML private Label specialReq;
+    @FXML private Label roleLabel;
 
     @FXML private VBox accountCard;
     @FXML private VBox securityCard;
@@ -44,6 +52,7 @@ public class accountmanagement implements Initializable {
     @FXML private StackPane mainContentArea;
     @FXML private VBox slidingPanel;
     @FXML private Button togglePanelBtn;
+    @FXML private StackPane mainContainer;
 
     // Form fields for account information
     @FXML private TextField nomField;
@@ -77,12 +86,35 @@ public class accountmanagement implements Initializable {
         this.profileUpdateCallback = callback;
     }
 
+    /**
+     * Sets the current user for the account management interface
+     * @param user The user to set
+     */
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        if (user != null) {
+            UserSession.getInstance().setCurrentUser(user);
+            loadUserData();
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         serviceUser = new ServiceUser();
 
         // Load user data from session
         loadUserData();
+
+        // Show become guide button only for clients
+        if (becomeGuideBtn != null && currentUser != null) {
+            boolean isClient = currentUser instanceof Client;
+            becomeGuideBtn.setVisible(isClient);
+            becomeGuideBtn.setManaged(isClient);
+
+            if (isClient) {
+                addButtonHoverAnimation(becomeGuideBtn);
+            }
+        }
 
         setupAnimations();
         setupButtonEffects();
@@ -118,6 +150,18 @@ public class accountmanagement implements Initializable {
             String role = UserSession.getInstance().getCurrentUserType();
             if (roleField != null) roleField.setText(role != null ? role : "User");
 
+            // Client-specific UI adjustments
+            boolean isClient = UserSession.getInstance().isClient();
+            if (isClient) {
+                // Hide role field and label for clients
+                if (roleField != null) roleField.setVisible(false);
+                if (roleLabel != null) roleLabel.setVisible(false);
+            } else {
+                // Show role field for non-clients
+                if (roleField != null) roleField.setVisible(true);
+                if (roleLabel != null) roleLabel.setVisible(true);
+            }
+
             // Set header: full name, ID, role (so it shows current user, not placeholder)
             if (userFullName != null) {
                 String fullName = (currentUser.getPrenom() != null ? currentUser.getPrenom() : "") + " " +
@@ -138,6 +182,16 @@ public class accountmanagement implements Initializable {
 
             // Load profile image from database
             refreshProfileImage(currentUser.getImageurl());
+
+            // Show become guide button only for clients (reuse isClient variable)
+            if (becomeGuideBtn != null) {
+                becomeGuideBtn.setVisible(isClient);
+                becomeGuideBtn.setManaged(isClient);
+
+                if (isClient && becomeGuideBtn.getOnMouseEntered() == null) {
+                    addButtonHoverAnimation(becomeGuideBtn);
+                }
+            }
 
             System.out.println("User data loaded: " + currentUser.getNom() + " " + currentUser.getPrenom());
         } else {
@@ -352,7 +406,7 @@ public class accountmanagement implements Initializable {
             return;
         }
 
-        if (!PasswordUtils.isPasswordStrong(newPassword)) {
+        if (!isPasswordStrong(newPassword)) {
             showAlert(Alert.AlertType.ERROR, "Error", "Password must be at least 8 characters with uppercase, lowercase, number, and special character.");
             return;
         }
@@ -564,6 +618,7 @@ public class accountmanagement implements Initializable {
         });
     }
 
+
     private void setupPasswordValidation() {
         // Real-time password validation when typing in new password field
         if (newPasswordField != null) {
@@ -599,6 +654,16 @@ public class accountmanagement implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private boolean isPasswordStrong(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        return password.matches(".*[A-Z].*") && // At least one uppercase
+               password.matches(".*[a-z].*") && // At least one lowercase
+               password.matches(".*\\d.*") &&   // At least one digit
+               password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*"); // At least one special char
     }
 
     // Custom Transition Classes
@@ -661,5 +726,62 @@ public class accountmanagement implements Initializable {
                 region.setStyle(originalStyle);
             }
         }
+    }
+
+    @FXML
+    private void handleBecomeGuide(ActionEvent event) {
+        try {
+            // Load the guide requirements dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/guideRequirements.fxml"));
+            Parent root = loader.load();
+
+            // Create a new stage for the dialog
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Devenir Guide de Voyage - PlaNova");
+            dialogStage.setScene(new Scene(root));
+            dialogStage.setResizable(false);
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+
+            // Add fade in animation
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
+
+            dialogStage.setOnShown(e -> fadeIn.play());
+
+            // Show dialog and wait for result
+            dialogStage.showAndWait();
+
+            // Refresh user data in case conversion happened
+            loadUserData();
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir la fenêtre de demande de guide: " + e.getMessage());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur Inattendue", "Une erreur s'est produite: " + e.getMessage());
+        }
+    }
+
+    private void addButtonHoverAnimation(Button button) {
+        if (button == null) return;
+
+        // Scale animation on hover
+        ScaleTransition scaleIn = new ScaleTransition(Duration.millis(200), button);
+        scaleIn.setToX(1.05);
+        scaleIn.setToY(1.05);
+
+        ScaleTransition scaleOut = new ScaleTransition(Duration.millis(200), button);
+        scaleOut.setToX(1.0);
+        scaleOut.setToY(1.0);
+
+        button.setOnMouseEntered(e -> {
+            scaleOut.stop();
+            scaleIn.play();
+        });
+
+        button.setOnMouseExited(e -> {
+            scaleIn.stop();
+            scaleOut.play();
+        });
     }
 }

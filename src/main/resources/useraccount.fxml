@@ -20,12 +20,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: linear-gradient(to bottom right, #f5f7fa, #e9ecf2);" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.accountmanagement">
-
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to bottom right, #f5f7fa, #e9ecf2);" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.accountmanagement">
     <center>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
-                <VBox alignment="TOP_CENTER" maxWidth="900.0" spacing="25.0" HBox.hgrow="ALWAYS">
+                <VBox alignment="TOP_CENTER" maxWidth="1100.0" spacing="25.0" HBox.hgrow="ALWAYS">
                     <children>
                         <!-- Header with User Info -->
                         <AnchorPane style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 10);">
@@ -71,9 +70,9 @@
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <children>
-                                                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="📋 Account Information" />
+                                                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="📋 Informations du Compte" />
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Label style="-fx-text-fill: #6c757d;" text="Update your personal information" />
+                                                <Label style="-fx-text-fill: #6c757d;" text="Modifiez vos informations personnelles" />
                                             </children>
                                         </HBox>
                                         <Separator prefWidth="200.0" />
@@ -95,7 +94,7 @@
                                                 <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Prénom" GridPane.rowIndex="1" />
                                                 <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Email" GridPane.rowIndex="2" />
                                                 <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Pays" GridPane.rowIndex="3" />
-                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Rôle" GridPane.rowIndex="4" />
+                                                <Label fx:id="roleLabel" style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Rôle" GridPane.rowIndex="4" />
                                                 <TextField fx:id="nomField" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" promptText="Nom" GridPane.columnIndex="1" />
                                                 <TextField fx:id="prenomField" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" promptText="Prénom" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <TextField fx:id="emailField" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -104,10 +103,18 @@
                                             </children>
                                         </GridPane>
 
-                                        <HBox spacing="15.0">
+                                        <HBox spacing="15.0" alignment="CENTER">
                                             <children>
-                                                <Button fx:id="saveChangesBtn" mnemonicParsing="false" onAction="#handleSaveChanges" style="-fx-background-color: #4a6fa5; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 30;" text="Save Changes" />
-                                                <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#handleCancel" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-color: #dc3545; -fx-border-radius: 10; -fx-text-fill: #dc3545; -fx-font-weight: bold; -fx-padding: 12 30;" text="Cancel" />
+                                                <Button fx:id="saveChangesBtn" mnemonicParsing="false" onAction="#handleSaveChanges"
+                                                       style="-fx-background-color: #4a6fa5; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 120px; -fx-pref-width: 120px; -fx-font-size: 14px;"
+                                                       text="Sauvegarder" />
+                                                <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#handleCancel"
+                                                       style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-color: #dc3545; -fx-border-radius: 10; -fx-text-fill: #dc3545; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 100px; -fx-pref-width: 100px; -fx-font-size: 14px;"
+                                                       text="Annuler" />
+                                                <!-- BECOME GUIDE BUTTON (only for clients) -->
+                                                <Button fx:id="becomeGuideBtn" mnemonicParsing="false" onAction="#handleBecomeGuide"
+                                                       style="-fx-background-color: #28a745; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-effect: dropshadow(gaussian, rgba(40,167,69,0.3), 10, 0, 0, 3); -fx-min-width: 140px; -fx-pref-width: 140px; -fx-font-size: 14px;"
+                                                       text="Devenir Guide" visible="false" managed="false"/>
                                             </children>
                                         </HBox>
                                     </children>
@@ -121,9 +128,9 @@
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <children>
-                                                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="🔒 Security Settings" />
+                                                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="🔒 Paramètres de Sécurité" />
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Label style="-fx-text-fill: #6c757d;" text="Update your password" />
+                                                <Label style="-fx-text-fill: #6c757d;" text="Mettez à jour votre mot de passe" />
                                             </children>
                                         </HBox>
                                         <Separator prefWidth="200.0" />
@@ -132,28 +139,30 @@
                                             <children>
                                                 <VBox spacing="5.0">
                                                     <children>
-                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Current Password" />
-                                                        <PasswordField fx:id="currentPasswordField" promptText="Enter current password" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Mot de Passe Actuel" />
+                                                        <PasswordField fx:id="currentPasswordField" promptText="Entrez le mot de passe actuel" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
                                                     </children>
                                                 </VBox>
 
                                                 <VBox spacing="5.0">
                                                     <children>
-                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="New Password" />
-                                                        <PasswordField fx:id="newPasswordField" promptText="Enter new password" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Nouveau Mot de Passe" />
+                                                        <PasswordField fx:id="newPasswordField" promptText="Entrez le nouveau mot de passe" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
                                                     </children>
                                                 </VBox>
 
                                                 <VBox spacing="5.0">
                                                     <children>
-                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Confirm New Password" />
-                                                        <PasswordField fx:id="confirmPasswordField" promptText="Confirm new password" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Confirmer Nouveau Mot de Passe" />
+                                                        <PasswordField fx:id="confirmPasswordField" promptText="Confirmez le nouveau mot de passe" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
                                                     </children>
                                                 </VBox>
 
                                                 <HBox alignment="CENTER_RIGHT">
                                                     <children>
-                                                        <Button fx:id="updatePasswordBtn" mnemonicParsing="false" onAction="#handleUpdatePassword" style="-fx-background-color: #4a6fa5; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 30;" text="Update Password" />
+                                                        <Button fx:id="updatePasswordBtn" mnemonicParsing="false" onAction="#handleUpdatePassword"
+                                                               style="-fx-background-color: #4a6fa5; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 150px; -fx-pref-width: 150px; -fx-font-size: 14px;"
+                                                               text="Modifier Mot de Passe" />
                                                     </children>
                                                 </HBox>
                                             </children>
@@ -162,15 +171,15 @@
                                         <!-- Password Strength Indicator -->
                                         <VBox spacing="10.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 15;">
                                             <children>
-                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Password Requirements:" />
-                                                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Exigences du mot de passe:" />
+                                                <VBox spacing="5.0">
                                                     <children>
-                                                        <Label fx:id="lengthReq" style="-fx-text-fill: #6c757d;" text="• 8+ characters" />
-                                                        <Label fx:id="upperReq" style="-fx-text-fill: #6c757d;" text="• Uppercase" />
-                                                        <Label fx:id="numberReq" style="-fx-text-fill: #6c757d;" text="• Number" />
-                                                        <Label fx:id="specialReq" style="-fx-text-fill: #6c757d;" text="• Special char" />
+                                                        <Label fx:id="lengthReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• 8+ caractères" />
+                                                        <Label fx:id="upperReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Majuscule" />
+                                                        <Label fx:id="numberReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Chiffre" />
+                                                        <Label fx:id="specialReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Caractère spécial" />
                                                     </children>
-                                                </HBox>
+                                                </VBox>
                                             </children>
                                         </VBox>
                                     </children>

@@ -22,13 +22,44 @@ public class loginController {
     @FXML
     private PasswordField passwordField;
     @FXML
+    private TextField passwordTextField;
+    @FXML
     private Button loginBtn;
     @FXML
     private Button signupBtn;
     @FXML
+    private Button passwordToggleBtn;
+    @FXML
     private javafx.scene.control.Hyperlink forgotPasswordLink;
 
     private ServiceUser serviceUser = new ServiceUser();
+
+    @FXML
+    private void initialize() {
+        // Bind password fields and set up visibility toggle
+        if (passwordTextField != null) {
+            passwordTextField.textProperty().bindBidirectional(passwordField.textProperty());
+        }
+    }
+
+    @FXML
+    private void togglePasswordVisibility(ActionEvent event) {
+        if (passwordField.isVisible()) {
+            // Switch to visible text
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+            passwordTextField.setVisible(true);
+            passwordTextField.setManaged(true);
+            passwordToggleBtn.setText("🙈"); // closed eye
+        } else {
+            // Switch to hidden password
+            passwordTextField.setVisible(false);
+            passwordTextField.setManaged(false);
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+            passwordToggleBtn.setText("👁"); // open eye
+        }
+    }
 
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -37,7 +68,7 @@ public class loginController {
         if (password != null) password = password.trim();
 
         if (email.isEmpty() || password == null || password.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please enter both email and password.");
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Veuillez saisir à la fois l'email et le mot de passe.");
             return;
         }
 
@@ -45,7 +76,7 @@ public class loginController {
             User userByEmail = serviceUser.findByEmail(email);
 
             if (userByEmail == null) {
-                showAlert(Alert.AlertType.ERROR, "Connexion échouée", "Email incorrect ou inexistant. Vérifiez l'adresse email.");
+                showAlert(Alert.AlertType.ERROR, "Échec de la connexion", "Email incorrect ou inexistant. Vérifiez l'adresse email.");
                 return;
             }
 
@@ -63,16 +94,21 @@ public class loginController {
             // Store user in session
             UserSession.getInstance().setCurrentUser(userByEmail);
 
-            // Check if user has access to dashboard
-            if (!UserSession.getInstance().canAccessDashboard()) {
+            // Navigate based on user role
+            if (UserSession.getInstance().isClient()) {
+                // Clients go to explore interface
+                navigateToExplore(userByEmail);
+            } else if (UserSession.getInstance().canAccessDashboard()) {
+                // Admin and Moderator go to dashboard
+                navigateToDashboard(userByEmail);
+            } else {
+                // Guide and other roles not allowed
                 UserSession.getInstance().logout();
                 showAlert(Alert.AlertType.ERROR, "Accès refusé",
-                    "Seuls Admin et Moderateur peuvent accéder au dashboard. Les comptes Client et Guide ne sont pas autorisés.");
+                    "Ce type de compte n'a pas encore d'interface dédiée. Seuls Admin, Moderateur et Client peuvent se connecter.");
                 return;
             }
 
-            // Successful login - navigate to dashboard
-            navigateToDashboard(userByEmail);
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur base de données", "Échec de l'authentification : " + e.getMessage());
@@ -82,16 +118,16 @@ public class loginController {
     @FXML
     private void handleForgotPassword(ActionEvent event) {
         TextInputDialog emailDialog = new TextInputDialog();
-        emailDialog.setTitle("Reset password");
-        emailDialog.setHeaderText("Enter your account email");
+        emailDialog.setTitle("Réinitialiser le mot de passe");
+        emailDialog.setHeaderText("Entrez l'email de votre compte");
         emailDialog.setContentText("Email:");
         emailDialog.showAndWait().ifPresent(email -> {
             if (email.trim().isEmpty()) return;
             Dialog<String> passDialog = new Dialog<>();
-            passDialog.setTitle("Reset password");
-            passDialog.setHeaderText("Enter new password for " + email.trim());
+            passDialog.setTitle("Réinitialiser le mot de passe");
+            passDialog.setHeaderText("Entrez un nouveau mot de passe pour " + email.trim());
             javafx.scene.control.PasswordField newPass = new javafx.scene.control.PasswordField();
-            newPass.setPromptText("New password");
+            newPass.setPromptText("Nouveau mot de passe");
             passDialog.getDialogPane().setContent(newPass);
             passDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
             passDialog.setResultConverter(btn -> btn == ButtonType.OK ? newPass.getText() : null);
@@ -99,12 +135,12 @@ public class loginController {
                 if (newPassword == null || newPassword.isEmpty()) return;
                 try {
                     if (serviceUser.resetPasswordByEmail(email.trim(), newPassword)) {
-                        showAlert(Alert.AlertType.INFORMATION, "Password reset", "Password updated. You can now log in with your email and the new password.");
+                        showAlert(Alert.AlertType.INFORMATION, "Mot de passe réinitialisé", "Mot de passe mis à jour. Vous pouvez maintenant vous connecter avec votre email et le nouveau mot de passe.");
                     } else {
-                        showAlert(Alert.AlertType.WARNING, "Reset failed", "No account found with that email, or error occurred.");
+                        showAlert(Alert.AlertType.WARNING, "Échec de la réinitialisation", "Aucun compte trouvé avec cet email, ou une erreur s'est produite.");
                     }
                 } catch (SQLException e) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to reset password: " + e.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la réinitialisation du mot de passe: " + e.getMessage());
                 }
             });
         });
@@ -131,6 +167,46 @@ public class loginController {
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to open create account screen: " + e.getMessage());
+        }
+    }
+
+    private void navigateToExplore(User user) {
+        try {
+            // Navigate to explore interface for clients
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/explore.fxml"));
+
+            if (loader.getLocation() == null) {
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to find explore file (ui/explore.fxml)");
+                return;
+            }
+
+            Parent root = loader.load();
+
+            // Get the controller and pass user info
+            ExploreController controller = loader.getController();
+            if (controller == null) {
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to load explore controller");
+                return;
+            }
+
+            Stage stage = (Stage) loginBtn.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("PlaNova - Explore");
+
+            // Allow full screen and resizing for better visibility
+            stage.setResizable(true);
+            stage.setMaximized(true);
+            stage.setMinWidth(1100);
+            stage.setMinHeight(700);
+
+            stage.show();
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to open explore interface: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Unexpected Error", "An unexpected error occurred: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

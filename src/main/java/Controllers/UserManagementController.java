@@ -111,8 +111,8 @@ public class UserManagementController implements Initializable {
         } catch (Exception e) {
             System.err.println("Error during dashboard initialization: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Initialization Error",
-                "Failed to initialize dashboard: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur d'Initialisation",
+                "Échec de l'initialisation du tableau de bord: " + e.getMessage());
         }
     }
 
@@ -197,7 +197,7 @@ public class UserManagementController implements Initializable {
 
             System.out.println("Navigated to: " + title);
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to " + title + ": " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur de Navigation", "Échec de la navigation vers " + title + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -457,7 +457,7 @@ public class UserManagementController implements Initializable {
             setupUserContainer(); // Refresh UI
 
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open modify user window: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ouverture de la fenêtre de modification utilisateur: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -474,7 +474,7 @@ public class UserManagementController implements Initializable {
                     loadUsers();
                     updateStats();
                     setupUserContainer(); // Refresh UI
-                    showAlert(Alert.AlertType.INFORMATION, "Success", "User deleted successfully!");
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Utilisateur supprimé avec succès!");
                 });
             });
 
@@ -498,7 +498,7 @@ public class UserManagementController implements Initializable {
             stage.showAndWait();
 
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open delete confirmation: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ouverture de la confirmation de suppression: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -543,7 +543,7 @@ public class UserManagementController implements Initializable {
             stage.showAndWait();
 
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open user info: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ouverture des informations utilisateur: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -554,7 +554,7 @@ public class UserManagementController implements Initializable {
             List<User> users = serviceUser.recuperer();
             if (users == null) {
                 System.err.println("Service returned null user list");
-                showAlert(Alert.AlertType.WARNING, "Warning", "Failed to retrieve users: service returned null");
+                showAlert(Alert.AlertType.WARNING, "Avertissement", "Échec de la récupération des utilisateurs: le service a renvoyé null");
                 return;
             }
 
@@ -570,9 +570,9 @@ public class UserManagementController implements Initializable {
         } catch (SQLException e) {
             System.err.println("SQL Error loading users: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to load users: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur de Base de Données", "Échec du chargement des utilisateurs: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Unexpected error loading users: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur inattendue lors du chargement des utilisateurs: " + e.getMessage());
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Unexpected error loading users: " + e.getMessage());
         }
@@ -637,7 +637,7 @@ public class UserManagementController implements Initializable {
             userList.setAll(filteredList);
             setupUserContainer(); // Refresh the UI after filtering
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to filter users: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec du filtrage des utilisateurs: " + e.getMessage());
         }
     }
 
@@ -681,7 +681,7 @@ public class UserManagementController implements Initializable {
             setupUserContainer(); // Refresh UI
 
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open add user window: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ouverture de la fenêtre d'ajout d'utilisateur: " + e.getMessage());
         }
     }
 
@@ -723,7 +723,7 @@ public class UserManagementController implements Initializable {
 
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to dashboard: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur de Navigation", "Échec de la navigation vers le tableau de bord: " + e.getMessage());
         }
     }
 
