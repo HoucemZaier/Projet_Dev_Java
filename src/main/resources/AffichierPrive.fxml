@@ -27,7 +27,7 @@
                 <VBox>
                     <Label text="Gestion des transports privés"
                            style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1f2933;" />
-                    <Label text="Liste des voitures de location, filtrage par carburant et état"
+                    <Label text="Liste des voitures de location, filtrage par prix location"
                            style="-fx-font-size: 12; -fx-text-fill: #6b7280;" />
                 </VBox>
             </HBox>
@@ -43,14 +43,13 @@
                                      -fx-padding: 4 8 4 8;">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Prix croissant"/>
-                                <String fx:value="Prix décroissant"/>
+                                <String fx:value="Prix Moins Cher"/>
+                                <String fx:value="Prix Plus Cher"/>
                             </FXCollections>
                         </items>
                     </ComboBox>
                 </VBox>
 
-                <!-- Espace flexible -->
                 <Region HBox.hgrow="ALWAYS" />
 
                 <!-- Bouton ajouter -->
@@ -73,7 +72,6 @@
                 </Button>
             </HBox>
 
-            <!-- Section liste des véhicules avec VBox pour un affichage clair -->
             <VBox spacing="8" style="-fx-padding: 10 0 0 0;" VBox.vgrow="ALWAYS">
                 <Label text="Liste des véhicules privés"
                        style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #111827;" />

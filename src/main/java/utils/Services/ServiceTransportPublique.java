@@ -68,9 +68,7 @@ public class ServiceTransportPublique implements Iservice <TransportPublique> {
                 tp.setId_transport_pub(rs.getInt("id_transport_pub"));
                 tp.setType(rs.getString("type"));
                 tp.setTarif(rs.getDouble("tarif"));
-                // la colonne se nomme 'horraire' dans la base
                 tp.setHoraire(rs.getString("horraire"));
-                // et la colonne image est 'image'
                 tp.setImage_path(rs.getString("image"));
                 transportList.add(tp);
             }

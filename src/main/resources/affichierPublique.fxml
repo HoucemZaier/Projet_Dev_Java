@@ -38,12 +38,15 @@
             <HBox spacing="15"
                   style="-fx-padding: 10; -fx-background-color: #f9fafb; -fx-background-radius: 8;">
                 <VBox spacing="4">
-                    <Label text="Filtrer par type"
+                    <Label text="recherche par type"
                            style="-fx-font-weight: bold; -fx-text-fill: #374151; -fx-font-size: 12;" />
                     <ComboBox fx:id="comboRechercheType" promptText="Tous les types"
                               style="-fx-background-radius: 6; -fx-padding: 4 8 4 8;">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
+                                <!-- Option qui affiche tous les transports -->
+                                <String fx:value="Tous"/>
+                                <!-- Options individuelles -->
                                 <String fx:value="🚌 Bus"/>
                                 <String fx:value="🚕 Taxi"/>
                                 <String fx:value="🚇 Metro"/>

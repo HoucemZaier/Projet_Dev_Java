@@ -82,13 +82,6 @@ public class TransportPrive {
         this.image_path = image_path;
     }
 
-    public String getType_carburant() {
-        return type_carburant;
-    }
-
-    public void setType_carburant(String type_carburant) {
-        this.type_carburant = type_carburant;
-    }
 
     // ==================== MÉTHODES ====================
 

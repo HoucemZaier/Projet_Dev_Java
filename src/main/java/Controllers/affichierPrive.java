@@ -55,13 +55,17 @@ public class affichierPrive implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialiser la ComboBox de tri par prix
-        if (triPrixComboBox != null && triPrixComboBox.getItems().isEmpty()) {
-            triPrixComboBox.setItems(FXCollections.observableArrayList(
-                    "Prix croissant",
-                    "Prix décroissant"
-            ));
+        // Initialiser / brancher la ComboBox de tri par prix
+        if (triPrixComboBox != null) {
+            // Si aucun item n'est défini dans le FXML, on les ajoute en Java
+            if (triPrixComboBox.getItems().isEmpty()) {
+                triPrixComboBox.setItems(FXCollections.observableArrayList(
+                        "Prix Moins Cher",
+                        "Prix Plus Cher"
+                ));
+            }
 
+            // Listener sur le choix sélectionné
             triPrixComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal != null) {
                     trierParPrix(newVal);
@@ -154,15 +158,25 @@ public class affichierPrive implements Initializable {
 
     /**
      * Trie la liste des transports privés selon le prix de location.
+     * "Prix Moins Cher"  -> tri croissant
+     * "Prix Plus Cher"   -> tri décroissant
      */
     private void trierParPrix(String critere) {
         if (critere == null || data.isEmpty()) {
             return;
         }
 
+        boolean triMoinsCher = "Prix Moins Cher".equalsIgnoreCase(critere);
+        boolean triPlusCher = "Prix Plus Cher".equalsIgnoreCase(critere);
+
+        if (!triMoinsCher && !triPlusCher) {
+            // Autre valeur => on ne fait rien
+            return;
+        }
+
         FXCollections.sort(data, (a, b) -> {
             int cmp = Double.compare(a.getPrix_loc(), b.getPrix_loc());
-            return "Prix décroissant".equals(critere) ? -cmp : cmp;
+            return triPlusCher ? -cmp : cmp;
         });
     }
 
