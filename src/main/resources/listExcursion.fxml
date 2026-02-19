@@ -1,69 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="650.0" prefWidth="1000.0" spacing="0"
+<VBox prefWidth="1000.0"
+      prefHeight="650.0"
+      spacing="0"
       style="-fx-background-color: #f8fafc;"
-      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="Controllers.ListExcursionController">
 
-    <!-- HEADER -->
-    <BorderPane style="-fx-background-color: white; -fx-padding: 20 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
+    <!-- ================= HEADER ================= -->
+    <BorderPane style="-fx-background-color: white;
+                       -fx-padding: 20 25;
+                       -fx-border-color: #e2e8f0;
+                       -fx-border-width: 0 0 1 0;">
+
         <left>
             <VBox spacing="5">
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Rectangle arcHeight="5" arcWidth="5" fill="#10b981" height="30" width="4" />
-                    <Label style="-fx-text-fill: #1e293b;" text="Gestion des Excursions">
+                    <Rectangle arcHeight="5"
+                               arcWidth="5"
+                               fill="#10b981"
+                               height="30"
+                               width="4"/>
+                    <Label text="Gestion des Excursions"
+                           style="-fx-text-fill: #1e293b;">
                         <font>
-                            <Font name="Segoe UI Semibold" size="22" />
+                            <Font name="Segoe UI Semibold" size="22"/>
                         </font>
                     </Label>
                 </HBox>
-                <Label style="-fx-text-fill: #64748b;" text="Ajoutez, modifiez ou supprimez des excursions.">
+
+                <Label text="Ajoutez, modifiez ou supprimez des excursions."
+                       style="-fx-text-fill: #64748b;">
                     <font>
-                        <Font name="Segoe UI" size="13" />
+                        <Font name="Segoe UI" size="13"/>
                     </font>
                 </Label>
             </VBox>
         </left>
 
         <right>
-            <Button onAction="#handleAjouterExcursion" prefHeight="40" prefWidth="180"
-                    style="-fx-background-color: linear-gradient(to right,#10b981,#059669); -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"
-                    text="+ Ajouter Excursion">
+            <Button text="+ Ajouter Excursion"
+                    onAction="#handleAjouterExcursion"
+                    prefHeight="45"
+                    style="-fx-background-color: linear-gradient(to right,#10b981,#0DA2E7);
+                           -fx-text-fill: white;
+                           -fx-background-radius: 8;
+                           -fx-font-weight: bold;
+                           -fx-cursor: hand;">
                 <effect>
-                    <DropShadow color="rgba(16,185,129,0.3)" offsetY="4" radius="8" />
+                    <DropShadow color="rgba(16,185,129,0.3)"
+                                offsetY="4"
+                                radius="8"/>
                 </effect>
-                <padding>
-                    <Insets bottom="10" left="20" right="20" top="10" />
-                </padding>
             </Button>
         </right>
     </BorderPane>
 
-    <!-- SEARCH BAR -->
-    <BorderPane style="-fx-background-color: white; -fx-padding: 20 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
-        <left>
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <TextField fx:id="txtRecherche" prefHeight="40" prefWidth="300" promptText="Rechercher par titre ou destination"
-                           style="-fx-background-radius: 8; -fx-background-color: white; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-border-width: 1.5; -fx-padding: 0 15;" />
-                <Button onAction="#handleRechercher" prefHeight="40" prefWidth="156.0"
-                        style="-fx-background-color: #64748b; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;" text="Rechercher" />
-            </HBox>
-        </left>
-    </BorderPane>
+    <!-- ================= FILTRES ================= -->
+    <HBox alignment="CENTER_LEFT"
+          spacing="15"
+          style="-fx-padding:15 25;">
 
-    <!-- LISTE DES EXCURSIONS -->
-    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+        <TextField fx:id="txtRecherche"
+                   promptText="Rechercher par titre ou destination"
+                   prefHeight="45"
+                   prefWidth="260"
+                   style="-fx-background-radius: 8;
+                          -fx-background-color: white;
+                          -fx-border-color: #cbd5e1;
+                          -fx-border-radius: 8;
+                          -fx-border-width: 1.5;
+                          -fx-padding: 0 15;" />
+
+        <ComboBox fx:id="statutFilter"
+                  prefWidth="170"
+                  promptText="Filtrer par statut"
+                  style="-fx-background-radius:8;" />
+
+        <Button text="Liste des Favoris"
+                onAction="#handleFavoris"
+                style="-fx-background-color:#f59e0b;
+                       -fx-text-fill:white;
+                       -fx-background-radius:8;
+                       -fx-font-weight:bold;
+                       -fx-cursor:hand;" />
+
+        <Button text="Notifications"
+                onAction="#handleNotifications"
+                style="-fx-background-color:#10b981;
+                       -fx-text-fill:white;
+                       -fx-background-radius:8;
+                       -fx-font-weight:bold;
+                       -fx-cursor:hand;" />
+
+    </HBox>
+
+    <!-- ================= LISTE ================= -->
+    <ScrollPane fitToWidth="true"
+                fitToHeight="true"
+                VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent;">
+
         <content>
-            <VBox fx:id="containerExcursions" spacing="15" style="-fx-padding: 25;" />
+            <VBox fx:id="containerExcursions"
+                  spacing="15"
+                  style="-fx-padding: 25;" />
         </content>
+
     </ScrollPane>
 
 </VBox>

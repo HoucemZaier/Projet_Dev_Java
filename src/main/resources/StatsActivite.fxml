@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.StatsActiviteController"
+      spacing="20"
+      style="-fx-padding:20; -fx-background-color:#f8fafc;">
+
+    <Label text="Statistiques des Activités"
+           style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#1e293b;"/>
+
+    <HBox spacing="20">
+
+        <!-- Graphique barre prix -->
+        <VBox spacing="10" VBox.vgrow="ALWAYS">
+            <Label text="Prix des Activités" style="-fx-font-weight:bold;"/>
+            <BarChart fx:id="barChartPrix" prefWidth="400" prefHeight="300">
+                <xAxis>
+                    <CategoryAxis label="Activité"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Prix (DT)"/>
+                </yAxis>
+            </BarChart>
+        </VBox>
+
+        <!-- Graphique camembert pour répartition des lieux -->
+        <VBox spacing="10" VBox.vgrow="ALWAYS">
+            <Label text="Répartition des Activités par Lieu" style="-fx-font-weight:bold;"/>
+            <PieChart fx:id="pieChartLieu" prefWidth="400" prefHeight="300"/>
+        </VBox>
+
+    </HBox>
+</VBox>

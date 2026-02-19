@@ -24,42 +24,78 @@ public class ListActiviteController implements Initializable {
 
     @FXML private VBox containerActivites;
     @FXML private TextField txtRecherche;
+    @FXML private Button btnTriPrix;
 
     private final ServiceActivite service = new ServiceActivite();
     private ObservableList<Activite> list;
+    private ObservableList<Activite> favoris = FXCollections.observableArrayList();
+    private boolean triCroissant = true; // pour suivre la direction du tri
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadData();
+
+        // 🔹 Recherche en temps réel
+        txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> filtrerActivites(newVal));
     }
 
     private void loadData() {
         try {
             containerActivites.getChildren().clear();
             list = FXCollections.observableArrayList(service.recuperer());
-
-            for (Activite activite : list) {
-                containerActivites.getChildren().add(createCard(activite));
-            }
+            filtrerActivites(txtRecherche.getText());
 
         } catch (SQLDataException e) {
             showAlert("Erreur", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
-    private HBox createCard(Activite activite) {
+    private void filtrerActivites(String keyword) {
+        containerActivites.getChildren().clear();
+        if (keyword == null) keyword = "";
+        String lowerKeyword = keyword.toLowerCase();
 
-        // Informations
+        for (Activite a : list) {
+            boolean matchesNom = a.getNom() != null && a.getNom().toLowerCase().contains(lowerKeyword);
+            boolean matchesLieu = a.getLieu() != null && a.getLieu().toLowerCase().contains(lowerKeyword);
+            boolean matchesDescription = a.getDescription() != null && a.getDescription().toLowerCase().contains(lowerKeyword);
+
+            if (matchesNom || matchesLieu || matchesDescription) {
+                containerActivites.getChildren().add(createCard(a));
+            }
+        }
+
+        if (containerActivites.getChildren().isEmpty()) {
+            Label noResult = new Label("Aucune activité trouvée pour : " + keyword);
+            noResult.setStyle("-fx-text-fill:#ef4444; -fx-font-style:italic;");
+            containerActivites.getChildren().add(noResult);
+        }
+    }
+
+    // 🔹 Tri dynamique par prix avec flèche
+    @FXML
+    private void trierPrixDynamic() {
+        if(triCroissant) {
+            FXCollections.sort(list, (a,b) -> Double.compare(a.getPrix(), b.getPrix()));
+            btnTriPrix.setText("Trier par prix ⬇️");
+        } else {
+            FXCollections.sort(list, (a,b) -> Double.compare(b.getPrix(), a.getPrix()));
+            btnTriPrix.setText("Trier par prix ⬆️");
+        }
+        triCroissant = !triCroissant;
+        filtrerActivites(txtRecherche.getText());
+    }
+
+    private HBox createCard(Activite activite) {
         VBox info = new VBox(8);
         Label nom = new Label(activite.getNom());
         nom.setStyle("-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0f172a;");
         Label description = new Label(activite.getDescription());
         description.setStyle("-fx-text-fill:#475569;");
-        Label details = new Label("📅 " + activite.getDateActivite() + " | 📍 " + activite.getLieu() + " | 💰 " + activite.getPrix() + " DT");
-        details.setStyle("-fx-text-fill:#64748b; -fx-font-size:13px;");
-        info.getChildren().addAll(nom, description, details);
+        Label summary = new Label("📅 " + activite.getDateActivite() + " | 📍 " + activite.getLieu() + " | 💰 " + activite.getPrix() + " DT");
+        summary.setStyle("-fx-text-fill:#64748b; -fx-font-size:13px;");
+        info.getChildren().addAll(nom, description, summary);
 
-        // BOUTONS STYLE FORUMCONTROLLER
         FontAwesomeIconView iconView = new FontAwesomeIconView(FontAwesomeIcon.EYE);
         iconView.setFill(javafx.scene.paint.Color.web("#3498db"));
         iconView.setSize("18px");
@@ -72,14 +108,27 @@ public class ListActiviteController implements Initializable {
         iconDelete.setFill(javafx.scene.paint.Color.web("#e74c3c"));
         iconDelete.setSize("18px");
 
+        FontAwesomeIconView iconFav = new FontAwesomeIconView(FontAwesomeIcon.STAR);
+        iconFav.setFill(favoris.contains(activite) ? javafx.scene.paint.Color.GOLD : javafx.scene.paint.Color.LIGHTGRAY);
+        iconFav.setSize("18px");
+
         Button btnView = new Button(); btnView.setGraphic(iconView);
         Button btnEdit = new Button(); btnEdit.setGraphic(iconEdit);
         Button btnDelete = new Button(); btnDelete.setGraphic(iconDelete);
+        Button btnFav = new Button(); btnFav.setGraphic(iconFav);
+        btnFav.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
 
-        String baseStyle = "-fx-cursor: hand; -fx-min-width: 38; -fx-min-height: 38; " +
-                "-fx-background-radius: 50; -fx-background-color: #f8f9fa; " +
-                "-fx-border-color: #eee; -fx-border-radius: 50; -fx-border-width: 1;";
+        btnFav.setOnAction(e -> {
+            if(favoris.contains(activite)) {
+                favoris.remove(activite);
+                iconFav.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+            } else {
+                favoris.add(activite);
+                iconFav.setFill(javafx.scene.paint.Color.GOLD);
+            }
+        });
 
+        String baseStyle = "-fx-cursor: hand; -fx-min-width: 38; -fx-min-height: 38; -fx-background-radius: 50; -fx-background-color: #f8f9fa; -fx-border-color: #eee; -fx-border-radius: 50; -fx-border-width: 1;";
         btnView.setStyle(baseStyle);
         btnEdit.setStyle(baseStyle);
         btnDelete.setStyle(baseStyle);
@@ -87,36 +136,43 @@ public class ListActiviteController implements Initializable {
         btnView.setOnMouseEntered(e -> btnView.setStyle(baseStyle + "-fx-background-color: #e1f5fe;"));
         btnEdit.setOnMouseEntered(e -> btnEdit.setStyle(baseStyle + "-fx-background-color: #fff3e0;"));
         btnDelete.setOnMouseEntered(e -> btnDelete.setStyle(baseStyle + "-fx-background-color: #ffebee;"));
-
         btnView.setOnMouseExited(e -> btnView.setStyle(baseStyle));
         btnEdit.setOnMouseExited(e -> btnEdit.setStyle(baseStyle));
         btnDelete.setOnMouseExited(e -> btnDelete.setStyle(baseStyle));
 
-        // Actions au clic
-        btnView.setOnAction(e -> showAlert("Détails", activite.getDescription(), Alert.AlertType.INFORMATION));
+        btnView.setOnAction(e -> {
+            StringBuilder details = new StringBuilder();
+            details.append("Nom : ").append(activite.getNom()).append("\n");
+            details.append("Description : ").append(activite.getDescription()).append("\n");
+            details.append("Date : ").append(activite.getDateActivite()).append("\n");
+            details.append("Heure : ").append(activite.getHeureActivite()).append("\n");
+            details.append("Lieu : ").append(activite.getLieu()).append("\n");
+            details.append("Prix : ").append(activite.getPrix()).append(" DT").append("\n");
+            details.append("Excursion ID : ").append(activite.getIdExcursion()).append("\n");
+            details.append("Destination ID : ").append(activite.getIdDestination());
+
+            showAlert("Détails de l'activité", details.toString(), Alert.AlertType.INFORMATION);
+        });
         btnEdit.setOnAction(e -> ouvrirUpdate(activite));
         btnDelete.setOnAction(e -> supprimerActivite(activite));
 
-        HBox actions = new HBox(12, btnView, btnEdit, btnDelete);
+        HBox actions = new HBox(12, btnView, btnEdit, btnDelete, btnFav);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
-        // Carte
         HBox card = new HBox(40, info, actions);
         card.setAlignment(Pos.CENTER_LEFT);
         card.setStyle("""
-        -fx-background-color:white;
-        -fx-padding:20;
-        -fx-background-radius:12;
-        -fx-border-radius:12;
-        -fx-border-color:#e2e8f0;
-        -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.06),10,0,0,4);
-    """);
-
+            -fx-background-color:white;
+            -fx-padding:20;
+            -fx-background-radius:12;
+            -fx-border-radius:12;
+            -fx-border-color:#e2e8f0;
+            -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.06),10,0,0,4);
+        """);
         HBox.setHgrow(info, Priority.ALWAYS);
 
         return card;
     }
-
 
     private void supprimerActivite(Activite activite) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -175,23 +231,19 @@ public class ListActiviteController implements Initializable {
     }
 
     @FXML
-    private void handleRechercher() {
-        String keyword = txtRecherche.getText().trim().toLowerCase();
+    private void afficherStats() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/StatsActivite.fxml"));
+            Parent root = loader.load();
+            StatsActiviteController controller = loader.getController();
+            controller.setActivites(list);
 
-        if (keyword.isEmpty()) {
-            loadData();
-            return;
-        }
-
-        containerActivites.getChildren().clear();
-
-        for (Activite a : list) {
-            if (a.getNom().toLowerCase().contains(keyword)
-                    || a.getLieu().toLowerCase().contains(keyword)
-                    || a.getDescription().toLowerCase().contains(keyword)) {
-
-                containerActivites.getChildren().add(createCard(a));
-            }
+            Stage stage = new Stage();
+            stage.setTitle("Dashboard Activités");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            showAlert("Erreur", "Impossible d'ouvrir le tableau de bord.", Alert.AlertType.ERROR);
         }
     }
 

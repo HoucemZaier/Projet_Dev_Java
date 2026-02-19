@@ -2,25 +2,92 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="380.0" prefWidth="465.0" spacing="10" style="-fx-padding:20; -fx-background-color:#f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.CreateExcursionController">
+<VBox prefHeight="447.0" prefWidth="599.0" spacing="0" style="-fx-background-color:#f8fafc;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.CreateExcursionController">
 
-    <Label text="Ajouter Excursion">
-        <font><Font size="22" /></font>
-    </Label>
+    <!-- HEADER -->
+    <BorderPane style="-fx-background-color:white; -fx-padding:20 25; -fx-border-color:#e2e8f0; -fx-border-width:0 0 1 0;">
+        <left>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Rectangle fill="#10b981" height="30" width="4" />
+                <Label text="Ajouter une Excursion">
+                    <font>
+                        <Font name="Segoe UI Semibold" size="22" />
+                    </font>
+                </Label>
+            </HBox>
+        </left>
+    </BorderPane>
 
-    <TextField fx:id="titreField" promptText="Titre" />
-    <TextField fx:id="destinationField" promptText="Destination" />
-    <DatePicker fx:id="dateDepartPicker" promptText="Date de départ" />
-    <DatePicker fx:id="dateRetourPicker" promptText="Date de retour" />
-    <TextField fx:id="prixField" prefHeight="26.0" prefWidth="126.0" promptText="Prix" />
-    <TextField fx:id="nbPlacesField" promptText="Nombre de places" />
-    <ComboBox fx:id="statutComboBox" promptText="Statut" />
+    <!-- FORMULAIRE -->
+    <VBox spacing="10" style="-fx-padding:30;">
+        <GridPane hgap="20" vgap="5">
 
-    <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding:20 0 0 0;">
-        <Button onAction="#handleCancel" style="-fx-background-color:#64748b; -fx-text-fill:white; -fx-background-radius:8;" text="Annuler" />
-        <Button onAction="#handleSave" style="-fx-background-color:linear-gradient(to right,#10b981,#059669); -fx-text-fill:white; -fx-background-radius:8; -fx-font-weight:bold;" text="Enregistrer" />
-    </HBox>
+            <!-- Titre -->
+            <Label prefHeight="18.0" prefWidth="48.0" text="Titre :" GridPane.rowIndex="0" />
+            <TextField fx:id="titreField" prefHeight="26.0" prefWidth="261.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Label fx:id="titreError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
+            <!-- Destination -->
+            <Label text="Destination :" GridPane.rowIndex="2" />
+            <TextField fx:id="destinationField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="destinationError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+            <!-- Date départ -->
+            <Label text="Date de départ :" GridPane.rowIndex="4" />
+            <DatePicker fx:id="dateDepartPicker" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label fx:id="dateDepartError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+            <!-- Date retour -->
+            <Label text="Date de retour :" GridPane.rowIndex="6" />
+            <DatePicker fx:id="dateRetourPicker" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Label fx:id="dateRetourError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+            <!-- Prix -->
+            <Label text="Prix :" GridPane.rowIndex="8" />
+            <TextField fx:id="prixField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <Label fx:id="prixError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+
+            <!-- Nombre de places -->
+            <Label text="Nombre de places :" GridPane.rowIndex="10" />
+            <TextField fx:id="nbPlacesField" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <Label fx:id="nbPlacesError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+
+            <!-- Statut -->
+            <Label text="Statut :" GridPane.rowIndex="12" />
+            <ComboBox fx:id="statutComboBox" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+            <Label fx:id="statutError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+
+        <!-- MESSAGE D'ALERTE -->
+        <Label fx:id="messageLabel" style="-fx-font-weight:bold;" visible="false" />
+
+        <!-- BOUTONS -->
+        <HBox alignment="CENTER_RIGHT" spacing="15">
+            <Button fx:id="cancelButton" onAction="#handleCancel" style="-fx-background-color:#64748b; -fx-text-fill:white; -fx-background-radius:8;" text="Annuler" />
+            <Button fx:id="saveButton" onAction="#handleSave" style="-fx-background-color:linear-gradient(to right,#10b981,#059669);                            -fx-text-fill:white;                            -fx-background-radius:8;                            -fx-font-weight:bold;" text="Enregistrer" />
+        </HBox>
+    </VBox>
 </VBox>

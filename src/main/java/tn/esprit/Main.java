@@ -11,7 +11,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dashboard.fxml"));
         Scene scene = new Scene(loader.load());
         stage.setScene(scene);
-        stage.setTitle("Liste des Activités");
+        stage.setTitle("Accueil - Dashboard");
         stage.show();
     }
 

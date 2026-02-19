@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.shape.Rectangle?>
-<VBox prefHeight="650.0" prefWidth="1000.0"
-      style="-fx-background-color:#f1f5f9;"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Controllers.ListActiviteController">
+<VBox prefHeight="650.0" prefWidth="1000.0" style="-fx-background-color:#f1f5f9;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ListActiviteController">
 
     <!-- HEADER -->
     <BorderPane style="-fx-background-color: white; -fx-padding: 20 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
@@ -32,51 +27,27 @@
             </VBox>
         </left>
 
-
         <right>
-            <Button text="+ Ajouter Activité"
-                    onAction="#handleAjouterActivite"
-                    prefHeight="50"
-                    style="-fx-background-color:#0DA2E7;
-                           -fx-text-fill:white;
-                           -fx-background-radius:8;
-                           -fx-font-weight:bold;
-                           -fx-padding:0 20;"/>
+            <HBox spacing="10">
+                <Button onAction="#handleAjouterActivite" prefHeight="50" style="-fx-background-color:#0DA2E7; -fx-text-fill:white; -fx-background-radius:8; -fx-font-weight:bold; -fx-padding:0 20;" text="+ Ajouter Activité" />
+                <Button onAction="#afficherStats" prefHeight="50" prefWidth="119.0" style="-fx-background-color:#64748b; -fx-text-fill:white; -fx-background-radius:8; -fx-font-weight:bold; -fx-padding:0 20;" text="Statistique" />
+            </HBox>
         </right>
     </BorderPane>
 
-    <!-- SEARCH -->
-    <HBox spacing="10"
-          alignment="CENTER_LEFT"
-          style="-fx-padding:20 45;">
+    <!-- SEARCH & TRI DYNAMIQUE -->
+    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:20 45;">
+        <TextField fx:id="txtRecherche" prefWidth="300" promptText="Rechercher activité..." style="-fx-background-radius:8; -fx-border-radius:8; -fx-border-color:#cbd5e1; -fx-padding:15 15;" />
 
-        <TextField fx:id="txtRecherche"
-                   promptText="Rechercher activité..."
-                   prefWidth="300"
-                   style="-fx-background-radius:8;
-                          -fx-border-radius:8;
-                          -fx-border-color:#cbd5e1;
-                          -fx-padding:15 15;"/>
-
-        <Button text="Rechercher"
-                onAction="#handleRechercher"
-                style="-fx-background-color:#64748b;
-                       -fx-text-fill:white;
-                       -fx-font-weight:bold;
-                       -fx-background-radius:8;
-                       -fx-padding:10 30;"/>
+        <!-- Bouton tri avec flèche -->
+        <Button fx:id="btnTriPrix" onAction="#trierPrixDynamic" prefHeight="30.0" prefWidth="108.0" style="-fx-background-radius:8; -fx-border-radius:8; -fx-border-color:#cbd5e1; -fx-background-color:white;" text="Trier par prix ⬆" />
     </HBox>
 
     <!-- LISTE DES CARTES -->
-    <ScrollPane fitToWidth="true"
-                style="-fx-background-color:transparent;">
-
+    <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
         <content>
-            <VBox fx:id="containerActivites"
-                  spacing="20"
-                  style="-fx-padding:20 35;"/>
+            <VBox fx:id="containerActivites" spacing="20" style="-fx-padding:20 35;" />
         </content>
-
     </ScrollPane>
 
 </VBox>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -7,6 +8,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.text.Font?>
 
@@ -35,42 +37,52 @@
     </BorderPane>
 
     <!-- FORMULAIRE -->
-    <VBox spacing="20" style="-fx-padding:30;">
-        <GridPane hgap="20" vgap="15">
-
+    <VBox spacing="10" style="-fx-padding:30;">
+        <GridPane hgap="20" vgap="5">
             <Label text="Nom :" GridPane.rowIndex="0"/>
             <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label fx:id="nomError" GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="Description :" GridPane.rowIndex="1"/>
-            <TextArea fx:id="descriptionField" prefHeight="80" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Description :" GridPane.rowIndex="2"/>
+            <TextArea fx:id="descriptionField" prefHeight="80" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label fx:id="descriptionError" GridPane.rowIndex="3" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="Date :" GridPane.rowIndex="2"/>
-            <DatePicker fx:id="datePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="Date :" GridPane.rowIndex="4"/>
+            <DatePicker fx:id="datePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <Label fx:id="dateError" GridPane.rowIndex="5" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="Heure (HH:MM:SS) :" GridPane.rowIndex="3"/>
-            <TextField fx:id="heureField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="Heure (HH:MM:SS) :" GridPane.rowIndex="6"/>
+            <TextField fx:id="heureField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+            <Label fx:id="heureError" GridPane.rowIndex="7" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="Lieu :" GridPane.rowIndex="4"/>
-            <TextField fx:id="lieuField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <Label text="Lieu :" GridPane.rowIndex="8"/>
+            <TextField fx:id="lieuField" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+            <Label fx:id="lieuError" GridPane.rowIndex="9" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="Prix :" GridPane.rowIndex="5"/>
-            <TextField fx:id="prixField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            <Label text="Prix :" GridPane.rowIndex="10"/>
+            <TextField fx:id="prixField" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+            <Label fx:id="prixError" GridPane.rowIndex="11" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="ID Excursion :" GridPane.rowIndex="6"/>
-            <TextField fx:id="excursionField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+            <Label text="Excursion :" GridPane.rowIndex="12"/>
+            <ComboBox fx:id="excursionComboBox" GridPane.rowIndex="12" GridPane.columnIndex="1"/>
+            <Label fx:id="excursionError" GridPane.rowIndex="13" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="ID Destination :" GridPane.rowIndex="7"/>
-            <TextField fx:id="destinationField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
-
+            <Label text="Destination :" GridPane.rowIndex="14"/>
+            <ComboBox fx:id="destinationComboBox" GridPane.rowIndex="14" GridPane.columnIndex="1"/>
+            <Label fx:id="destinationError" GridPane.rowIndex="15" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
         </GridPane>
+
+        <!-- MESSAGE D'ALERTE -->
+        <Label fx:id="messageLabel" style="-fx-font-weight:bold;" visible="false"/>
 
         <!-- BOUTONS -->
         <HBox spacing="15" alignment="CENTER_RIGHT">
-            <Button text="Annuler"
+            <Button fx:id="cancelButton"
+                    text="Annuler"
                     onAction="#handleCancel"
                     style="-fx-background-color:#64748b; -fx-text-fill:white; -fx-background-radius:8;"/>
-
-            <Button text="Mettre à jour"
+            <Button fx:id="saveButton"
+                    text="Mettre à jour"
                     onAction="#handleUpdate"
                     style="-fx-background-color:linear-gradient(to right,#f59e0b,#d97706);
                            -fx-text-fill:white;

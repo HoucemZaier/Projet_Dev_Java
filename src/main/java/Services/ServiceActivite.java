@@ -1,6 +1,7 @@
 package Services;
 
 import Models.Activite;
+import Models.Excursion;
 import utils.MyDatabase;
 
 import java.sql.*;
@@ -96,19 +97,27 @@ public class ServiceActivite implements Iservice<Activite> {
     // Méthodes pour les ComboBox
     // ----------------------
 
-    public List<Integer> getAllExcursionIds() {
-        List<Integer> ids = new ArrayList<>();
-        String sql = "SELECT id_excursion FROM excursion"; // table excursion
+    public List<Excursion> getAllExcursions() {
+        List<Excursion> list = new ArrayList<>();
+        String sql = "SELECT id_excursion, titre FROM excursion";
+
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
+
             while (rs.next()) {
-                ids.add(rs.getInt("id_excursion"));
+                Excursion e = new Excursion();
+                e.setIdExcursion(rs.getInt("id_excursion"));
+                e.setTitre(rs.getString("Titre"));
+                list.add(e);
             }
+
         } catch (SQLException ex) {
             System.err.println("Erreur lors de la récupération des excursions : " + ex.getMessage());
         }
-        return ids;
+
+        return list;
     }
+
 
     public List<Integer> getAllDestinationIds() {
         List<Integer> ids = new ArrayList<>();

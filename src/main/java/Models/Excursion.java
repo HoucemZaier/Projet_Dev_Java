@@ -96,6 +96,8 @@ public class Excursion {
         this.statut = statut;
     }
 
+
+
     @Override
     public String toString() {
         return "Excursion{" +
@@ -109,4 +111,6 @@ public class Excursion {
                 ", statut='" + statut + '\'' +
                 '}';
     }
+
+
 }
