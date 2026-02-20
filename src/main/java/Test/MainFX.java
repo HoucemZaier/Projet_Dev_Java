@@ -20,6 +20,10 @@ public class MainFX extends Application {
             // Ouvrir uniquement les interfaces d'affichage (listes)
             openWindow("/AffichierPrive.fxml", "Liste Transports Privés");
             openWindow("/affichierPublique.fxml", "Liste Transports Publics");
+<<<<<<< HEAD
+=======
+            openWindow("/AfficheClientPrive.fxml", "Liste Transports Privés (Client)");
+>>>>>>> f98421b (feat: ajouter les pages parti client pour transportPrivé)
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Impossible de charger les interfaces d'affichage", e);
