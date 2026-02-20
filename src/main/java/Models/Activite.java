@@ -12,18 +12,31 @@ public class Activite {
     private Time heureActivite;
     private String lieu;
     private double prix;
-    private int idExcursion;    // clé étrangère vers Excursion
-    private int idDestination;  // clé étrangère vers Destination (nouveau)
+    private int idExcursion; // clé étrangère vers Excursion
+    private String nomDestination; // pour affichage
+
 
     // Constructeur vide
     public Activite() {
     }
 
+    // Constructeur pour insertion (sans idActivite auto-incrémenté)
+    public Activite(String nom, String description,
+                    Date dateActivite, Time heureActivite,
+                    String lieu, double prix, int idExcursion) {
+        this.nom = nom;
+        this.description = description;
+        this.dateActivite = dateActivite;
+        this.heureActivite = heureActivite;
+        this.lieu = lieu;
+        this.prix = prix;
+        this.idExcursion = idExcursion;
+    }
+
     // Constructeur complet
     public Activite(int idActivite, String nom, String description,
                     Date dateActivite, Time heureActivite,
-                    String lieu, double prix, int idExcursion,
-                    int idDestination) {
+                    String lieu, double prix, int idExcursion) {
         this.idActivite = idActivite;
         this.nom = nom;
         this.description = description;
@@ -32,10 +45,10 @@ public class Activite {
         this.lieu = lieu;
         this.prix = prix;
         this.idExcursion = idExcursion;
-        this.idDestination = idDestination;
     }
 
     // Getters & Setters
+
     public int getIdActivite() {
         return idActivite;
     }
@@ -100,26 +113,10 @@ public class Activite {
         this.idExcursion = idExcursion;
     }
 
-    public int getIdDestination() {
-        return idDestination;
-    }
-
-    public void setIdDestination(int idDestination) {
-        this.idDestination = idDestination;
-    }
-
+    public String getNomDestination() { return nomDestination; }
+    public void setNomDestination(String nomDestination) { this.nomDestination = nomDestination; }
     @Override
     public String toString() {
-        return "Activite{" +
-                "idActivite=" + idActivite +
-                ", nom='" + nom + '\'' +
-                ", description='" + description + '\'' +
-                ", dateActivite=" + dateActivite +
-                ", heureActivite=" + heureActivite +
-                ", lieu='" + lieu + '\'' +
-                ", prix=" + prix +
-                ", idExcursion=" + idExcursion +
-                ", idDestination=" + idDestination +
-                '}';
+        return nom + " - " + dateActivite + " à " + heureActivite;
     }
 }

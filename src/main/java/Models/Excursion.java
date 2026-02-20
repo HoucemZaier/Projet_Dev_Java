@@ -1,28 +1,28 @@
 package Models;
 
 import java.sql.Date;
-import java.util.List;
 
 public class Excursion {
 
     private int idExcursion;
     private String titre;
-    private String destination;
+    private int idDestination;
     private Date dateDepart;
     private Date dateRetour;
     private double prix;
     private int nbPlaces;
     private String statut;
+    private String nomDestination;
 
     public Excursion() {
     }
 
-    public Excursion(int idExcursion, String titre, String destination,
+    public Excursion(int idExcursion, String titre, int idDestination,
                      Date dateDepart, Date dateRetour,
                      double prix, int nbPlaces, String statut) {
         this.idExcursion = idExcursion;
         this.titre = titre;
-        this.destination = destination;
+        this.idDestination = idDestination;
         this.dateDepart = dateDepart;
         this.dateRetour = dateRetour;
         this.prix = prix;
@@ -48,14 +48,20 @@ public class Excursion {
         this.titre = titre;
     }
 
-    public String getDestination() {
-        return destination;
+    public int getIdDestination() {
+        return idDestination;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setIdDestination(int idDestination) {
+        this.idDestination = idDestination;
+    }
+    public String getNomDestination() {
+        return nomDestination;
     }
 
+    public void setNomDestination(String nomDestination) {
+        this.nomDestination = nomDestination;
+    }
     public Date getDateDepart() {
         return dateDepart;
     }
@@ -96,14 +102,12 @@ public class Excursion {
         this.statut = statut;
     }
 
-
-
     @Override
     public String toString() {
         return "Excursion{" +
                 "idExcursion=" + idExcursion +
                 ", titre='" + titre + '\'' +
-                ", destination='" + destination + '\'' +
+                ", idDestination=" + idDestination +
                 ", dateDepart=" + dateDepart +
                 ", dateRetour=" + dateRetour +
                 ", prix=" + prix +
@@ -111,6 +115,4 @@ public class Excursion {
                 ", statut='" + statut + '\'' +
                 '}';
     }
-
-
 }

@@ -31,9 +31,9 @@
             <Label fx:id="titreError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
             <!-- Destination -->
-            <Label text="Destination :" GridPane.rowIndex="2" />
-            <TextField fx:id="destinationField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="destinationError" style="-fx-text-fill:#ef4444;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="Destination :" GridPane.rowIndex="14" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="destinationComboBox" GridPane.rowIndex="14" GridPane.columnIndex="1"/>
+            <Label fx:id="destinationError" GridPane.rowIndex="15" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
             <!-- Date départ -->
             <Label text="Date de départ :" GridPane.rowIndex="4" />

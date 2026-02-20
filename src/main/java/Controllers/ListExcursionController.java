@@ -2,10 +2,6 @@ package Controllers;
 
 import Models.Excursion;
 import Services.ServiceExcursion;
-import jakarta.mail.*;
-import jakarta.mail.internet.*;
-
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.FXCollections;
@@ -20,8 +16,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
 
 import java.net.URL;
 import java.sql.SQLDataException;
@@ -40,9 +36,8 @@ public class ListExcursionController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Ajouter "Tous" pour afficher toutes les excursions
         statutFilter.getItems().addAll("Tous", "Ouverte", "Annulée", "Complète");
-        statutFilter.setValue("Tous"); // Valeur par défaut
+        statutFilter.setValue("Tous");
 
         txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> filtrerExcursions());
         statutFilter.valueProperty().addListener((obs, oldVal, newVal) -> filtrerExcursions());
@@ -57,12 +52,10 @@ public class ListExcursionController implements Initializable {
 
         for (Excursion e : list) {
             String titre = e.getTitre() == null ? "" : e.getTitre().toLowerCase();
-            String destination = e.getDestination() == null ? "" : e.getDestination().toLowerCase();
+            String destination = e.getNomDestination() == null ? "" : e.getNomDestination().toLowerCase();
             String statutExcursion = e.getStatut() == null ? "" : e.getStatut();
 
             boolean matchesKeyword = titre.contains(keyword) || destination.contains(keyword);
-
-            // Si "Tous" est sélectionné, matchesStatut est toujours vrai
             boolean matchesStatut = "Tous".equalsIgnoreCase(statut) || statutExcursion.equalsIgnoreCase(statut);
 
             if (matchesKeyword && matchesStatut) {
@@ -77,7 +70,6 @@ public class ListExcursionController implements Initializable {
         }
     }
 
-
     private void loadData() {
         try {
             list = FXCollections.observableArrayList(service.recuperer());
@@ -88,86 +80,102 @@ public class ListExcursionController implements Initializable {
     }
 
     private HBox createCard(Excursion e) {
-        VBox info = new VBox(6);
+        VBox info = new VBox(8);
+
         Label titre = new Label(e.getTitre());
-        titre.setStyle("-fx-font-size:18px; -fx-font-weight:bold;");
+        titre.setStyle("-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0f172a;");
 
         Label details = new Label(
-                "📍 " + e.getDestination() +
+                "📍 " + e.getNomDestination() +
                         " | 📅 " + e.getDateDepart() + " → " + e.getDateRetour() +
                         " | 💰 " + e.getPrix() + " DT" +
-                        " | 🪑 " + e.getNbPlaces() +
+                        " | 🪑 " + e.getNbPlaces() + " place(s)" +
                         " | " + e.getStatut()
         );
+        details.setStyle("-fx-text-fill:#64748b; -fx-font-size:13px;");
 
         info.getChildren().addAll(titre, details);
 
-        Button btnView = createIconButton(FontAwesomeIcon.EYE, "#3498db");
-        Button btnEdit = createIconButton(FontAwesomeIcon.PENCIL, "#f39c12");
-        Button btnDelete = createIconButton(FontAwesomeIcon.TRASH, "#e74c3c");
-        Button btnShare = createIconButton(FontAwesomeIcon.SHARE, "#0DA2E7");
-        Button btnFav = createIconButton(FontAwesomeIcon.STAR, favoris.contains(e) ? "#f59e0b" : "#cbd5e1");
-        Button btnNotify = createIconButton(FontAwesomeIcon.BELL, "#10b981");
+        FontAwesomeIconView iconView = new FontAwesomeIconView(FontAwesomeIcon.EYE);
+        iconView.setFill(Color.web("#3498db")); iconView.setSize("18px");
 
-        // Actions
-        btnView.setOnAction(ev -> showAlert("Détails",
-                "Titre: " + e.getTitre() +
-                        "\nDestination: " + e.getDestination() +
-                        "\nDates: " + e.getDateDepart() + " → " + e.getDateRetour() +
-                        "\nPrix: " + e.getPrix() + " DT",
-                Alert.AlertType.INFORMATION));
+        FontAwesomeIconView iconEdit = new FontAwesomeIconView(FontAwesomeIcon.PENCIL);
+        iconEdit.setFill(Color.web("#f39c12")); iconEdit.setSize("18px");
+
+        FontAwesomeIconView iconDelete = new FontAwesomeIconView(FontAwesomeIcon.TRASH);
+        iconDelete.setFill(Color.web("#e74c3c")); iconDelete.setSize("18px");
+
+        FontAwesomeIconView iconShare = new FontAwesomeIconView(FontAwesomeIcon.SHARE);
+        iconShare.setFill(Color.web("#0DA2E7")); iconShare.setSize("18px");
+
+        FontAwesomeIconView iconFav = new FontAwesomeIconView(FontAwesomeIcon.STAR);
+        iconFav.setFill(favoris.contains(e) ? Color.GOLD : Color.LIGHTGRAY); iconFav.setSize("18px");
+
+        FontAwesomeIconView iconEmail = new FontAwesomeIconView(FontAwesomeIcon.ENVELOPE);
+        iconEmail.setFill(Color.web("#10b981")); iconEmail.setSize("18px");
+
+        Button btnView = new Button(); btnView.setGraphic(iconView);
+        Button btnEdit = new Button(); btnEdit.setGraphic(iconEdit);
+        Button btnDelete = new Button(); btnDelete.setGraphic(iconDelete);
+        Button btnFav = new Button(); btnFav.setGraphic(iconFav);
+        Button btnEmail = new Button(); btnEmail.setGraphic(iconEmail);
+
+        String baseStyle = "-fx-cursor: hand; -fx-min-width: 38; -fx-min-height: 38; -fx-background-radius: 50; -fx-background-color: #f8f9fa; -fx-border-color: #eee; -fx-border-radius: 50; -fx-border-width: 1;";
+        btnView.setStyle(baseStyle); btnEdit.setStyle(baseStyle); btnDelete.setStyle(baseStyle); btnEmail.setStyle(baseStyle);
+        btnFav.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+
+        btnView.setOnAction(ev -> {
+            StringBuilder detailsStr = new StringBuilder();
+            detailsStr.append("Titre : ").append(e.getTitre()).append("\n");
+            detailsStr.append("Destination : ").append(e.getNomDestination()).append("\n");
+            detailsStr.append("Dates : ").append(e.getDateDepart()).append(" → ").append(e.getDateRetour()).append("\n");
+            detailsStr.append("Prix : ").append(e.getPrix()).append(" DT\n");
+            detailsStr.append("Nombre de places : ").append(e.getNbPlaces()).append("\n");
+            detailsStr.append("Statut : ").append(e.getStatut());
+            showAlert("Détails de l'excursion", detailsStr.toString(), Alert.AlertType.INFORMATION);
+        });
 
         btnEdit.setOnAction(ev -> ouvrirUpdate(e));
         btnDelete.setOnAction(ev -> supprimerExcursion(e));
-
-        btnShare.setOnAction(ev -> {
-            String contenu = "Excursion : " + e.getTitre() +
-                    "\nDestination : " + e.getDestination() +
-                    "\nDates : " + e.getDateDepart() + " → " + e.getDateRetour() +
-                    "\nPrix : " + e.getPrix() + " DT";
-            ClipboardContent content = new ClipboardContent();
-            content.putString(contenu);
-            Clipboard.getSystemClipboard().setContent(content);
-            showAlert("Succès", "Informations copiées.\nCollez-les dans WhatsApp ou Email.", Alert.AlertType.INFORMATION);
-        });
-
         btnFav.setOnAction(ev -> {
             if (favoris.contains(e)) {
                 favoris.remove(e);
-                ((FontAwesomeIconView) btnFav.getGraphic()).setFill(Color.web("#cbd5e1"));
+                ((FontAwesomeIconView) btnFav.getGraphic()).setFill(Color.LIGHTGRAY);
             } else {
                 favoris.add(e);
-                ((FontAwesomeIconView) btnFav.getGraphic()).setFill(Color.web("#f59e0b"));
+                ((FontAwesomeIconView) btnFav.getGraphic()).setFill(Color.GOLD);
             }
         });
-
-        btnNotify.setOnAction(ev -> {
+        btnEmail.setOnAction(ev -> {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Envoyer Email");
-            dialog.setHeaderText("Entrer l'email du destinataire");
+            dialog.setHeaderText("Entrer l'adresse email du destinataire");
             dialog.showAndWait().ifPresent(email -> envoyerEmail(email, e));
         });
 
-        HBox actions = new HBox(8, btnView, btnEdit, btnDelete, btnShare, btnFav, btnNotify);
+        btnView.setOnMouseEntered(e1 -> btnView.setStyle(baseStyle + "-fx-background-color: #e1f5fe;"));
+        btnEdit.setOnMouseEntered(e1 -> btnEdit.setStyle(baseStyle + "-fx-background-color: #fff3e0;"));
+        btnDelete.setOnMouseEntered(e1 -> btnDelete.setStyle(baseStyle + "-fx-background-color: #ffebee;"));
+        btnView.setOnMouseExited(e1 -> btnView.setStyle(baseStyle));
+        btnEdit.setOnMouseExited(e1 -> btnEdit.setStyle(baseStyle));
+        btnDelete.setOnMouseExited(e1 -> btnDelete.setStyle(baseStyle));
+
+        HBox actions = new HBox(12, btnView, btnEdit, btnDelete, btnEmail, btnFav);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
         HBox card = new HBox(40, info, actions);
         card.setAlignment(Pos.CENTER_LEFT);
-        card.setStyle("-fx-background-color:white; -fx-padding:15; -fx-border-color:#ddd;");
+        card.setStyle("""
+            -fx-background-color:white;
+            -fx-padding:20;
+            -fx-background-radius:12;
+            -fx-border-radius:12;
+            -fx-border-color:#e2e8f0;
+            -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.06),10,0,0,4);
+        """);
         HBox.setHgrow(info, Priority.ALWAYS);
 
         return card;
-    }
-
-    private Button createIconButton(FontAwesomeIcon icon, String color) {
-        FontAwesomeIconView iconView = new FontAwesomeIconView(icon);
-        iconView.setFill(Color.web(color));
-        iconView.setSize("18px");
-
-        Button btn = new Button();
-        btn.setGraphic(iconView);
-        btn.setStyle("-fx-background-color:#f8f9fa; -fx-cursor:hand;");
-        return btn;
     }
 
     private void supprimerExcursion(Excursion e) {
@@ -203,7 +211,19 @@ public class ListExcursionController implements Initializable {
 
     @FXML
     private void handleAjouterExcursion() {
-        ouvrirUpdate(new Excursion());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/createExcursion.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ajouter Excursion");
+            stage.show();
+            stage.setOnHiding(event -> loadData());
+        } catch (Exception e) {
+            showAlert("Erreur", "Impossible d'ouvrir la fenêtre d'ajout.", Alert.AlertType.ERROR);
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -225,49 +245,41 @@ public class ListExcursionController implements Initializable {
 
     private void envoyerEmail(String destinataire, Excursion e) {
         final String emailExpediteur = "saida.dridi18@gmail.com";
-        final String motDePasse = "hmgx vjoj hsir pqgy";
+        final String motDePasse = "hmgx vjoj hsir pqgy"; // attention à sécuriser
 
-        // Configuration SMTP pour Gmail
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
 
-        // Création de la session avec authentification
-        jakarta.mail.Session session = jakarta.mail.Session.getInstance(props,
-                new jakarta.mail.Authenticator() {
-                    @Override
-                    protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
-                        return new jakarta.mail.PasswordAuthentication(emailExpediteur, motDePasse);
-                    }
-                });
+        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(emailExpediteur, motDePasse);
+            }
+        });
 
         try {
-            // Création du message
-            jakarta.mail.Message message = new jakarta.mail.internet.MimeMessage(session);
-            message.setFrom(new jakarta.mail.internet.InternetAddress(emailExpediteur));
-            message.setRecipients(jakarta.mail.Message.RecipientType.TO,
-                    jakarta.mail.internet.InternetAddress.parse(destinataire));
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(emailExpediteur));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinataire));
             message.setSubject("Nouvelle Excursion Disponible ✈️");
             message.setText(
                     "Titre : " + e.getTitre() +
-                            "\nDestination : " + e.getDestination() +
+                            "\nDestination : " + e.getNomDestination() +
                             "\nDates : " + e.getDateDepart() + " → " + e.getDateRetour() +
                             "\nPrix : " + e.getPrix() + " DT"
             );
 
-            // Envoi de l'email
-            jakarta.mail.Transport.send(message);
-
+            Transport.send(message);
             showAlert("Succès", "Email envoyé avec succès !", Alert.AlertType.INFORMATION);
 
-        } catch (jakarta.mail.MessagingException ex) {
+        } catch (MessagingException ex) {
             ex.printStackTrace();
             showAlert("Erreur", "Impossible d'envoyer l'email.", Alert.AlertType.ERROR);
         }
     }
-
 
     private void showAlert(String title, String message, Alert.AlertType type) {
         Alert alert = new Alert(type);

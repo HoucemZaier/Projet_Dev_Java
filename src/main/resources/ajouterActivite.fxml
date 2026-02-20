@@ -57,9 +57,7 @@
             <ComboBox fx:id="excursionComboBox" GridPane.rowIndex="12" GridPane.columnIndex="1"/>
             <Label fx:id="excursionError" GridPane.rowIndex="13" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
 
-            <Label text="Destination :" GridPane.rowIndex="14" GridPane.columnIndex="0"/>
-            <ComboBox fx:id="destinationComboBox" GridPane.rowIndex="14" GridPane.columnIndex="1"/>
-            <Label fx:id="destinationError" GridPane.rowIndex="15" GridPane.columnIndex="1" style="-fx-text-fill:#ef4444;" visible="false"/>
+
         </GridPane>
 
         <!-- MESSAGE DE SUCCÈS / ERREUR -->

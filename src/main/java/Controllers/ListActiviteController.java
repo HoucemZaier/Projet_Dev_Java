@@ -1,6 +1,8 @@
 package Controllers;
 
 import Models.Activite;
+import Models.Notification;
+import Services.NotificationService;
 import Services.ServiceActivite;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -13,6 +15,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -25,6 +29,7 @@ public class ListActiviteController implements Initializable {
     @FXML private VBox containerActivites;
     @FXML private TextField txtRecherche;
     @FXML private Button btnTriPrix;
+    @FXML private Button btnNotifications;
 
     private final ServiceActivite service = new ServiceActivite();
     private ObservableList<Activite> list;
@@ -35,8 +40,38 @@ public class ListActiviteController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadData();
 
-        // 🔹 Recherche en temps réel
-        txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> filtrerActivites(newVal));
+        // 🔎 Recherche temps réel
+        txtRecherche.textProperty().addListener((obs, oldVal, newVal) ->
+                filtrerActivites(newVal)
+        );
+
+        updateNotificationBadge();
+    }
+
+    /* ============================= */
+    /*          NOTIFICATIONS        */
+    /* ============================= */
+
+    private void addNotification(String message) {
+        NotificationService.getInstance().addNotification(message);
+        updateNotificationBadge();
+    }
+
+    private void updateNotificationBadge() {
+        int unread = NotificationService.getInstance().getUnreadCount();
+        btnNotifications.setText("🔔 (" + unread + ")");
+    }
+
+    @FXML
+    private void handleNotifications() {
+        Stage stage = new Stage();
+        ListView<Notification> listView = new ListView<>();
+        listView.setItems(NotificationService.getInstance().getNotifications());
+        stage.setScene(new Scene(listView, 400, 500));
+        stage.setTitle("Centre de Notifications");
+        stage.show();
+        NotificationService.getInstance().markAllAsRead();
+        updateNotificationBadge();
     }
 
     private void loadData() {
@@ -44,11 +79,11 @@ public class ListActiviteController implements Initializable {
             containerActivites.getChildren().clear();
             list = FXCollections.observableArrayList(service.recuperer());
             filtrerActivites(txtRecherche.getText());
-
         } catch (SQLDataException e) {
             showAlert("Erreur", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
+
 
     private void filtrerActivites(String keyword) {
         containerActivites.getChildren().clear();
@@ -108,6 +143,10 @@ public class ListActiviteController implements Initializable {
         iconDelete.setFill(javafx.scene.paint.Color.web("#e74c3c"));
         iconDelete.setSize("18px");
 
+        FontAwesomeIconView iconShare = new FontAwesomeIconView(FontAwesomeIcon.SHARE);
+        iconShare.setFill(javafx.scene.paint.Color.web("#0DA2E7"));
+        iconShare.setSize("18px");
+
         FontAwesomeIconView iconFav = new FontAwesomeIconView(FontAwesomeIcon.STAR);
         iconFav.setFill(favoris.contains(activite) ? javafx.scene.paint.Color.GOLD : javafx.scene.paint.Color.LIGHTGRAY);
         iconFav.setSize("18px");
@@ -115,16 +154,20 @@ public class ListActiviteController implements Initializable {
         Button btnView = new Button(); btnView.setGraphic(iconView);
         Button btnEdit = new Button(); btnEdit.setGraphic(iconEdit);
         Button btnDelete = new Button(); btnDelete.setGraphic(iconDelete);
+        Button btnShare = new Button(); btnShare.setGraphic(iconShare);
         Button btnFav = new Button(); btnFav.setGraphic(iconFav);
         btnFav.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+        btnShare.setStyle("-fx-background-color: transparent ; -fx-cursor: hand;");
 
         btnFav.setOnAction(e -> {
             if(favoris.contains(activite)) {
                 favoris.remove(activite);
                 iconFav.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+                addNotification("Retiré des favoris : " + activite.getNom());
             } else {
                 favoris.add(activite);
                 iconFav.setFill(javafx.scene.paint.Color.GOLD);
+                addNotification("Ajouté aux favoris : " + activite.getNom());
             }
         });
 
@@ -149,14 +192,30 @@ public class ListActiviteController implements Initializable {
             details.append("Lieu : ").append(activite.getLieu()).append("\n");
             details.append("Prix : ").append(activite.getPrix()).append(" DT").append("\n");
             details.append("Excursion ID : ").append(activite.getIdExcursion()).append("\n");
-            details.append("Destination ID : ").append(activite.getIdDestination());
-
             showAlert("Détails de l'activité", details.toString(), Alert.AlertType.INFORMATION);
         });
+
         btnEdit.setOnAction(e -> ouvrirUpdate(activite));
         btnDelete.setOnAction(e -> supprimerActivite(activite));
 
-        HBox actions = new HBox(12, btnView, btnEdit, btnDelete, btnFav);
+        btnShare.setOnAction(e -> {
+            StringBuilder contenu = new StringBuilder();
+            contenu.append("Activité : ").append(activite.getNom()).append("\n");
+            contenu.append("Description : ").append(activite.getDescription()).append("\n");
+            contenu.append("Date : ").append(activite.getDateActivite()).append("\n");
+            contenu.append("Heure : ").append(activite.getHeureActivite()).append("\n");
+            contenu.append("Lieu : ").append(activite.getLieu()).append("\n");
+            contenu.append("Prix : ").append(activite.getPrix()).append(" DT").append("\n");
+            contenu.append("Excursion ID : ").append(activite.getIdExcursion()).append("\n");
+
+            ClipboardContent content = new ClipboardContent();
+            content.putString(contenu.toString());
+            Clipboard.getSystemClipboard().setContent(content);
+
+            showAlert("Succès", "Informations copiées.\nCollez-les dans WhatsApp ou Email.", Alert.AlertType.INFORMATION);
+        });
+
+        HBox actions = new HBox(12, btnView, btnEdit, btnDelete, btnShare, btnFav);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
         HBox card = new HBox(40, info, actions);
@@ -184,6 +243,7 @@ public class ListActiviteController implements Initializable {
             if (response == ButtonType.OK) {
                 try {
                     service.supprimer(activite.getIdActivite());
+                    addNotification("Activité supprimée : " + activite.getNom());
                     loadData();
                     showAlert("Succès", "Activité supprimée !", Alert.AlertType.INFORMATION);
                 } catch (SQLDataException e) {
@@ -205,7 +265,10 @@ public class ListActiviteController implements Initializable {
             stage.setTitle("Modifier Activité");
             stage.show();
 
-            stage.setOnHiding(event -> loadData());
+            stage.setOnHiding(event -> {
+                loadData();
+                addNotification("Activité modifiée : " + activite.getNom());
+            });
 
         } catch (Exception e) {
             showAlert("Erreur", "Impossible d'ouvrir la fenêtre de modification.", Alert.AlertType.ERROR);
@@ -223,10 +286,25 @@ public class ListActiviteController implements Initializable {
             stage.setTitle("Ajouter Activité");
             stage.show();
 
-            stage.setOnHiding(event -> loadData());
+            stage.setOnHiding(event -> {
+                loadData();
+                addNotification("Nouvelle activité ajoutée");
+            });
 
         } catch (Exception e) {
             showAlert("Erreur", "Impossible d'ouvrir la fenêtre d'ajout.", Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleFavoris() {
+        if (favoris.isEmpty()) {
+            showAlert("Favoris", "Aucun favori.", Alert.AlertType.INFORMATION);
+            return;
+        }
+        containerActivites.getChildren().clear();
+        for (Activite a : favoris) {
+            containerActivites.getChildren().add(createCard(a));
         }
     }
 

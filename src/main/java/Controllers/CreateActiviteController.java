@@ -40,8 +40,6 @@ public class CreateActiviteController implements Initializable {
     @FXML private ComboBox<Excursion> excursionComboBox;
     @FXML private Label excursionError;
 
-    @FXML private ComboBox<Integer> destinationComboBox;
-    @FXML private Label destinationError;
 
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
@@ -80,8 +78,6 @@ public class CreateActiviteController implements Initializable {
             }
         });
 
-        List<Integer> destinationIds = service.getAllDestinationIds();
-        destinationComboBox.setItems(FXCollections.observableArrayList(destinationIds));
     }
 
     private void setupDatePicker() {
@@ -176,10 +172,6 @@ public class CreateActiviteController implements Initializable {
             excursionError.setVisible(newVal == null);
         });
 
-        // Destination
-        destinationComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            destinationError.setVisible(newVal == null);
-        });
     }
 
     private void setupSaveButtonBinding() {
@@ -191,7 +183,6 @@ public class CreateActiviteController implements Initializable {
                         .or(lieuField.textProperty().isEmpty())
                         .or(prixField.textProperty().isEmpty())
                         .or(excursionComboBox.valueProperty().isNull())
-                        .or(destinationComboBox.valueProperty().isNull())
         );
     }
 
@@ -202,14 +193,11 @@ public class CreateActiviteController implements Initializable {
         try {
             Activite a = new Activite();
             a.setNom(nomField.getText().trim());
-            a.setDescription(descriptionField.getText().trim());
             a.setDateActivite(Date.valueOf(datePicker.getValue()));
             a.setHeureActivite(Time.valueOf(heureField.getText()));
             a.setLieu(lieuField.getText().trim());
             a.setPrix(Double.parseDouble(prixField.getText()));
             a.setIdExcursion(excursionComboBox.getValue().getIdExcursion());
-            a.setIdDestination(destinationComboBox.getValue());
-
             service.ajouter(a);
 
             // ✅ Message succès
@@ -265,8 +253,6 @@ public class CreateActiviteController implements Initializable {
         catch (Exception e){prixError.setVisible(true); valid=false;}
 
         if (excursionComboBox.getValue() == null) { excursionError.setVisible(true); valid = false;}
-        if (destinationComboBox.getValue() == null) { destinationError.setVisible(true); valid = false;}
-
         return valid;
     }
 

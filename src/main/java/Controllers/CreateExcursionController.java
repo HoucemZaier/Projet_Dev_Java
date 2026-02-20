@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.Excursion;
 import Services.ServiceExcursion;
+import Services.ServiceDestination; // Service pour récupérer les destinations
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class CreateExcursionController implements Initializable {
@@ -19,7 +21,7 @@ public class CreateExcursionController implements Initializable {
     @FXML private TextField titreField;
     @FXML private Label titreError;
 
-    @FXML private TextField destinationField;
+    @FXML private ComboBox<String> destinationComboBox;
     @FXML private Label destinationError;
 
     @FXML private DatePicker dateDepartPicker;
@@ -43,13 +45,22 @@ public class CreateExcursionController implements Initializable {
     @FXML private Label messageLabel;
 
     private final ServiceExcursion service = new ServiceExcursion();
+    private final ServiceDestination serviceDest = new ServiceDestination();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialisation ComboBox
+        // Statut ComboBox
         statutComboBox.setItems(FXCollections.observableArrayList("ouverte", "complète", "annulée"));
 
-        // Désactiver les dates passées
+        // Destinations disponibles
+        try {
+            List<String> destinations = serviceDest.getAllDestinationNames();
+            destinationComboBox.setItems(FXCollections.observableArrayList(destinations));
+        } catch (Exception ex) {
+            showError("Erreur lors du chargement des destinations : " + ex.getMessage());
+        }
+
+        // Désactiver les dates passées pour le départ
         dateDepartPicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -58,6 +69,7 @@ public class CreateExcursionController implements Initializable {
             }
         });
 
+        // Désactiver les dates retour antérieures au départ
         dateRetourPicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -70,7 +82,7 @@ public class CreateExcursionController implements Initializable {
             }
         });
 
-        // Mettre à jour la dateRetour minimale lorsque dateDepart change
+        // Mettre à jour la date retour minimale lorsque dateDepart change
         dateDepartPicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (dateRetourPicker.getValue() != null && newVal != null && dateRetourPicker.getValue().isBefore(newVal)) {
                 dateRetourPicker.setValue(newVal);
@@ -97,7 +109,7 @@ public class CreateExcursionController implements Initializable {
             if (newVal.trim().isEmpty()) {
                 titreError.setText("Le titre est obligatoire");
                 titreError.setVisible(true);
-            } else if (!newVal.matches("[a-zA-ZÀ-ÿ\\s]+")) { // lettres et espaces seulement
+            } else if (!newVal.matches("[a-zA-ZÀ-ÿ\\s]+")) {
                 titreError.setText("Le titre doit contenir uniquement des lettres");
                 titreError.setVisible(true);
             } else {
@@ -105,13 +117,10 @@ public class CreateExcursionController implements Initializable {
             }
         });
 
-        // DESTINATION : obligatoire + lettres uniquement
-        destinationField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.trim().isEmpty()) {
+        // DESTINATION : obligatoire (choix ComboBox)
+        destinationComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null || newVal.trim().isEmpty()) {
                 destinationError.setText("La destination est obligatoire");
-                destinationError.setVisible(true);
-            } else if (!newVal.matches("[a-zA-ZÀ-ÿ\\s]+")) {
-                destinationError.setText("La destination doit contenir uniquement des lettres");
                 destinationError.setVisible(true);
             } else {
                 destinationError.setVisible(false);
@@ -140,7 +149,8 @@ public class CreateExcursionController implements Initializable {
         // DATES
         dateDepartPicker.valueProperty().addListener((obs, oldVal, newVal) -> dateDepartError.setVisible(newVal == null));
         dateRetourPicker.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (dateRetourPicker.getValue() != null && dateDepartPicker.getValue() != null && dateRetourPicker.getValue().isBefore(dateDepartPicker.getValue())) {
+            if (dateRetourPicker.getValue() != null && dateDepartPicker.getValue() != null &&
+                    dateRetourPicker.getValue().isBefore(dateDepartPicker.getValue())) {
                 dateRetourError.setText("La date de retour doit être ≥ date de départ");
                 dateRetourError.setVisible(true);
             } else dateRetourError.setVisible(newVal == null);
@@ -150,7 +160,7 @@ public class CreateExcursionController implements Initializable {
     private void setupSaveButtonBinding() {
         saveButton.disableProperty().bind(
                 titreField.textProperty().isEmpty()
-                        .or(destinationField.textProperty().isEmpty())
+                        .or(destinationComboBox.valueProperty().isNull())
                         .or(dateDepartPicker.valueProperty().isNull())
                         .or(dateRetourPicker.valueProperty().isNull())
                         .or(prixField.textProperty().isEmpty())
@@ -166,19 +176,21 @@ public class CreateExcursionController implements Initializable {
         try {
             Excursion e = new Excursion();
             e.setTitre(titreField.getText().trim());
-            e.setDestination(destinationField.getText().trim());
             e.setDateDepart(Date.valueOf(dateDepartPicker.getValue()));
             e.setDateRetour(Date.valueOf(dateRetourPicker.getValue()));
             e.setPrix(Double.parseDouble(prixField.getText()));
             e.setNbPlaces(Integer.parseInt(nbPlacesField.getText()));
             e.setStatut(statutComboBox.getValue());
 
-            service.ajouter(e);
+            // Ajouter excursion avec nom de destination choisi dans le ComboBox
+            service.ajouter(e, destinationComboBox.getValue());
 
             showSuccess("Excursion ajoutée avec succès !");
             new Thread(() -> {
-                try { Thread.sleep(2000); Platform.runLater(this::closeWindow); }
-                catch (InterruptedException ignored) {}
+                try {
+                    Thread.sleep(2000);
+                    Platform.runLater(this::closeWindow);
+                } catch (InterruptedException ignored) {}
             }).start();
 
         } catch (Exception ex) {
@@ -188,16 +200,10 @@ public class CreateExcursionController implements Initializable {
 
     private boolean validateInputs() {
         boolean valid = true;
-
-        // Vérifications complètes
-        if (titreField.getText().trim().isEmpty() || !titreField.getText().matches("[a-zA-ZÀ-ÿ\\s]+")) {
-            titreError.setVisible(true); valid = false;
-        }
-        if (destinationField.getText().trim().isEmpty() || !destinationField.getText().matches("[a-zA-ZÀ-ÿ\\s]+")) {
-            destinationError.setVisible(true); valid = false;
-        }
+        if (titreField.getText().trim().isEmpty() || !titreField.getText().matches("[a-zA-ZÀ-ÿ\\s]+")) { titreError.setVisible(true); valid = false; }
+        if (destinationComboBox.getValue() == null || destinationComboBox.getValue().trim().isEmpty()) { destinationError.setVisible(true); valid = false; }
         if (dateDepartPicker.getValue() == null) { dateDepartError.setVisible(true); valid = false; }
-        if (dateRetourPicker.getValue() == null || (dateDepartPicker.getValue() != null && dateRetourPicker.getValue().isBefore(dateDepartPicker.getValue()))) {
+        if (dateRetourPicker.getValue() == null || dateRetourPicker.getValue().isBefore(dateDepartPicker.getValue())) {
             dateRetourError.setText("La date de retour doit être ≥ date de départ");
             dateRetourError.setVisible(true); valid = false;
         }
