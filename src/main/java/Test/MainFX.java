@@ -17,14 +17,14 @@ public class MainFX extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         try {
-            // Ouvrir uniquement les interfaces d'affichage (listes)
             openWindow("/AffichierPrive.fxml", "Liste Transports Privés");
             openWindow("/affichierPublique.fxml", "Liste Transports Publics");
             openWindow("/AfficheClientPrive.fxml", "Liste Transports Privés (Client)");
+            openWindow("/AfficheClientPublique.fxml", "Liste Transports Publics (Client)");
+
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Impossible de charger les interfaces d'affichage", e);
-            // Quitter proprement, l'exception est déjà loggée
             throw e;
         }
     }

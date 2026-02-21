@@ -56,6 +56,7 @@ public class ServiceTransportPrive implements Iservice<TransportPrive> {
         }
     }
 
+   
     @Override
     public List<TransportPrive> recuperer() throws SQLDataException {
         String sql = "SELECT * FROM transport_prive";
