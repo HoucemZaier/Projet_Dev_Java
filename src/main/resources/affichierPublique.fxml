@@ -9,7 +9,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="Controllers.affichierPublique"
             prefHeight="450.0" prefWidth="750.0"
-            style="-fx-background-color: linear-gradient(to bottom, #f5f7fa, #e5ecf6);">
+            style="-fx-background-color: #f5f7fa;">
 
     <children>
         <!-- Conteneur principal en VBox pour un affichage clair et organisé -->

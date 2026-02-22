@@ -5,7 +5,10 @@ import Models.TransportPrive;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,6 +20,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import utils.Services.ServiceTransportPrive;
 
@@ -125,8 +130,40 @@ public class AfficheClientPrive implements Initializable {
                                     imageView.setImage(null);
                                 }
 
-                                // Action de location (à adapter selon ton flow)
-                                btnLouer.setOnAction(e -> handleLouer(item));
+                                // Désactiver le bouton si le véhicule est indisponible
+                                boolean isIndisponible = "indisponible".equalsIgnoreCase(item.getEtat());
+                                btnLouer.setDisable(isIndisponible);
+                                
+                                if (isIndisponible) {
+                                    btnLouer.setStyle(
+                                        "-fx-background-color: #cbd5e0;" +   // gris
+                                        "-fx-text-fill: #718096;" +
+                                        "-fx-font-size: 12px;" +
+                                        "-fx-font-weight: bold;" +
+                                        "-fx-padding: 6 14 6 14;" +
+                                        "-fx-background-radius: 999;" +
+                                        "-fx-cursor: not-allowed;"
+                                    );
+                                    btnLouer.setText("Indisponible");
+                                } else {
+                                    btnLouer.setStyle(
+                                        "-fx-background-color: #facc15;" +   // jaune
+                                        "-fx-text-fill: #1f2937;" +
+                                        "-fx-font-size: 12px;" +
+                                        "-fx-font-weight: bold;" +
+                                        "-fx-padding: 6 14 6 14;" +
+                                        "-fx-background-radius: 999;" +
+                                        "-fx-cursor: hand;"
+                                    );
+                                    btnLouer.setText("Louer Voiture");
+                                }
+
+                                // Action de location avec ouverture de la boîte de dialogue
+                                btnLouer.setOnAction(e -> {
+                                    if (!isIndisponible) {
+                                        openLocationDialog(item);
+                                    }
+                                });
 
                                 setGraphic(card);
                                 setStyle("-fx-background-color: transparent; -fx-padding: 4 0;");
@@ -175,14 +212,30 @@ public class AfficheClientPrive implements Initializable {
     }
 
     /**
-     * Action quand l'utilisateur clique sur "Louer Voiture"
-     * -> Ici simple popup, à remplacer par ton flux réel de réservation.
+     * Ouvre la boîte de dialogue de location
      */
-    private void handleLouer(TransportPrive tp) {
-        String msg = "Vous avez choisi de louer la voiture : "
-                + tp.getMarque()
-                + " (prix " + tp.getPrix_loc() + " DT).";
-        showAlert(Alert.AlertType.INFORMATION, "Louer voiture", msg);
+    private void openLocationDialog(TransportPrive transport) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/LocationDialog.fxml"));
+            Parent root = loader.load();
+
+            LocationDialogController controller = loader.getController();
+            controller.setTransportPrive(transport);
+
+            Stage stage = new Stage();
+            stage.setTitle("Confirmation de Location");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Recharger les données après la fermeture de la boîte de dialogue
+            loadData();
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", 
+                     "Impossible d'ouvrir la fenêtre de location: " + e.getMessage());
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

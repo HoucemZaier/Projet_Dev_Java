@@ -9,7 +9,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="Controllers.AfficheClientPrive"
             prefHeight="600.0" prefWidth="900.0"
-            style="-fx-background-color: linear-gradient(to bottom, #f5f7fa, #e4ecf7);">
+            style="-fx-background-color: #f5f7fa;">
 
     <children>
         <!-- Conteneur principal type carte -->
