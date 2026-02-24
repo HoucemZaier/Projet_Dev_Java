@@ -1,17 +1,18 @@
 package Services;
 
 import Models.*;
+import utils.OAuthConfig;
 import java.sql.SQLException;
 import java.awt.Desktop;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Social media authentication service using ngrok tunnel with automatic detection
  * Singleton implementation to prevent port binding conflicts
+ * OAuth credentials are loaded securely from configuration file
  */
 public class SocialAuthService {
 
@@ -24,16 +25,12 @@ public class SocialAuthService {
     private final ServiceUser serviceUser;
     private final HttpClient httpClient;
     private String ngrokUrl = null;
+    
+    // OAuth configuration manager - loads credentials securely
+    private final OAuthConfig oauthConfig;
 
-    // Facebook credentials
-    private static final String FACEBOOK_APP_ID = "925022893757906";
-    private static final String FACEBOOK_APP_SECRET = "e93e7c5a45f1c523b353a70bdaf5b5b9";
-
-    // Google OAuth credentials - FULLY CONFIGURED ✅
-    // Client ID and Secret from Google Cloud Console
-    private static final String GOOGLE_CLIENT_ID = "342453768411-1go1q6gkb5v15tjls2hgsofq64uhaajh.apps.googleusercontent.com";
-    private static final String GOOGLE_CLIENT_SECRET = "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";
-    private static final String GOOGLE_SCOPE = "openid email profile";
+    // OAuth credentials are now loaded from secure configuration
+    // No more hardcoded secrets in source code!
 
     /**
      * Get singleton instance with default port 8080
@@ -60,6 +57,15 @@ public class SocialAuthService {
     private SocialAuthService(int port) {
         this.serviceUser = new ServiceUser();
         this.httpClient = HttpClient.newHttpClient();
+        this.oauthConfig = OAuthConfig.getInstance();
+        
+        // Validate OAuth configuration on startup
+        try {
+            oauthConfig.validateConfiguration();
+        } catch (Exception e) {
+            System.err.println("❌ OAuth Configuration Error: " + e.getMessage());
+            throw new RuntimeException("Cannot start SocialAuthService without valid OAuth configuration", e);
+        }
 
         // Initialize server only once per port
         synchronized (SocialAuthService.class) {
@@ -259,7 +265,7 @@ public class SocialAuthService {
         String redirectUri = ngrokUrl + "/auth/facebook/callback";
         String authUrl = String.format(
             "https://www.facebook.com/v18.0/dialog/oauth?client_id=%s&redirect_uri=%s&scope=public_profile,email&response_type=code&state=facebook_auth",
-            FACEBOOK_APP_ID,
+            oauthConfig.getFacebookAppId(),
             java.net.URLEncoder.encode(redirectUri, java.nio.charset.StandardCharsets.UTF_8)
         );
 
@@ -298,9 +304,9 @@ public class SocialAuthService {
         String redirectUri = ngrokUrl + "/auth/google/callback";
         String authUrl = String.format(
             "https://accounts.google.com/o/oauth2/v2/auth?client_id=%s&redirect_uri=%s&scope=%s&response_type=code&state=google_auth&access_type=offline",
-            GOOGLE_CLIENT_ID,
+            oauthConfig.getGoogleClientId(),
             java.net.URLEncoder.encode(redirectUri, java.nio.charset.StandardCharsets.UTF_8),
-            java.net.URLEncoder.encode(GOOGLE_SCOPE, java.nio.charset.StandardCharsets.UTF_8)
+            java.net.URLEncoder.encode(oauthConfig.getGoogleScope(), java.nio.charset.StandardCharsets.UTF_8)
         );
 
         System.out.println("🌐 ngrok URL détecté: " + ngrokUrl);
@@ -451,8 +457,8 @@ public class SocialAuthService {
 
         String tokenUrl = String.format(
             "https://graph.facebook.com/v18.0/oauth/access_token?client_id=%s&client_secret=%s&redirect_uri=%s&code=%s",
-            FACEBOOK_APP_ID,
-            FACEBOOK_APP_SECRET,
+            oauthConfig.getFacebookAppId(),
+            oauthConfig.getFacebookAppSecret(),
             java.net.URLEncoder.encode(redirectUri, java.nio.charset.StandardCharsets.UTF_8),
             code
         );
@@ -751,8 +757,8 @@ public class SocialAuthService {
 
         String postData = String.format(
             "client_id=%s&client_secret=%s&code=%s&grant_type=authorization_code&redirect_uri=%s",
-            java.net.URLEncoder.encode(GOOGLE_CLIENT_ID, java.nio.charset.StandardCharsets.UTF_8),
-            java.net.URLEncoder.encode(GOOGLE_CLIENT_SECRET, java.nio.charset.StandardCharsets.UTF_8),
+            java.net.URLEncoder.encode(oauthConfig.getGoogleClientId(), java.nio.charset.StandardCharsets.UTF_8),
+            java.net.URLEncoder.encode(oauthConfig.getGoogleClientSecret(), java.nio.charset.StandardCharsets.UTF_8),
             java.net.URLEncoder.encode(code, java.nio.charset.StandardCharsets.UTF_8),
             java.net.URLEncoder.encode(redirectUri, java.nio.charset.StandardCharsets.UTF_8)
         );
@@ -811,7 +817,7 @@ public class SocialAuthService {
                 throw new Exception("❌ CLIENT GOOGLE INVALIDE!\n\n" +
                                    "Vérifiez votre Client ID et Client Secret dans:\n" +
                                    "Google Cloud Console > APIs & Services > Credentials\n\n" +
-                                   "Client ID actuel: " + GOOGLE_CLIENT_ID.substring(0, 20) + "...\n" +
+                                   "Client ID actuel: " + oauthConfig.getGoogleClientId().substring(0, 20) + "...\n" +
                                    "Assurez-vous qu'ils correspondent exactement à votre projet Google.");
             } else if (errorBody.contains("invalid_grant")) {
                 throw new Exception("❌ CODE D'AUTORISATION EXPIRÉ!\n\n" +

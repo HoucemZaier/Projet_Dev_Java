@@ -3,6 +3,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### OAuth Configuration - SENSITIVE CREDENTIALS ###
+src/main/resources/oauth.properties
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml

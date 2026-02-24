@@ -1,0 +1,11 @@
+# OAuth Configuration Template - SAFE FOR GITHUB
+# Copy this to oauth.properties and fill in your actual credentials
+
+# Facebook OAuth Configuration
+facebook.app.id=YOUR_FACEBOOK_APP_ID
+facebook.app.secret=YOUR_FACEBOOK_APP_SECRET
+
+# Google OAuth Configuration
+google.client.id=YOUR_GOOGLE_CLIENT_ID
+google.client.secret=YOUR_GOOGLE_CLIENT_SECRET
+google.scope=openid email profile
