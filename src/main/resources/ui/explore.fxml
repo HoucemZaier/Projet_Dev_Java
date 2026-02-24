@@ -24,7 +24,7 @@
       <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" text="PlaNova" />
 
       <!-- Search Bar -->
-      <TextField fx:id="searchField" prefWidth="400" promptText="Search destinations..." style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 10 20; -fx-font-size: 14px;" onAction="#handleSearch" />
+      <TextField fx:id="searchField" prefWidth="400" promptText="Rechercher des destinations..." style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 10 20; -fx-font-size: 14px;" onAction="#handleSearch" />
 
       <!-- Spacer to balance -->
       <Region HBox.hgrow="ALWAYS" />
@@ -44,7 +44,7 @@
          <!-- Logout Button -->
          <Button fx:id="exploreLogoutBtn" onAction="#handleLogout"
                  style="-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 12; -fx-background-radius: 20; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 20; -fx-border-width: 1; -fx-cursor: hand;"
-                 text="🚪 Logout" />
+                 text="🚪 Déconnexion" />
       </HBox>
    </HBox>
 
@@ -52,7 +52,7 @@
    <VBox style="-fx-padding: 40 50;" VBox.vgrow="ALWAYS">
 
       <!-- Section Title -->
-      <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Explore">
+      <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Explorer">
          <VBox.margin><Insets bottom="30" /></VBox.margin>
       </Label>
 
@@ -71,13 +71,13 @@
                <Label styleClass="card-title" text="Osaka" />
 
                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Label styleClass="card-info" text="Vols • Direct" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label styleClass="card-price" text="39 €" />
                </HBox>
 
                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <Label styleClass="card-info" text="Hotels • 4 stars" />
+                  <Label styleClass="card-info" text="Hôtels • 4 étoiles" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label styleClass="card-price" text="13 €" />
                </HBox>
@@ -96,13 +96,13 @@
                <Label styleClass="card-title" text="Akita" />
 
                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Label styleClass="card-info" text="Vols • Direct" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label styleClass="card-price" text="63 €" />
                </HBox>
 
                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <Label style="-fx-text-fill: #0066cc; -fx-underline: true; -fx-font-size: 14px;" text="Explore hotels" />
+                  <Label style="-fx-text-fill: #0066cc; -fx-underline: true; -fx-font-size: 14px;" text="Explorer les hôtels" />
                   <Region HBox.hgrow="ALWAYS" />
                </HBox>
             </VBox>
@@ -120,13 +120,13 @@
                <Label styleClass="card-title" text="Nagoya" />
 
                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Label styleClass="card-info" text="Vols • Direct" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label styleClass="card-price" text="80 €" />
                </HBox>
 
                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <Label styleClass="card-info" text="Hotels • 4 stars" />
+                  <Label styleClass="card-info" text="Hôtels • 4 étoiles" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label styleClass="card-price" text="40 €" />
                </HBox>
@@ -145,7 +145,7 @@
                <Label styleClass="card-title" text="Kumamoto" />
 
                <HBox alignment="CENTER_LEFT" spacing="10">
-                  <Label styleClass="card-info" text="Flights • Direct" />
+                  <Label styleClass="card-info" text="Vols • Direct" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label styleClass="card-price" text="86 €" />
                </HBox>
@@ -176,14 +176,14 @@
                         <Label styleClass="card-title" text="Osaka" />
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Label styleClass="card-info" text="Vols • Direct" />
                               <Region HBox.hgrow="ALWAYS" />
                               <Label styleClass="card-price" text="39 €" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <Label styleClass="card-info" text="Hotels • 4 stars" />
+                              <Label styleClass="card-info" text="Hôtels • 4 étoiles" />
                               <Region HBox.hgrow="ALWAYS" />
                               <Label styleClass="card-price" text="13 €" />
                            </children>
@@ -207,14 +207,14 @@
                         <Label styleClass="card-title" text="Akita" />
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Label styleClass="card-info" text="Vols • Direct" />
                               <Region HBox.hgrow="ALWAYS" />
                               <Label styleClass="card-price" text="63 €" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <Label style="-fx-text-fill: #0066cc; -fx-underline: true; -fx-font-size: 14px;" text="Explore hotels" />
+                              <Label style="-fx-text-fill: #0066cc; -fx-underline: true; -fx-font-size: 14px;" text="Explorer les hôtels" />
                               <Region HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
@@ -237,14 +237,14 @@
                         <Label styleClass="card-title" text="Nagoya" />
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Label styleClass="card-info" text="Vols • Direct" />
                               <Region HBox.hgrow="ALWAYS" />
                               <Label styleClass="card-price" text="80 €" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <Label styleClass="card-info" text="Hotels • 4 stars" />
+                              <Label styleClass="card-info" text="Hôtels • 4 étoiles" />
                               <Region HBox.hgrow="ALWAYS" />
                               <Label styleClass="card-price" text="40 €" />
                            </children>
@@ -268,7 +268,7 @@
                         <Label styleClass="card-title" text="Kumamoto" />
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <Label styleClass="card-info" text="Flights • Direct" />
+                              <Label styleClass="card-info" text="Vols • Direct" />
                               <Region HBox.hgrow="ALWAYS" />
                               <Label styleClass="card-price" text="86 €" />
                            </children>

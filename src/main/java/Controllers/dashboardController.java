@@ -11,6 +11,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -212,27 +214,52 @@ public class dashboardController implements Initializable {
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        // Close account window if open
-        if (accountStage != null && accountStage.isShowing()) {
-            accountStage.close();
-        }
+        // Show professional confirmation dialog before logout
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation de Déconnexion");
+        alert.setHeaderText("Êtes-vous sûr de vouloir vous déconnecter ?");
+        alert.setContentText("Vous serez redirigé vers l'écran de connexion et perdrez votre session actuelle.");
 
-        // Clear user session
-        UserSession.getInstance().logout();
+        // Add custom professional styling to the alert
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/login.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog");
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
-            Parent root = loader.load();
+        // Customize button text and styling
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
 
-            Stage stage = (Stage) logoutBtn.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("PlaNova - Login");
-            stage.show();
+        okButton.setText("Se déconnecter");
+        okButton.getStyleClass().add("logout-confirm-btn");
 
-            System.out.println("Logged out successfully");
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to logout: " + e.getMessage());
-            e.printStackTrace();
+        cancelButton.setText("Annuler");
+        cancelButton.getStyleClass().add("logout-cancel-btn");
+
+        java.util.Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Close account window if open
+            if (accountStage != null && accountStage.isShowing()) {
+                accountStage.close();
+            }
+
+            // Clear user session
+            UserSession.getInstance().logout();
+
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+                Parent root = loader.load();
+
+                Stage stage = (Stage) logoutBtn.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Planova - Connexion");
+                stage.centerOnScreen();
+                stage.setResizable(false);
+
+                System.out.println("Utilisateur déconnecté avec succès");
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la déconnexion: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 

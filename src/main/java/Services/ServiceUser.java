@@ -22,7 +22,7 @@ public class ServiceUser implements IService<User> {
     @Override
     public void ajouter(User user) throws SQLException {
         // 1. Insérer dans la table utilisateur
-        String sqlUser = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, pays, imageurl) VALUES (?, ?, ?, ?, ?, ?)";
+        String sqlUser = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, pays, imageurl, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS);
@@ -33,6 +33,7 @@ public class ServiceUser implements IService<User> {
             pstmt.setString(4, PasswordUtils.hashPassword(user.getMotDePasse()));
             pstmt.setString(5, user.getPays());
             pstmt.setString(6, user.getImageurl());
+            pstmt.setInt(7, user.getStatus()); // Add status field
 
             int affectedRows = pstmt.executeUpdate();
 
@@ -150,8 +151,8 @@ public class ServiceUser implements IService<User> {
             passwordToSave = PasswordUtils.hashPassword(passwordToSave);
         }
 
-        final String sqlWithPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ? WHERE id_utilisateur = ?";
-        final String sqlWithoutPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, pays = ?, imageurl = ? WHERE id_utilisateur = ?";
+        final String sqlWithPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ?, status = ? WHERE id_utilisateur = ?";
+        final String sqlWithoutPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, pays = ?, imageurl = ?, status = ? WHERE id_utilisateur = ?";
 
         try {
             PreparedStatement pstmt;
@@ -163,7 +164,8 @@ public class ServiceUser implements IService<User> {
                 pstmt.setString(4, passwordToSave);
                 pstmt.setString(5, user.getPays());
                 pstmt.setString(6, user.getImageurl());
-                pstmt.setInt(7, user.getIdUtilisateur());
+                pstmt.setInt(7, user.getStatus());
+                pstmt.setInt(8, user.getIdUtilisateur());
             } else {
                 // Do not update password (e.g. when saving account info only) so we never overwrite with null
                 pstmt = connection.prepareStatement(sqlWithoutPassword);
@@ -172,7 +174,8 @@ public class ServiceUser implements IService<User> {
                 pstmt.setString(3, user.getEmail());
                 pstmt.setString(4, user.getPays());
                 pstmt.setString(5, user.getImageurl());
-                pstmt.setInt(6, user.getIdUtilisateur());
+                pstmt.setInt(6, user.getStatus());
+                pstmt.setInt(7, user.getIdUtilisateur());
             }
 
             int rowsAffected = pstmt.executeUpdate();
@@ -304,12 +307,98 @@ public class ServiceUser implements IService<User> {
     public User authenticate(String email, String motDePasse) throws SQLException {
         User user = findByEmail(email);
         if (user == null) return null;
+
+        // Check if user is blocked
+        if (user.isBlocked()) {
+            throw new SQLException("COMPTE_BLOQUE:Votre compte a été bloqué par l'administrateur. Veuillez contacter le support.");
+        }
+
         String stored = user.getMotDePasse();
         if (stored == null || stored.isEmpty()) return null;
         if (!PasswordUtils.verifyPassword(motDePasse, stored)) return null;
         return user;
     }
-    
+
+    // Méthode pour bloquer un utilisateur
+    public boolean blockUser(int userId) throws SQLException {
+        String sql = "UPDATE utilisateur SET status = 1 WHERE id_utilisateur = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Utilisateur bloqué avec succès. ID: " + userId);
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du blocage de l'utilisateur : " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // Méthode pour débloquer un utilisateur
+    public boolean unblockUser(int userId) throws SQLException {
+        String sql = "UPDATE utilisateur SET status = 0 WHERE id_utilisateur = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Utilisateur débloqué avec succès. ID: " + userId);
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du déblocage de l'utilisateur : " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // Méthode pour vérifier si un utilisateur est bloqué
+    public boolean isUserBlocked(int userId) throws SQLException {
+        String sql = "SELECT status FROM utilisateur WHERE id_utilisateur = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("status") == 1;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la vérification du statut de l'utilisateur : " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // Méthode pour compter les utilisateurs actifs
+    public int countActiveUsers() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM utilisateur WHERE status = 0";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du comptage des utilisateurs actifs : " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // Méthode pour compter les utilisateurs bloqués
+    public int countBlockedUsers() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM utilisateur WHERE status = 1";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du comptage des utilisateurs bloqués : " + e.getMessage());
+            throw e;
+        }
+    }
+
     // Méthode supplémentaire : Mettre à jour le mot de passe
     public boolean updatePassword(int userId, String newPassword) throws SQLException {
         if (connection == null) {
@@ -321,25 +410,25 @@ public class ServiceUser implements IService<User> {
         try {
             // Hash the new password before storing
             String hashedPassword = PasswordUtils.hashPassword(newPassword);
-            
+
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, hashedPassword);
             pstmt.setInt(2, userId);
-            
+
             int rowsAffected = pstmt.executeUpdate();
-            
+
             if (rowsAffected > 0) {
                 System.out.println("Mot de passe mis à jour avec succès pour l'utilisateur ID: " + userId);
                 return true;
             }
-            
+
             return false;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la mise à jour du mot de passe : " + e.getMessage());
             throw e;
         }
     }
-    
+
     // Méthode supplémentaire : Vérifier le mot de passe actuel
     public boolean verifyCurrentPassword(int userId, String currentPassword) throws SQLException {
         if (connection == null) {
@@ -393,29 +482,6 @@ public class ServiceUser implements IService<User> {
         return rows > 0;
     }
 
-    // Méthode supplémentaire : Récupérer par type
-    public List<User> recupererParType(String type) throws SQLException {
-        String sql = "SELECT * FROM utilisateur WHERE type_utilisateur = ?";
-        List<User> userList = new ArrayList<>();
-
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-            pstmt.setString(1, type);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                User user = createUserFromResultSet(rs);
-                userList.add(user);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération par type : " + e.getMessage());
-            throw e;
-        }
-
-        return userList;
-    }
-
     // Créer un objet User à partir du ResultSet en utilisant le polymorphisme (instanceof)
     private User createUserFromResultSet(ResultSet rs) throws SQLException {
         User user = null;
@@ -427,30 +493,35 @@ public class ServiceUser implements IService<User> {
         String motDePasse = rs.getString("mot_de_passe");
         String pays = rs.getString("pays");
         String imageurl = rs.getString("imageurl");
+        int status = rs.getInt("status"); // Get status from database
 
         // Utiliser le polymorphisme pour déterminer le type en vérifiant les tables spécifiques
         if (isAdmin(id)) {
             String matriculeAdmin = getMatriculeAdmin(id);
             Admin admin = new Admin(id, nom, prenom, email, motDePasse, pays, imageurl, matriculeAdmin);
             admin.setId_admin(id);
+            admin.setStatus(status); // Set status
             user = admin;
         } else if (isClient(id)) {
             String cin = getCinClient(id);
             Client client = new Client(id, nom, prenom, email, motDePasse, pays, imageurl, cin);
             client.setId_client(id);
+            client.setStatus(status); // Set status
             user = client;
         } else if (isGuide(id)) {
             Guide guide = new Guide(id, nom, prenom, email, motDePasse, pays, imageurl);
             guide.setId_guide(id);
+            guide.setStatus(status); // Set status
             user = guide;
         } else if (isModerateur(id)) {
             String matricule = getMatriculeModerateur(id);
             Moderateur moderateur = new Moderateur(id, nom, prenom, email, motDePasse, pays, imageurl, matricule);
             moderateur.setId_moderateur(id);
+            moderateur.setStatus(status); // Set status
             user = moderateur;
         } else {
             // Type inconnu, créer un User générique
-            user = new User(id, nom, prenom, email, motDePasse, pays, imageurl);
+            user = new User(id, nom, prenom, email, motDePasse, pays, imageurl, status);
         }
 
         return user;

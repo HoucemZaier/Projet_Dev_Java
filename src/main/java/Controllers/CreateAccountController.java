@@ -3,6 +3,7 @@ package Controllers;
 import Models.*;
 import Services.ServiceUser;
 import utils.PasswordValidator;
+import utils.CinValidator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,8 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -236,6 +235,13 @@ public class CreateAccountController implements Initializable {
             showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Le CIN est requis pour les clients!");
             return;
         }
+
+        // Validate CIN format for clients
+        if ("Client".equals(userType) && !CinValidator.isValidCin(cin)) {
+            String message = CinValidator.getValidationMessage(cin);
+            showAlert(Alert.AlertType.WARNING, "Erreur de Validation", message != null ? message : "Format de CIN invalide!");
+            return;
+        }
         if ("Admin".equals(userType) && matricule.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Le matricule est requis pour les administrateurs!");
             return;
@@ -313,7 +319,7 @@ public class CreateAccountController implements Initializable {
             // Save to database using ServiceUser
             serviceUser.ajouter(newUser);
 
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Account created successfully!");
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Compte créé avec succès!");
 
             // Navigate back to login
             handleBackToLogin(event);

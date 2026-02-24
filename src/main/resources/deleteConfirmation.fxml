@@ -28,17 +28,17 @@
 
     <!-- MESSAGE -->
     <VBox spacing="10" alignment="CENTER">
-        <Label text="Delete User" styleClass="title"/>
-        <Label fx:id="messageLabel" text="Are you sure you want to delete this user?"
+        <Label text="Supprimer Utilisateur" styleClass="title"/>
+        <Label fx:id="messageLabel" text="Êtes-vous sûr de vouloir supprimer cet utilisateur?"
                wrapText="true" styleClass="subtitle"/>
-        <Label fx:id="userDetailsLabel" text="User details will be shown here"
+        <Label fx:id="userDetailsLabel" text="Les détails de l'utilisateur seront affichés ici"
                wrapText="true" styleClass="subtitle"/>
     </VBox>
 
     <!-- BUTTONS -->
     <HBox spacing="15" alignment="CENTER">
-        <Button fx:id="cancelBtn" text="Cancel" styleClass="signup-btn" onAction="#cancel"/>
-        <Button fx:id="confirmDeleteBtn" text="Delete" styleClass="delete-btn" onAction="#confirmDelete"/>
+        <Button fx:id="cancelBtn" text="Annuler" styleClass="signup-btn" onAction="#cancel"/>
+        <Button fx:id="confirmDeleteBtn" text="Supprimer" styleClass="delete-btn" onAction="#confirmDelete"/>
     </HBox>
 
 </VBox>

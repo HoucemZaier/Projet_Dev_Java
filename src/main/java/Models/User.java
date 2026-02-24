@@ -8,14 +8,15 @@ public class User {
     private String motDePasse;
     private String pays;
     private String imageurl;
+    private int status; // 0 = active, 1 = blocked
 
     // Constructeur vide
     public User() {
     }
 
-    // Constructeur complet
+    // Constructeur complet avec status
     public User(int idUtilisateur, String nom, String prenom, String email,
-                String motDePasse, String pays, String imageurl) {
+                String motDePasse, String pays, String imageurl, int status) {
         this.idUtilisateur = idUtilisateur;
         this.nom = nom;
         this.prenom = prenom;
@@ -23,6 +24,13 @@ public class User {
         this.motDePasse = motDePasse;
         this.pays = pays;
         this.imageurl = imageurl;
+        this.status = status;
+    }
+
+    // Constructeur complet sans status (pour compatibilité)
+    public User(int idUtilisateur, String nom, String prenom, String email,
+                String motDePasse, String pays, String imageurl) {
+        this(idUtilisateur, nom, prenom, email, motDePasse, pays, imageurl, 0); // default active
     }
 
     // Constructeur sans ID (pour insertion)
@@ -34,6 +42,7 @@ public class User {
         this.motDePasse = motDePasse;
         this.pays = pays;
         this.imageurl = imageurl;
+        this.status = 0; // default active
     }
 
     // Getters et Setters
@@ -91,6 +100,22 @@ public class User {
 
     public void setImageurl(String imageurl) {
         this.imageurl = imageurl;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public boolean isBlocked() {
+        return status == 1;
+    }
+
+    public boolean isActive() {
+        return status == 0;
     }
 
     @Override

@@ -15,7 +15,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -27,11 +26,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.animation.KeyValue;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class UserManagementController implements Initializable {
@@ -150,6 +149,55 @@ public class UserManagementController implements Initializable {
         navigateTo("/gestionTransport.fxml", "Transport Privée Management");
     }
 
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        // Show professional confirmation dialog before logout
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation de Déconnexion");
+        alert.setHeaderText("Êtes-vous sûr de vouloir vous déconnecter ?");
+        alert.setContentText("Vous serez redirigé vers l'écran de connexion et perdrez votre session actuelle.");
+
+        // Add custom professional styling to the alert
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/login.css").toExternalForm());
+        dialogPane.getStyleClass().add("dialog");
+
+        // Customize button text and styling
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+
+        okButton.setText("Se déconnecter");
+        okButton.getStyleClass().add("logout-confirm-btn");
+
+        cancelButton.setText("Annuler");
+        cancelButton.getStyleClass().add("logout-cancel-btn");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                // Clear user session
+                UserSession.getInstance().logout();
+
+                // Navigate back to login screen
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+                Parent root = loader.load();
+
+                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.setTitle("Planova - Connexion");
+                stage.centerOnScreen();
+                stage.setResizable(false);
+
+                System.out.println("Utilisateur déconnecté avec succès");
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la déconnexion: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void handleDashbordManagement(ActionEvent event) {
         // Check if current user is Admin
         navigateTo("dashboard.fxml", "User Management");
@@ -258,10 +306,19 @@ public class UserManagementController implements Initializable {
         Label emailLabel = new Label(user.getEmail());
         emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #7f8c8d;");
 
-        Label countryLabel = new Label("Country: " + user.getPays());
+        Label countryLabel = new Label("Pays: " + user.getPays());
         countryLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #34495e;");
 
-        infoBox.getChildren().addAll(nameLabel, emailLabel, countryLabel);
+        // Status label
+        Label statusLabel = new Label(user.isBlocked() ? "Bloqué" : "Actif");
+        statusLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 3 8 3 8; -fx-background-radius: 10;");
+        if (user.isBlocked()) {
+            statusLabel.setStyle(statusLabel.getStyle() + "-fx-background-color: #fee2e2; -fx-text-fill: #dc2626;");
+        } else {
+            statusLabel.setStyle(statusLabel.getStyle() + "-fx-background-color: #dcfce7; -fx-text-fill: #16a34a;");
+        }
+
+        infoBox.getChildren().addAll(nameLabel, emailLabel, countryLabel, statusLabel);
 
         // Role badge
         Label roleLabel = new Label(getUserType(user));
@@ -277,13 +334,17 @@ public class UserManagementController implements Initializable {
             roleLabel.setStyle(roleLabel.getStyle() + "-fx-background-color: #34495e; -fx-text-fill: white;");
         }
 
-        // Action buttons (Edit and Delete) - beautiful icon-only buttons
+        // Action buttons (Edit, Block/Unblock, and Delete) - beautiful icon-only buttons
         HBox actionBox = new HBox(8);
         actionBox.getStyleClass().add("action-buttons-container");
 
-        // Enhanced Edit Button with beautiful icon
-        Button modifyCardBtn = new Button("✏️");
-        modifyCardBtn.getStyleClass().addAll("edit-btn", "action-btn-floating");
+        // Enhanced Edit Button with professional white icon
+        Button modifyCardBtn = new Button();
+        ImageView editIcon = new ImageView(new Image("https://img.icons8.com/ios-filled/50/ffffff/edit.png"));
+        editIcon.setFitWidth(16);
+        editIcon.setFitHeight(16);
+        modifyCardBtn.setGraphic(editIcon);
+        modifyCardBtn.getStyleClass().addAll("edit-btn", "action-btn-square");
         modifyCardBtn.setOnAction(event -> {
             // Add click feedback animation
             addClickFeedback(modifyCardBtn, "#3b82f6");
@@ -291,9 +352,38 @@ public class UserManagementController implements Initializable {
         });
         addButtonAnimation(modifyCardBtn);
 
-        // Enhanced Delete Button with beautiful icon
-        Button deleteCardBtn = new Button("🗑️");
-        deleteCardBtn.getStyleClass().addAll("delete-btn", "action-btn-floating");
+        // Block/Unblock Button with professional icon
+        Button blockUnblockBtn = new Button();
+        ImageView blockIcon;
+        if (user.isBlocked()) {
+            // Unblock icon
+            blockIcon = new ImageView(new Image("https://img.icons8.com/ios-filled/50/ffffff/unlock.png"));
+            blockUnblockBtn.getStyleClass().addAll("unblock-btn", "action-btn-square");
+            blockUnblockBtn.setOnAction(event -> {
+                addClickFeedback(blockUnblockBtn, "#10b981");
+                showUnblockConfirmation(user);
+            });
+        } else {
+            // Block icon
+            blockIcon = new ImageView(new Image("https://img.icons8.com/ios-filled/50/ffffff/lock.png"));
+            blockUnblockBtn.getStyleClass().addAll("block-btn", "action-btn-square");
+            blockUnblockBtn.setOnAction(event -> {
+                addClickFeedback(blockUnblockBtn, "#f59e0b");
+                showBlockConfirmation(user);
+            });
+        }
+        blockIcon.setFitWidth(16);
+        blockIcon.setFitHeight(16);
+        blockUnblockBtn.setGraphic(blockIcon);
+        addButtonAnimation(blockUnblockBtn);
+
+        // Enhanced Delete Button with professional white icon
+        Button deleteCardBtn = new Button();
+        ImageView deleteIcon = new ImageView(new Image("https://img.icons8.com/ios-filled/50/ffffff/trash.png"));
+        deleteIcon.setFitWidth(16);
+        deleteIcon.setFitHeight(16);
+        deleteCardBtn.setGraphic(deleteIcon);
+        deleteCardBtn.getStyleClass().addAll("delete-btn", "action-btn-square");
         deleteCardBtn.setOnAction(event -> {
             // Add click feedback animation
             addClickFeedback(deleteCardBtn, "#ef4444");
@@ -301,7 +391,7 @@ public class UserManagementController implements Initializable {
         });
         addButtonAnimation(deleteCardBtn);
 
-        actionBox.getChildren().addAll(modifyCardBtn, deleteCardBtn);
+        actionBox.getChildren().addAll(modifyCardBtn, blockUnblockBtn, deleteCardBtn);
 
         // Add all elements to card
         card.getChildren().addAll(avatarContainer, infoBox, roleLabel);
@@ -574,7 +664,6 @@ public class UserManagementController implements Initializable {
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur inattendue lors du chargement des utilisateurs: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Unexpected error loading users: " + e.getMessage());
         }
     }
 
@@ -643,23 +732,278 @@ public class UserManagementController implements Initializable {
 
     private void updateStats() {
         try {
-            List<User> users = serviceUser.recuperer();
-            User currentLoggedUser = UserSession.getInstance().getCurrentUser();
+            int totalUsers = userList.size();
+            int activeUsers = serviceUser.countActiveUsers();
+            int blockedUsers = serviceUser.countBlockedUsers();
 
-            // Filter out current admin from stats count
-            if (currentLoggedUser != null && currentLoggedUser instanceof Admin) {
-                users.removeIf(user -> user.getIdUtilisateur() == currentLoggedUser.getIdUtilisateur());
-            }
-
-            totalUsersLabel.setText(String.valueOf(users.size()));
-
-            // For demo purposes, assuming all users are active
-            // You can modify this based on your user status logic
-            activeUsersLabel.setText(String.valueOf(users.size()));
-            blockedUsersLabel.setText("0");
-
+            totalUsersLabel.setText(String.valueOf(totalUsers));
+            activeUsersLabel.setText(String.valueOf(activeUsers));
+            blockedUsersLabel.setText(String.valueOf(blockedUsers));
         } catch (SQLException e) {
-            System.err.println("Failed to update stats: " + e.getMessage());
+            System.err.println("Erreur lors de la mise à jour des statistiques : " + e.getMessage());
+        }
+    }
+
+    private void showBlockConfirmation(User user) {
+        // Create custom professional confirmation dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("");
+
+        // Remove default styling and add custom
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/dashboard.css").toExternalForm());
+        dialogPane.getStyleClass().add("professional-confirmation-dialog");
+
+        // Create custom content
+        VBox content = new VBox(20);
+        content.setAlignment(javafx.geometry.Pos.CENTER);
+        content.setPadding(new javafx.geometry.Insets(30, 40, 30, 40));
+
+        // Warning icon with animation
+        StackPane iconContainer = new StackPane();
+        ImageView warningIcon = new ImageView(new Image("https://img.icons8.com/fluency/96/warning-shield.png"));
+        warningIcon.setFitWidth(80);
+        warningIcon.setFitHeight(80);
+        iconContainer.getChildren().add(warningIcon);
+
+        // Add pulse animation to icon
+        Timeline pulse = new Timeline(
+            new KeyFrame(Duration.ZERO,
+                new KeyValue(warningIcon.scaleXProperty(), 1.0),
+                new KeyValue(warningIcon.scaleYProperty(), 1.0)
+            ),
+            new KeyFrame(Duration.millis(1000),
+                new KeyValue(warningIcon.scaleXProperty(), 1.1, Interpolator.EASE_BOTH),
+                new KeyValue(warningIcon.scaleYProperty(), 1.1, Interpolator.EASE_BOTH)
+            ),
+            new KeyFrame(Duration.millis(2000),
+                new KeyValue(warningIcon.scaleXProperty(), 1.0, Interpolator.EASE_BOTH),
+                new KeyValue(warningIcon.scaleYProperty(), 1.0, Interpolator.EASE_BOTH)
+            )
+        );
+        pulse.setCycleCount(Timeline.INDEFINITE);
+        pulse.play();
+
+        // Title
+        Label titleLabel = new Label("Confirmer le Blocage");
+        titleLabel.getStyleClass().add("dialog-title");
+
+        // User info with avatar
+        HBox userInfo = new HBox(15);
+        userInfo.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // User avatar
+        Circle avatar = new Circle(30);
+        avatar.setFill(getAvatarColor(user));
+        String initials = (user.getNom().charAt(0) + "" + user.getPrenom().charAt(0)).toUpperCase();
+        Label initialsLabel = new Label(initials);
+        initialsLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;");
+        StackPane avatarContainer = new StackPane();
+        avatarContainer.getChildren().addAll(avatar, initialsLabel);
+
+        // User details
+        VBox userDetails = new VBox(5);
+        Label nameLabel = new Label(user.getNom() + " " + user.getPrenom());
+        nameLabel.getStyleClass().add("dialog-user-name");
+        Label emailLabel = new Label(user.getEmail());
+        emailLabel.getStyleClass().add("dialog-user-email");
+        userDetails.getChildren().addAll(nameLabel, emailLabel);
+
+        userInfo.getChildren().addAll(avatarContainer, userDetails);
+
+        // Message
+        Label messageLabel = new Label("Êtes-vous sûr de vouloir bloquer cet utilisateur ?\n\nL'utilisateur ne pourra plus se connecter à son compte jusqu'à ce qu'il soit débloqué.");
+        messageLabel.getStyleClass().add("dialog-message");
+        messageLabel.setWrapText(true);
+        messageLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        content.getChildren().addAll(iconContainer, titleLabel, userInfo, messageLabel);
+        dialogPane.setContent(content);
+
+        // Custom buttons
+        ButtonType blockButtonType = new ButtonType("Bloquer l'Utilisateur", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(blockButtonType, cancelButtonType);
+
+        // Style the buttons
+        Button blockBtn = (Button) dialogPane.lookupButton(blockButtonType);
+        Button cancelBtn = (Button) dialogPane.lookupButton(cancelButtonType);
+
+        blockBtn.getStyleClass().addAll("dialog-confirm-btn", "block-confirm-btn");
+        cancelBtn.getStyleClass().addAll("dialog-cancel-btn");
+
+        // Add button animations
+        addDialogButtonAnimation(blockBtn, "#f59e0b");
+        addDialogButtonAnimation(cancelBtn, "#6b7280");
+
+        // Add entrance animation
+        Stage stage = (Stage) dialogPane.getScene().getWindow();
+        if (stage != null) {
+            stage.setOnShowing(e -> {
+                // Fade in animation
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(400), dialogPane);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+
+                // Scale animation
+                ScaleTransition scaleIn = new ScaleTransition(Duration.millis(400), dialogPane);
+                scaleIn.setFromX(0.8);
+                scaleIn.setFromY(0.8);
+                scaleIn.setToX(1.0);
+                scaleIn.setToY(1.0);
+                scaleIn.setInterpolator(Interpolator.EASE_OUT);
+
+                ParallelTransition entrance = new ParallelTransition(fadeIn, scaleIn);
+                entrance.play();
+            });
+        }
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        pulse.stop(); // Stop the pulse animation
+
+        if (result.isPresent() && result.get() == blockButtonType) {
+            try {
+                if (serviceUser.blockUser(user.getIdUtilisateur())) {
+                    // Update user status in the list
+                    user.setStatus(1);
+                    // Refresh the user container to update display
+                    setupUserContainer();
+                    updateStats();
+                    showSuccessDialog("Utilisateur Bloqué",
+                                    "L'utilisateur " + user.getNom() + " " + user.getPrenom() + " a été bloqué avec succès.");
+                } else {
+                    showErrorDialog("Erreur", "Échec du blocage de l'utilisateur.");
+                }
+            } catch (SQLException e) {
+                showErrorDialog("Erreur Base de Données",
+                              "Erreur lors du blocage : " + e.getMessage());
+            }
+        }
+    }
+
+    private void showUnblockConfirmation(User user) {
+        // Create custom professional confirmation dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("");
+
+        // Remove default styling and add custom
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/dashboard.css").toExternalForm());
+        dialogPane.getStyleClass().add("professional-confirmation-dialog");
+
+        // Create custom content
+        VBox content = new VBox(20);
+        content.setAlignment(javafx.geometry.Pos.CENTER);
+        content.setPadding(new javafx.geometry.Insets(30, 40, 30, 40));
+
+        // Success icon with animation
+        StackPane iconContainer = new StackPane();
+        ImageView successIcon = new ImageView(new Image("https://img.icons8.com/fluency/96/unlock.png"));
+        successIcon.setFitWidth(80);
+        successIcon.setFitHeight(80);
+        iconContainer.getChildren().add(successIcon);
+
+        // Add rotation animation to icon
+        RotateTransition rotate = new RotateTransition(Duration.millis(2000), successIcon);
+        rotate.setByAngle(360);
+        rotate.setInterpolator(Interpolator.EASE_BOTH);
+        rotate.setCycleCount(Timeline.INDEFINITE);
+        rotate.play();
+
+        // Title
+        Label titleLabel = new Label("Confirmer le Déblocage");
+        titleLabel.getStyleClass().add("dialog-title");
+
+        // User info with avatar
+        HBox userInfo = new HBox(15);
+        userInfo.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // User avatar
+        Circle avatar = new Circle(30);
+        avatar.setFill(getAvatarColor(user));
+        String initials = (user.getNom().charAt(0) + "" + user.getPrenom().charAt(0)).toUpperCase();
+        Label initialsLabel = new Label(initials);
+        initialsLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;");
+        StackPane avatarContainer = new StackPane();
+        avatarContainer.getChildren().addAll(avatar, initialsLabel);
+
+        // User details
+        VBox userDetails = new VBox(5);
+        Label nameLabel = new Label(user.getNom() + " " + user.getPrenom());
+        nameLabel.getStyleClass().add("dialog-user-name");
+        Label emailLabel = new Label(user.getEmail());
+        emailLabel.getStyleClass().add("dialog-user-email");
+        userDetails.getChildren().addAll(nameLabel, emailLabel);
+
+        userInfo.getChildren().addAll(avatarContainer, userDetails);
+
+        // Message
+        Label messageLabel = new Label("Êtes-vous sûr de vouloir débloquer cet utilisateur ?\n\nL'utilisateur pourra de nouveau se connecter à son compte normalement.");
+        messageLabel.getStyleClass().add("dialog-message");
+        messageLabel.setWrapText(true);
+        messageLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        content.getChildren().addAll(iconContainer, titleLabel, userInfo, messageLabel);
+        dialogPane.setContent(content);
+
+        // Custom buttons
+        ButtonType unblockButtonType = new ButtonType("Débloquer l'Utilisateur", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(unblockButtonType, cancelButtonType);
+
+        // Style the buttons
+        Button unblockBtn = (Button) dialogPane.lookupButton(unblockButtonType);
+        Button cancelBtn = (Button) dialogPane.lookupButton(cancelButtonType);
+
+        unblockBtn.getStyleClass().addAll("dialog-confirm-btn", "unblock-confirm-btn");
+        cancelBtn.getStyleClass().addAll("dialog-cancel-btn");
+
+        // Add button animations
+        addDialogButtonAnimation(unblockBtn, "#10b981");
+        addDialogButtonAnimation(cancelBtn, "#6b7280");
+
+        // Add entrance animation
+        Stage stage = (Stage) dialogPane.getScene().getWindow();
+        if (stage != null) {
+            stage.setOnShowing(e -> {
+                // Fade in animation
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(400), dialogPane);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+
+                // Scale animation
+                ScaleTransition scaleIn = new ScaleTransition(Duration.millis(400), dialogPane);
+                scaleIn.setFromX(0.8);
+                scaleIn.setFromY(0.8);
+                scaleIn.setToX(1.0);
+                scaleIn.setToY(1.0);
+                scaleIn.setInterpolator(Interpolator.EASE_OUT);
+
+                ParallelTransition entrance = new ParallelTransition(fadeIn, scaleIn);
+                entrance.play();
+            });
+        }
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        rotate.stop(); // Stop the rotation animation
+
+        if (result.isPresent() && result.get() == unblockButtonType) {
+            try {
+                if (serviceUser.unblockUser(user.getIdUtilisateur())) {
+                    // Update user status in the list
+                    user.setStatus(0);
+                    // Refresh the user container to update display
+                    setupUserContainer();
+                    updateStats();
+                    showSuccessDialog("Utilisateur Débloqué",
+                                    "L'utilisateur " + user.getNom() + " " + user.getPrenom() + " a été débloqué avec succès.");
+                } else {
+                    showErrorDialog("Erreur", "Échec du déblocage de l'utilisateur.");
+                }
+            } catch (SQLException e) {
+                showErrorDialog("Erreur Base de Données",
+                              "Erreur lors du déblocage : " + e.getMessage());
+            }
         }
     }
 
@@ -758,5 +1102,145 @@ public class UserManagementController implements Initializable {
         // Play both animations
         ParallelTransition clickAnimation = new ParallelTransition(clickEffect, clickRotate);
         clickAnimation.play();
+    }
+
+    // Professional dialog button animations
+    private void addDialogButtonAnimation(Button btn, String baseColor) {
+        btn.setOnMouseEntered(e -> {
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(200), btn);
+            scaleUp.setToX(1.05);
+            scaleUp.setToY(1.05);
+            scaleUp.setInterpolator(Interpolator.EASE_OUT);
+            scaleUp.play();
+
+            // Add glow effect
+            btn.setStyle(btn.getStyle() + "-fx-effect: dropshadow(gaussian, " + baseColor + ", 10, 0.3, 0, 0);");
+        });
+
+        btn.setOnMouseExited(e -> {
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), btn);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            scaleDown.setInterpolator(Interpolator.EASE_OUT);
+            scaleDown.play();
+
+            // Remove glow effect
+            btn.setStyle(btn.getStyle().replaceAll("-fx-effect: dropshadow\\([^;]*\\);", ""));
+        });
+
+        btn.setOnMousePressed(e -> {
+            ScaleTransition press = new ScaleTransition(Duration.millis(100), btn);
+            press.setToX(0.95);
+            press.setToY(0.95);
+            press.play();
+        });
+
+        btn.setOnMouseReleased(e -> {
+            ScaleTransition release = new ScaleTransition(Duration.millis(100), btn);
+            release.setToX(1.05);
+            release.setToY(1.05);
+            release.play();
+        });
+    }
+
+    // Professional success dialog
+    private void showSuccessDialog(String title, String message) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("");
+
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/dashboard.css").toExternalForm());
+        dialogPane.getStyleClass().add("success-dialog");
+
+        VBox content = new VBox(15);
+        content.setAlignment(javafx.geometry.Pos.CENTER);
+        content.setPadding(new javafx.geometry.Insets(25, 35, 25, 35));
+
+        // Success icon with animation
+        ImageView successIcon = new ImageView(new Image("https://img.icons8.com/fluency/64/checkmark.png"));
+        successIcon.setFitWidth(60);
+        successIcon.setFitHeight(60);
+
+        // Bounce animation for success icon
+        ScaleTransition bounce = new ScaleTransition(Duration.millis(600), successIcon);
+        bounce.setFromX(0.3);
+        bounce.setFromY(0.3);
+        bounce.setToX(1.0);
+        bounce.setToY(1.0);
+        bounce.setInterpolator(Interpolator.SPLINE(0.68, -0.55, 0.265, 1.55));
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("success-dialog-title");
+
+        Label messageLabel = new Label(message);
+        messageLabel.getStyleClass().add("success-dialog-message");
+        messageLabel.setWrapText(true);
+        messageLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        content.getChildren().addAll(successIcon, titleLabel, messageLabel);
+        dialogPane.setContent(content);
+
+        ButtonType okButtonType = new ButtonType("Parfait", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(okButtonType);
+
+        Button okBtn = (Button) dialogPane.lookupButton(okButtonType);
+        okBtn.getStyleClass().add("success-dialog-btn");
+        addDialogButtonAnimation(okBtn, "#10b981");
+
+        // Show with animation
+        Platform.runLater(() -> {
+            bounce.play();
+            dialog.showAndWait();
+        });
+    }
+
+    // Professional error dialog
+    private void showErrorDialog(String title, String message) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("");
+
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/dashboard.css").toExternalForm());
+        dialogPane.getStyleClass().add("error-dialog");
+
+        VBox content = new VBox(15);
+        content.setAlignment(javafx.geometry.Pos.CENTER);
+        content.setPadding(new javafx.geometry.Insets(25, 35, 25, 35));
+
+        // Error icon with animation
+        ImageView errorIcon = new ImageView(new Image("https://img.icons8.com/fluency/64/error.png"));
+        errorIcon.setFitWidth(60);
+        errorIcon.setFitHeight(60);
+
+        // Shake animation for error icon
+        TranslateTransition shake = new TranslateTransition(Duration.millis(100), errorIcon);
+        shake.setFromX(-10);
+        shake.setToX(10);
+        shake.setCycleCount(6);
+        shake.setAutoReverse(true);
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("error-dialog-title");
+
+        Label messageLabel = new Label(message);
+        messageLabel.getStyleClass().add("error-dialog-message");
+        messageLabel.setWrapText(true);
+        messageLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        content.getChildren().addAll(errorIcon, titleLabel, messageLabel);
+        dialogPane.setContent(content);
+
+        ButtonType okButtonType = new ButtonType("Compris", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(okButtonType);
+
+        Button okBtn = (Button) dialogPane.lookupButton(okButtonType);
+        okBtn.getStyleClass().add("error-dialog-btn");
+        addDialogButtonAnimation(okBtn, "#ef4444");
+
+        // Show with animation
+        Platform.runLater(() -> {
+            shake.play();
+            dialog.showAndWait();
+        });
     }
 }

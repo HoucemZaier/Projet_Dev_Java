@@ -3,11 +3,11 @@ package Controllers;
 import Models.*;
 import Services.ServiceUser;
 import utils.PasswordValidator;
+import utils.CinValidator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -196,6 +196,16 @@ public class AddUserController implements Initializable {
         if ("Client".equals(userTypeCombo.getValue()) && cinField.getText().trim().isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Erreur de Validation", "Le CIN est requis pour les clients");
             return false;
+        }
+
+        // Validate CIN format for clients
+        if ("Client".equals(userTypeCombo.getValue()) && !cinField.getText().trim().isEmpty()) {
+            String cin = cinField.getText().trim();
+            if (!CinValidator.isValidCin(cin)) {
+                String message = CinValidator.getValidationMessage(cin);
+                showAlert(Alert.AlertType.WARNING, "Erreur de Validation", message != null ? message : "Format de CIN invalide!");
+                return false;
+            }
         }
 
         if ("Admin".equals(userTypeCombo.getValue()) && matriculeField.getText().trim().isEmpty()) {

@@ -360,7 +360,7 @@ public class accountmanagement implements Initializable {
                 profileUpdateCallback.run();
             }
 
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Account information updated successfully!");
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Informations du compte mises à jour avec succès!");
 
             // Animate success
             if (accountCard != null) animateSuccess(accountCard);
@@ -422,7 +422,7 @@ public class accountmanagement implements Initializable {
             boolean success = serviceUser.updatePassword(currentUser.getIdUtilisateur(), newPassword);
 
             if (success) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Password updated successfully!");
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Mot de passe mis à jour avec succès!");
 
                 // Clear password fields
                 if (currentPasswordField != null) currentPasswordField.clear();

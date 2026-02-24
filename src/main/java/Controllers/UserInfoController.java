@@ -14,8 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -35,8 +33,6 @@ public class UserInfoController implements Initializable {
     private Label cinLabel;
     @FXML
     private Label matriculeLabel;
-    @FXML
-    private Label dateLabel;
 
     private User user;
 
@@ -113,9 +109,6 @@ public class UserInfoController implements Initializable {
                     System.err.println("Failed to load user image: " + e.getMessage());
                 }
             }
-
-            // Set registration date (using ID as fallback since we don't have a date field)
-            dateLabel.setText("ID: " + user.getIdUtilisateur());
         }
     }
 

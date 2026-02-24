@@ -33,7 +33,7 @@
                                 <Insets top="20"/>
                             </padding>
                             <children>
-                                <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button-active" text="Overview">
+                                <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button-active" text="Aperçu">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0">
                                             <image>
@@ -46,7 +46,7 @@
                                     </font>
                                 </Button>
 
-                                <Button fx:id="userManagementBtn" maxWidth="Infinity" onAction="#handleUserManagement" styleClass="menu-button" text="User Management">
+                                <Button fx:id="userManagementBtn" maxWidth="Infinity" onAction="#handleUserManagement" styleClass="menu-button" text="Gestion Utilisateurs">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -85,7 +85,7 @@
                                     </font>
                                 </Button>
 
-                                <Button fx:id="hotelsBtn" maxWidth="Infinity" onAction="#handleHotels" styleClass="menu-button" text="Hotels">
+                                <Button fx:id="hotelsBtn" maxWidth="Infinity" onAction="#handleHotels" styleClass="menu-button" text="Hôtels">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0">
                                             <image>
@@ -138,7 +138,7 @@
                                     </font>
                                 </Button>
 
-                                <Button fx:id="blogBtn" maxWidth="Infinity" onAction="#handleBlog" styleClass="menu-button" text="Blog Posts">
+                                <Button fx:id="blogBtn" maxWidth="Infinity" onAction="#handleBlog" styleClass="menu-button" text="Articles de Blog">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0">
                                             <image>
@@ -151,7 +151,7 @@
                                     </font>
                                 </Button>
 
-                                <Button fx:id="forumBtn" maxWidth="Infinity" onAction="#handleForum" styleClass="menu-button" text="Community Forum">
+                                <Button fx:id="forumBtn" maxWidth="Infinity" onAction="#handleForum" styleClass="menu-button" text="Forum Communauté">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0">
                                             <image>
@@ -164,7 +164,7 @@
                                     </font>
                                 </Button>
 
-                                <Button fx:id="activitiesBtn" maxWidth="Infinity" onAction="#handleActivities" styleClass="menu-button" text="Activities">
+                                <Button fx:id="activitiesBtn" maxWidth="Infinity" onAction="#handleActivities" styleClass="menu-button" text="Activités">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0">
                                             <image>
@@ -183,7 +183,7 @@
 
                 <VBox spacing="5">
                     <children>
-                        <Button fx:id="settingsBtn" maxWidth="Infinity" onAction="#handleSettings" styleClass="menu-button" text="Settings">
+                        <Button fx:id="settingsBtn" maxWidth="Infinity" onAction="#handleSettings" styleClass="menu-button" text="Paramètres">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0">
                                     <image>
@@ -195,7 +195,7 @@
                                 <Font size="12.0"/>
                             </font>
                         </Button>
-                        <Button fx:id="logoutBtn" maxWidth="Infinity" onAction="#handleLogout" styleClass="menu-button" text="Logout">
+                        <Button fx:id="logoutBtn" maxWidth="Infinity" onAction="#handleLogout" styleClass="menu-button" text="Déconnexion">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0">
                                     <image>
@@ -221,15 +221,15 @@
                     <children>
                         <VBox>
                             <children>
-                                <Label styleClass="dashboard-title" text="Dashboard" />
-                                <Label styleClass="welcome-text" text="Welcome back, Admin Panel" />
+                                <Label styleClass="dashboard-title" text="Tableau de Bord" />
+                                <Label styleClass="welcome-text" text="Bienvenue, Panneau d'Administration" />
                             </children>
                         </VBox>
                         <Region HBox.hgrow="ALWAYS" />
                         <HBox alignment="CENTER" spacing="15" styleClass="top-bar-right-panel">
                             <children>
-                                <TextField promptText="Search anything..." styleClass="search-field" />
-                                <Button styleClass="new-entry-button" text="+ New Entry" />
+                                <TextField promptText="Rechercher quelque chose..." styleClass="search-field" />
+                                <Button styleClass="new-entry-button" text="+ Nouvelle Entrée" />
                                 <ImageView fitHeight="20.0" fitWidth="20.0">
                                     <image>
                                         <Image url="https://img.icons8.com/fluency/48/appointment-reminders.png" />
@@ -240,7 +240,7 @@
                                         <VBox alignment="CENTER_RIGHT">
                                             <children>
                                                 <Label fx:id="userNameLabel" styleClass="user-name" text="Alex Thompson" />
-                                                <Label fx:id="userRoleLabel" styleClass="user-role" text="Super Admin" />
+                                                <Label fx:id="userRoleLabel" styleClass="user-role" text="Super Administrateur" />
                                             </children>
                                         </VBox>
                                         <ImageView fx:id="userProfileImage" fitHeight="36.0" fitWidth="36.0">
@@ -262,7 +262,7 @@
                                 <HBox alignment="TOP_RIGHT">
                                     <children><Text styleClass="percentage-text-positive" text="+12.5%" /></children>
                                 </HBox>
-                                <Label styleClass="card-title" text="Total Revenue" />
+                                <Label styleClass="card-title" text="Revenus Totaux" />
                                 <Label styleClass="card-value" text="\$42,500" />
                             </children>
                         </VBox>
@@ -271,7 +271,7 @@
                                 <HBox alignment="TOP_RIGHT">
                                     <children><Text styleClass="percentage-text-positive" text="+8.2%" /></children>
                                 </HBox>
-                                <Label styleClass="card-title" text="Total Clients" />
+                                <Label styleClass="card-title" text="Clients Totaux" />
                                 <Label styleClass="card-value" text="1,284" />
                             </children>
                         </VBox>
@@ -280,7 +280,7 @@
                                 <HBox alignment="TOP_RIGHT">
                                     <children><Text styleClass="percentage-text-negative" text="-2.4%" /></children>
                                 </HBox>
-                                <Label styleClass="card-title" text="Active Tours" />
+                                <Label styleClass="card-title" text="Tours Actifs" />
                                 <Label styleClass="card-value" text="48" />
                             </children>
                         </VBox>
@@ -300,7 +300,7 @@
                     <children>
                         <VBox styleClass="chart-card" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label styleClass="section-title" text="Booking Analytics" />
+                                <Label styleClass="section-title" text="Analyse des Réservations" />
                                 <LineChart fx:id="bookingChart" createSymbols="false" legendVisible="false" verticalGridLinesVisible="false">
                                     <xAxis><CategoryAxis side="BOTTOM" /></xAxis>
                                     <yAxis><NumberAxis side="LEFT" /></yAxis>
@@ -310,10 +310,10 @@
 
                         <VBox prefWidth="300.0" spacing="15" styleClass="recent-bookings-card">
                             <children>
-                                <Label styleClass="section-title" text="Recent Bookings" />
+                                <Label styleClass="section-title" text="Réservations Récentes" />
                                 <VBox fx:id="recentBookingsList" spacing="10" />
                                 <Region VBox.vgrow="ALWAYS" />
-                                <Button maxWidth="Infinity" styleClass="view-all-button" text="View All Reports" />
+                                <Button maxWidth="Infinity" styleClass="view-all-button" text="Voir Tous les Rapports" />
                             </children>
                         </VBox>
                     </children>

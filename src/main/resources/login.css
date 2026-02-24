@@ -1,4 +1,94 @@
-/* LEFT PANEL */
+/* DIALOG STYLING */
+.dialog {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);
+    -fx-border-color: rgba(59,76,255,0.1);
+    -fx-border-width: 1px;
+    -fx-border-radius: 15px;
+}
+
+.dialog .header-panel {
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #ffffff);
+    -fx-background-radius: 15px 15px 0 0;
+    -fx-padding: 25px;
+    -fx-border-color: transparent transparent rgba(226,232,240,0.8) transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.dialog .header-panel .label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.dialog .content {
+    -fx-padding: 25px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #5a6c7d;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-line-spacing: 5px;
+}
+
+.dialog .button-bar {
+    -fx-padding: 15px 25px 25px 25px;
+    -fx-spacing: 15px;
+    -fx-background-color: #fafbfc;
+    -fx-background-radius: 0 0 15px 15px;
+}
+
+.dialog .button {
+    -fx-background-radius: 8px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+/* Logout Button - Red styling */
+.logout-confirm-btn {
+    -fx-background-color: linear-gradient(to right, #ef4444, #dc2626);
+    -fx-text-fill: white;
+    -fx-background-radius: 8px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.logout-confirm-btn:hover {
+    -fx-background-color: linear-gradient(to right, #dc2626, #b91c1c);
+    -fx-effect: dropshadow(three-pass-box, rgba(239,68,68,0.3), 8, 0, 0, 3);
+}
+
+/* Cancel Button - Blue outline styling */
+.logout-cancel-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: #3b82f6;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-text-fill: #3b82f6;
+    -fx-background-radius: 8px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.logout-cancel-btn:hover {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.3), 8, 0, 0, 3);
+}
+
+/* EXISTING LOGIN STYLES */
 .left-panel {
     -fx-padding: 60 40 60 60;
     -fx-background-color: linear-gradient(to bottom, #ffffff, #f8f9fa);
@@ -12,6 +102,12 @@
     -fx-text-fill: #2c3e50;
     -fx-font-family: "Segoe UI", sans-serif;
     -fx-effect: dropshadow(gaussian, rgba(59,76,255,0.3), 2, 0, 0, 1);
+}
+
+.title {
+    -fx-font-size: 24px;
+    -fx-text-fill: #3b4cff;
+    -fx-font-weight: bold;
 }
 
 /* SUBTITLE */
@@ -254,13 +350,211 @@
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
-.title {
-    -fx-font-size: 24px;
-    -fx-text-fill: #3b4cff;
-    -fx-font-weight: bold;
+
+/* Social Authentication Buttons */
+.divider-text {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #9CA3AF;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
 }
 
-.input {
-    -fx-pref-width: 300px;
+.social-btn {
+    -fx-background-color: white;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 2px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 12;
+    -fx-min-width: 60px;
+    -fx-min-height: 50px;
+    -fx-max-width: 60px;
+    -fx-max-height: 50px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 4, 0, 0, 2);
+    -fx-transition: all 0.2s ease;
+}
+
+.social-btn:hover {
+    -fx-border-color: #D1D5DB;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 4);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.social-btn:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0, 0, 1);
+}
+
+.facebook-btn:hover {
+    -fx-border-color: #1877F2;
+    -fx-background-color: #F0F8FF;
+}
+
+.google-btn:hover {
+    -fx-border-color: #4285F4;
+    -fx-background-color: #F8FAFE;
+}
+
+/* Loading state for social buttons */
+.social-btn:disabled {
+    -fx-opacity: 0.7;
+    -fx-cursor: wait;
+    -fx-background-color: #F3F4F6;
+    -fx-border-color: #D1D5DB;
+}
+
+.social-btn:disabled .image-view {
+    -fx-opacity: 0.5;
+}
+
+/* Animation for loading state */
+@keyframes spin {
+    from { -fx-rotate: 0deg; }
+    to { -fx-rotate: 360deg; }
+}
+
+.social-btn.loading {
+    -fx-animation: spin 1s linear infinite;
+}
+
+/* Enhanced social button text when loading */
+.social-btn-text {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #6B7280;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Social Authentication Info Text */
+.social-info-text {
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #6B7280;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-style: italic;
+}
+
+/* OAuth Window Styles */
+.oauth-container {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f8fafc);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.oauth-header {
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #ffffff);
+    -fx-padding: 20;
+    -fx-border-color: transparent transparent #e5e7eb transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-alignment: center-left;
+}
+
+.oauth-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1f2937;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.oauth-instruction {
+    -fx-font-size: 12px;
+    -fx-font-weight: 400;
+    -fx-text-fill: #6b7280;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.oauth-content {
+    -fx-padding: 30;
+}
+
+.oauth-info {
+    -fx-font-size: 14px;
+    -fx-text-fill: #374151;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-text-alignment: center;
+}
+
+.oauth-form {
+    -fx-alignment: center;
+}
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #374151;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.oauth-field {
+    -fx-pref-width: 350px;
     -fx-pref-height: 40px;
+    -fx-background-color: white;
+    -fx-border-color: #d1d5db;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 0 12 0 12;
+    -fx-font-size: 14px;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 2, 0, 0, 1);
+}
+
+.oauth-field:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.25), 4, 0, 0, 0);
+}
+
+.oauth-confirm-btn {
+    -fx-background-color: linear-gradient(to right, #3b82f6, #2563eb);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-padding: 12 24 12 24;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.3), 4, 0, 0, 2);
+}
+
+.oauth-confirm-btn:hover {
+    -fx-background-color: linear-gradient(to right, #2563eb, #1d4ed8);
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.4), 6, 0, 0, 3);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.oauth-confirm-btn:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.2), 2, 0, 0, 1);
+}
+
+.oauth-cancel-btn {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #374151;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-border-color: #d1d5db;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 2, 0, 0, 1);
+}
+
+.oauth-cancel-btn:hover {
+    -fx-background-color: #e5e7eb;
+    -fx-text-fill: #111827;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+}
+
+.oauth-cancel-btn:pressed {
+    -fx-background-color: #d1d5db;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
 }

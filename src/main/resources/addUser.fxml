@@ -81,7 +81,7 @@
 
             <TextField fx:id="paysField" promptText="Pays" styleClass="input"/>
             <TextField fx:id="cinField" promptText="CIN (pour Client)" styleClass="input" visible="false"/>
-            <TextField fx:id="matriculeField" promptText="Matricule (pour Admin)" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeField" promptText="Matricule" styleClass="input" visible="false"/>
 
             <!-- IMAGE UPLOAD -->
             <HBox spacing="10" alignment="CENTER_LEFT">

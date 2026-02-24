@@ -35,7 +35,7 @@
                             <Insets top="20"/>
                         </padding>
                         <children>
-                            <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button" text="Overview">
+                            <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button" text="Aperçu">
                                 <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="20.0">
                                         <image>
@@ -48,7 +48,7 @@
                                 </font>
                             </Button>
 
-                            <Button maxWidth="Infinity" styleClass="menu-button-active" text="User Management">
+                            <Button maxWidth="Infinity" styleClass="menu-button-active" text="Gestion Utilisateurs">
                                 <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                         <image>
@@ -87,7 +87,7 @@
                                 </font>
                             </Button>
 
-                            <Button maxWidth="Infinity" styleClass="menu-button" text="Hotels">
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Hôtels">
                                 <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="20.0">
                                         <image>
@@ -140,7 +140,7 @@
                                 </font>
                             </Button>
 
-                            <Button maxWidth="Infinity" styleClass="menu-button" text="Blog Posts">
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Articles de Blog">
                                 <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="20.0">
                                         <image>
@@ -153,7 +153,7 @@
                                 </font>
                             </Button>
 
-                            <Button maxWidth="Infinity" styleClass="menu-button" text="Community Forum">
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Forum Communauté">
                                 <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="20.0">
                                         <image>
@@ -166,7 +166,7 @@
                                 </font>
                             </Button>
 
-                            <Button maxWidth="Infinity" styleClass="menu-button" text="Activities">
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Activités">
                                 <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="20.0">
                                         <image>
@@ -185,7 +185,7 @@
 
             <VBox spacing="5">
                 <children>
-                    <Button maxWidth="Infinity" styleClass="menu-button" text="Settings">
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Paramètres">
                         <graphic>
                             <ImageView fitHeight="20.0" fitWidth="20.0">
                                 <image>
@@ -197,7 +197,7 @@
                             <Font size="12.0"/>
                         </font>
                     </Button>
-                    <Button maxWidth="Infinity" styleClass="menu-button" text="Logout">
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Déconnexion" onAction="#handleLogout">
                         <graphic>
                             <ImageView fitHeight="20.0" fitWidth="20.0">
                                 <image>
@@ -225,28 +225,28 @@
             <!-- Header -->
             <HBox fx:id="headerSection" spacing="25" alignment="CENTER_LEFT">
                 <VBox>
-                    <Label text="Gestion des utilisateurs" styleClass="dashboard-title"/>
-                    <Label text="Manage and monitor user accounts" styleClass="welcome-text"/>
+                    <Label text="Gestion des Utilisateurs" styleClass="dashboard-title"/>
+                    <Label text="Gérer et surveiller les comptes d'utilisateurs" styleClass="welcome-text"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="headerSearchField" promptText="Search anything..." styleClass="search-field"
+                <TextField fx:id="headerSearchField" promptText="Rechercher quelque chose..." styleClass="search-field"
                           prefWidth="300.0" maxWidth="300.0"/>
             </HBox>
 
             <!-- Stats Cards -->
             <HBox spacing="25" prefHeight="120.0">
                 <VBox styleClass="info-card" HBox.hgrow="ALWAYS" prefHeight="120.0">
-                    <Label text="Total Users" styleClass="card-title"/>
+                    <Label text="Total Utilisateurs" styleClass="card-title"/>
                     <Label fx:id="totalUsersLabel" text="8" styleClass="card-value"/>
                 </VBox>
 
                 <VBox styleClass="info-card" HBox.hgrow="ALWAYS" prefHeight="120.0">
-                    <Label text="Active Users" styleClass="card-title"/>
+                    <Label text="Utilisateurs Actifs" styleClass="card-title"/>
                     <Label fx:id="activeUsersLabel" text="6" styleClass="card-value"/>
                 </VBox>
 
                 <VBox styleClass="info-card" HBox.hgrow="ALWAYS" prefHeight="120.0">
-                    <Label text="Blocked Users" styleClass="card-title"/>
+                    <Label text="Utilisateurs Bloqués" styleClass="card-title"/>
                     <Label fx:id="blockedUsersLabel" text="2" styleClass="card-value"/>
                 </VBox>
             </HBox>
@@ -254,11 +254,11 @@
             <!-- Actions Bar -->
             <HBox fx:id="actionsBar" spacing="20" alignment="CENTER_LEFT" styleClass="actions-bar"
                   prefHeight="50.0" minHeight="50.0">
-                <Button text="+ Add New User" styleClass="new-entry-button" onAction="#addNewUser"
+                <Button text="+ Ajouter Nouvel Utilisateur" styleClass="new-entry-button" onAction="#addNewUser"
                        prefHeight="45.0" minHeight="45.0"/>
-                <TextField fx:id="searchField" promptText="Search user by name or email..."
+                <TextField fx:id="searchField" promptText="Rechercher utilisateur par nom ou email..."
                           styleClass="search-field" prefWidth="350.0" prefHeight="45.0"/>
-                <ComboBox fx:id="countryFilter" promptText="All Countries" styleClass="country-combo"
+                <ComboBox fx:id="countryFilter" promptText="Tous les Pays" styleClass="country-combo"
                          prefWidth="200.0" prefHeight="45.0"/>
                 <Region HBox.hgrow="ALWAYS"/>
             </HBox>
