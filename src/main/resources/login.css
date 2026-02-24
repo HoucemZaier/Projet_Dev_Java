@@ -120,32 +120,70 @@
 
 /* INPUTS */
 .input {
-    -fx-pref-width: 320px;
-    -fx-pref-height: 45px;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
+    -fx-pref-width: 350px;
+    -fx-pref-height: 50px;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
     -fx-border-color: #bdc3c7;
-    -fx-padding: 0 15 0 15;
+    -fx-border-width: 2px;
+    -fx-padding: 0 18 0 18;
     -fx-background-color: #ffffff;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+    -fx-font-size: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 6, 0, 0, 3);
 }
 
 .input:focused {
     -fx-border-color: #3b4cff;
-    -fx-effect: dropshadow(three-pass-box, rgba(59,76,255,0.2), 8, 0, 0, 2);
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(59,76,255,0.25), 10, 0, 0, 3);
+}
+
+/* Password container specific styling to match email field exactly */
+.password-container {
+    -fx-pref-width: 350px;
+    -fx-pref-height: 50px;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 2px;
+    -fx-padding: 0 18 0 18;
+    -fx-background-color: #ffffff;
+    -fx-font-size: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 6, 0, 0, 3);
+    -fx-alignment: center-left;
+}
+
+.password-container:focused-within {
+    -fx-border-color: #3b4cff;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(59,76,255,0.25), 10, 0, 0, 3);
+}
+
+.password-container-focused {
+    -fx-pref-width: 350px;
+    -fx-pref-height: 50px;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #3b4cff;
+    -fx-border-width: 2px;
+    -fx-padding: 0 18 0 18;
+    -fx-background-color: #ffffff;
+    -fx-font-size: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(59,76,255,0.25), 10, 0, 0, 3);
+    -fx-alignment: center-left;
 }
 
 /* LOGIN BUTTON */
 .login-btn {
     -fx-background-color: linear-gradient(to right, #3b4cff, #5c6bc0);
     -fx-text-fill: white;
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-pref-width: 130px;
-    -fx-pref-height: 45px;
-    -fx-background-radius: 8;
+    -fx-pref-width: 140px;
+    -fx-pref-height: 50px;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 6, 0, 0, 3);
     -fx-transition: -fx-background-color 0.3s ease, -fx-scale-x 0.2s ease, -fx-scale-y 0.2s ease, -fx-effect 0.3s ease;
 }
 
@@ -153,7 +191,7 @@
     -fx-background-color: linear-gradient(to right, #2c3e50, #3b4cff);
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 10, 0, 0, 4);
 }
 
 /* SIGNUP BUTTON */
@@ -162,12 +200,12 @@
     -fx-border-color: #3b4cff;
     -fx-border-width: 2;
     -fx-text-fill: #3b4cff;
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-pref-width: 130px;
-    -fx-pref-height: 45px;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
+    -fx-pref-width: 140px;
+    -fx-pref-height: 50px;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
     -fx-transition: -fx-background-color 0.3s ease, -fx-text-fill 0.3s ease, -fx-scale-x 0.2s ease, -fx-scale-y 0.2s ease;
 }
@@ -359,55 +397,92 @@
     -fx-font-family: "Inter", "Segoe UI", sans-serif;
 }
 
-.social-btn {
-    -fx-background-color: white;
-    -fx-border-color: #E5E7EB;
-    -fx-border-width: 2px;
-    -fx-border-radius: 12px;
-    -fx-background-radius: 12px;
-    -fx-padding: 12;
-    -fx-min-width: 60px;
-    -fx-min-height: 50px;
-    -fx-max-width: 60px;
-    -fx-max-height: 50px;
+/* Facebook Button - Beautiful Blue */
+.facebook-btn {
+    -fx-background-color: #1877F2;
+    -fx-border-color: #1877F2;
+    -fx-border-width: 0px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-padding: 16;
+    -fx-min-width: 70px;
+    -fx-min-height: 70px;
+    -fx-max-width: 70px;
+    -fx-max-height: 70px;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 4, 0, 0, 2);
-    -fx-transition: all 0.2s ease;
-}
-
-.social-btn:hover {
-    -fx-border-color: #D1D5DB;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 4);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
-
-.social-btn:pressed {
-    -fx-scale-x: 0.95;
-    -fx-scale-y: 0.95;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(24,119,242,0.3), 8, 0, 0, 4);
 }
 
 .facebook-btn:hover {
-    -fx-border-color: #1877F2;
-    -fx-background-color: #F0F8FF;
+    -fx-background-color: #0C63D4;
+    -fx-border-color: #0C63D4;
+    -fx-effect: dropshadow(gaussian, rgba(24,119,242,0.5), 12, 0, 0, 6);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.facebook-btn:pressed {
+    -fx-background-color: #0A58C2;
+    -fx-border-color: #0A58C2;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* Google Button - Google Red Colors */
+.google-btn {
+    -fx-background-color: #DB4437;
+    -fx-border-color: #DB4437;
+    -fx-border-width: 0px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-padding: 16;
+    -fx-min-width: 70px;
+    -fx-min-height: 70px;
+    -fx-max-width: 70px;
+    -fx-max-height: 70px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(219,68,55,0.3), 8, 0, 0, 4);
 }
 
 .google-btn:hover {
-    -fx-border-color: #4285F4;
-    -fx-background-color: #F8FAFE;
+    -fx-background-color: #C23321;
+    -fx-border-color: #C23321;
+    -fx-effect: dropshadow(gaussian, rgba(219,68,55,0.5), 12, 0, 0, 6);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 
-/* Loading state for social buttons */
-.social-btn:disabled {
-    -fx-opacity: 0.7;
+.google-btn:pressed {
+    -fx-background-color: #A52714;
+    -fx-border-color: #A52714;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* Disabled state for social buttons */
+.facebook-btn:disabled {
+    -fx-opacity: 0.6;
     -fx-cursor: wait;
-    -fx-background-color: #F3F4F6;
-    -fx-border-color: #D1D5DB;
+    -fx-background-color: #A4C2F4;
+    -fx-border-color: #A4C2F4;
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
 }
 
-.social-btn:disabled .image-view {
-    -fx-opacity: 0.5;
+.google-btn:disabled {
+    -fx-opacity: 0.6;
+    -fx-cursor: wait;
+    -fx-background-color: #F4A4A4;
+    -fx-border-color: #F4A4A4;
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);
+}
+
+.facebook-btn:disabled .image-view,
+.google-btn:disabled .image-view {
+    -fx-opacity: 0.7;
 }
 
 /* Animation for loading state */
@@ -419,6 +494,7 @@
 .social-btn.loading {
     -fx-animation: spin 1s linear infinite;
 }
+
 
 /* Enhanced social button text when loading */
 .social-btn-text {
