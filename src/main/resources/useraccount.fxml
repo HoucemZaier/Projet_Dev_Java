@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -22,9 +23,12 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to bottom right, #f5f7fa, #e9ecf2);" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.accountmanagement">
     <center>
-        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <children>
-                <VBox alignment="TOP_CENTER" maxWidth="1100.0" spacing="25.0" HBox.hgrow="ALWAYS">
+        <!-- Add ScrollPane to make the interface scrollable -->
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: transparent; -fx-background-color: transparent;" BorderPane.alignment="CENTER">
+            <content>
+                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <VBox alignment="TOP_CENTER" maxWidth="1100.0" spacing="25.0" HBox.hgrow="ALWAYS">
                     <children>
                         <!-- Header with User Info -->
                         <AnchorPane style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 10);">
@@ -168,6 +172,52 @@
                                             </children>
                                         </VBox>
 
+                                        <!-- 2FA Section (only for admins and moderators) -->
+                                        <VBox fx:id="twoFactorSection" spacing="15.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 20; -fx-border-color: #e9ecef; -fx-border-radius: 10; -fx-border-width: 1;" visible="false" managed="false">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #495057;" text="🔐 Authentification à Deux Facteurs" />
+                                                        <Region HBox.hgrow="ALWAYS" />
+                                                        <Label fx:id="twoFactorStatusLabel" style="-fx-background-color: #dc3545; -fx-background-radius: 15; -fx-text-fill: white; -fx-padding: 4 10; -fx-font-size: 12px; -fx-font-weight: bold;" text="Désactivé" />
+                                                    </children>
+                                                </HBox>
+
+                                                <Label style="-fx-font-size: 13px; -fx-text-fill: #6c757d; -fx-wrap-text: true;" text="Sécurisez votre compte avec la reconnaissance faciale. Cette fonctionnalité avancée est disponible uniquement pour les administrateurs et modérateurs." />
+
+                                                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                                    <children>
+                                                        <Button fx:id="enable2FABtn" mnemonicParsing="false" onAction="#handleEnable2FA"
+                                                               style="-fx-background-color: #6f42c1; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 160px; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(111,66,193,0.3), 10, 0, 0, 3);"
+                                                               text="🔒 Activer 2FA" />
+
+                                                        <Button fx:id="disable2FABtn" mnemonicParsing="false" onAction="#handleDisable2FA" visible="false" managed="false"
+                                                               style="-fx-background-color: #dc3545; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 160px; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(220,53,69,0.3), 10, 0, 0, 3);"
+                                                               text="❌ Désactiver 2FA" />
+                                                    </children>
+                                                </HBox>
+
+                                                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 12px; -fx-text-fill: #28a745; -fx-font-weight: bold;" text="✓" />
+                                                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Reconnaissance faciale sécurisée" />
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 12px; -fx-text-fill: #28a745; -fx-font-weight: bold;" text="✓" />
+                                                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Données biométriques cryptées localement" />
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 12px; -fx-text-fill: #28a745; -fx-font-weight: bold;" text="✓" />
+                                                        <Label style="-fx-font-size: 12px; -fx-text-fill: #6c757d;" text="Protection avancée contre les accès non autorisés" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+
                                         <!-- Password Strength Indicator -->
                                         <VBox spacing="10.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 15;">
                                             <children>
@@ -196,5 +246,7 @@
                 <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
             </padding>
         </HBox>
+            </content>
+        </ScrollPane>
     </center>
 </BorderPane>

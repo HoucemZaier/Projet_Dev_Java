@@ -21,8 +21,8 @@ public class ServiceUser implements IService<User> {
 
     @Override
     public void ajouter(User user) throws SQLException {
-        // 1. Insérer dans la table utilisateur
-        String sqlUser = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, pays, imageurl, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // 1. Insérer dans la table utilisateur avec les champs 2FA
+        String sqlUser = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, pays, imageurl, status, two_factor_enabled, face_model_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS);
@@ -34,6 +34,8 @@ public class ServiceUser implements IService<User> {
             pstmt.setString(5, user.getPays());
             pstmt.setString(6, user.getImageurl());
             pstmt.setInt(7, user.getStatus()); // Add status field
+            pstmt.setBoolean(8, user.isTwoFactorEnabled()); // Add 2FA enabled field
+            pstmt.setString(9, user.getFaceModelData()); // Add face model data field
 
             int affectedRows = pstmt.executeUpdate();
 
@@ -151,8 +153,8 @@ public class ServiceUser implements IService<User> {
             passwordToSave = PasswordUtils.hashPassword(passwordToSave);
         }
 
-        final String sqlWithPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ?, status = ? WHERE id_utilisateur = ?";
-        final String sqlWithoutPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, pays = ?, imageurl = ?, status = ? WHERE id_utilisateur = ?";
+        final String sqlWithPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ?, status = ?, two_factor_enabled = ?, face_model_data = ? WHERE id_utilisateur = ?";
+        final String sqlWithoutPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, pays = ?, imageurl = ?, status = ?, two_factor_enabled = ?, face_model_data = ? WHERE id_utilisateur = ?";
 
         try {
             PreparedStatement pstmt;
@@ -165,7 +167,9 @@ public class ServiceUser implements IService<User> {
                 pstmt.setString(5, user.getPays());
                 pstmt.setString(6, user.getImageurl());
                 pstmt.setInt(7, user.getStatus());
-                pstmt.setInt(8, user.getIdUtilisateur());
+                pstmt.setBoolean(8, user.isTwoFactorEnabled());
+                pstmt.setString(9, user.getFaceModelData());
+                pstmt.setInt(10, user.getIdUtilisateur());
             } else {
                 // Do not update password (e.g. when saving account info only) so we never overwrite with null
                 pstmt = connection.prepareStatement(sqlWithoutPassword);
@@ -175,7 +179,9 @@ public class ServiceUser implements IService<User> {
                 pstmt.setString(4, user.getPays());
                 pstmt.setString(5, user.getImageurl());
                 pstmt.setInt(6, user.getStatus());
-                pstmt.setInt(7, user.getIdUtilisateur());
+                pstmt.setBoolean(7, user.isTwoFactorEnabled());
+                pstmt.setString(8, user.getFaceModelData());
+                pstmt.setInt(9, user.getIdUtilisateur());
             }
 
             int rowsAffected = pstmt.executeUpdate();
@@ -495,33 +501,47 @@ public class ServiceUser implements IService<User> {
         String imageurl = rs.getString("imageurl");
         int status = rs.getInt("status"); // Get status from database
 
+        // Get 2FA fields from database
+        boolean twoFactorEnabled = rs.getBoolean("two_factor_enabled");
+        String faceModelData = rs.getString("face_model_data");
+
         // Utiliser le polymorphisme pour déterminer le type en vérifiant les tables spécifiques
         if (isAdmin(id)) {
             String matriculeAdmin = getMatriculeAdmin(id);
             Admin admin = new Admin(id, nom, prenom, email, motDePasse, pays, imageurl, matriculeAdmin);
             admin.setId_admin(id);
             admin.setStatus(status); // Set status
+            admin.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
+            admin.setFaceModelData(faceModelData); // Set face model data
             user = admin;
         } else if (isClient(id)) {
             String cin = getCinClient(id);
             Client client = new Client(id, nom, prenom, email, motDePasse, pays, imageurl, cin);
             client.setId_client(id);
             client.setStatus(status); // Set status
+            client.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
+            client.setFaceModelData(faceModelData); // Set face model data
             user = client;
         } else if (isGuide(id)) {
             Guide guide = new Guide(id, nom, prenom, email, motDePasse, pays, imageurl);
             guide.setId_guide(id);
             guide.setStatus(status); // Set status
+            guide.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
+            guide.setFaceModelData(faceModelData); // Set face model data
             user = guide;
         } else if (isModerateur(id)) {
             String matricule = getMatriculeModerateur(id);
             Moderateur moderateur = new Moderateur(id, nom, prenom, email, motDePasse, pays, imageurl, matricule);
             moderateur.setId_moderateur(id);
             moderateur.setStatus(status); // Set status
+            moderateur.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
+            moderateur.setFaceModelData(faceModelData); // Set face model data
             user = moderateur;
         } else {
             // Type inconnu, créer un User générique
             user = new User(id, nom, prenom, email, motDePasse, pays, imageurl, status);
+            user.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
+            user.setFaceModelData(faceModelData); // Set face model data
         }
 
         return user;

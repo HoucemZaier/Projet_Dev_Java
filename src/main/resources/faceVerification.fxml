@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.FaceVerificationController"
+           style="-fx-background-color: rgba(0,0,0,0.8);">
+      <VBox alignment="CENTER" spacing="30.0" style="-fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2); -fx-background-radius: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 35, 0, 0, 15); -fx-max-width: 450; -fx-max-height: 500;">
+            <!-- Header -->
+            <VBox alignment="CENTER" spacing="15.0">
+                  <Text fill="white" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 32px; -fx-font-weight: bold;" text="🔐" />
+                  <Text fill="white" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Vérification Faciale" />
+                  <Text fill="#e8eaf6" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 16px; -fx-text-alignment: center;" text="Positionnez votre visage devant la caméra" textAlignment="CENTER" wrappingWidth="350.0" />
+            </VBox>
+
+            <!-- Camera and Status Area -->
+            <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 20; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 20; -fx-border-width: 1;">
+                  <StackPane fx:id="cameraContainer" prefHeight="180.0" prefWidth="250.0" style="-fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 15;">
+                        <Label fx:id="cameraStatusLabel" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" text="📷 Préparation..." />
+                  </StackPane>
+
+                  <!-- Status and Progress -->
+                  <VBox alignment="CENTER" spacing="15.0">
+                        <HBox alignment="CENTER" spacing="15.0">
+                              <ProgressIndicator fx:id="verificationProgress" maxHeight="30.0" maxWidth="30.0" visible="false" />
+                              <Label fx:id="statusLabel" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" text="Prêt pour la vérification" />
+                        </HBox>
+                        <Text fx:id="instructionLabel" style="-fx-text-fill: #e8eaf6; -fx-font-size: 14px; -fx-text-alignment: center;" text="Regardez directement la caméra" textAlignment="CENTER" wrappingWidth="300.0" />
+                  </VBox>
+               <padding>
+                  <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+               </padding>
+            </VBox>
+
+            <!-- Action Buttons -->
+            <HBox alignment="CENTER" spacing="20.0">
+                  <Button fx:id="startVerificationBtn" mnemonicParsing="false" onAction="#handleStartVerification"
+                          style="-fx-background-color: #4caf50; -fx-background-radius: 15; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 15 25; -fx-font-size: 16px; -fx-min-width: 140px; -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.4), 15, 0, 0, 5);"
+                          text="🎯 Vérifier" />
+
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#handleCancel"
+                          style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 15; -fx-border-color: white; -fx-border-radius: 15; -fx-border-width: 2; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 15 25; -fx-font-size: 16px; -fx-min-width: 140px;"
+                          text="❌ Annuler" />
+            </HBox>
+
+            <!-- Security Note -->
+            <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 15; -fx-padding: 15;">
+                  <HBox alignment="CENTER" spacing="8.0">
+                        <Text fill="#81c784" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="🔒" />
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;" text="Connexion Sécurisée" />
+                  </HBox>
+                  <Text style="-fx-font-size: 12px; -fx-text-fill: #e8eaf6; -fx-text-alignment: center;" text="Votre visage est traité localement et en toute sécurité" textAlignment="CENTER" wrappingWidth="350.0" />
+            </VBox>
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+      </VBox>
+</StackPane>

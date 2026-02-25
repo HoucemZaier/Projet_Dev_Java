@@ -73,6 +73,12 @@ public class accountmanagement implements Initializable {
     @FXML private PasswordField newPasswordField;
     @FXML private PasswordField confirmPasswordField;
 
+    // 2FA elements
+    @FXML private VBox twoFactorSection;
+    @FXML private Label twoFactorStatusLabel;
+    @FXML private Button enable2FABtn;
+    @FXML private Button disable2FABtn;
+
     private User currentUser;
     private ServiceUser serviceUser;
     private boolean isPanelVisible = false;
@@ -194,6 +200,9 @@ public class accountmanagement implements Initializable {
             }
 
             System.out.println("User data loaded: " + currentUser.getNom() + " " + currentUser.getPrenom());
+
+            // Initialize 2FA section based on user role
+            initialize2FASection();
         } else {
             showAlert(Alert.AlertType.WARNING, "No User Session", "No user session found. Please log in again.");
         }
@@ -782,6 +791,164 @@ public class accountmanagement implements Initializable {
         button.setOnMouseExited(e -> {
             scaleIn.stop();
             scaleOut.play();
+        });
+    }
+
+    /**
+     * Initialize 2FA section visibility and status based on user role
+     */
+    private void initialize2FASection() {
+        if (twoFactorSection == null) return;
+
+        // Check if user is admin or moderator
+        String userType = UserSession.getInstance().getCurrentUserType();
+        boolean isAdminOrModerator = "Admin".equals(userType) || "Moderateur".equals(userType);
+
+        if (isAdminOrModerator) {
+            twoFactorSection.setVisible(true);
+            twoFactorSection.setManaged(true);
+
+            // Update 2FA status
+            update2FAStatus();
+
+            // Add hover animations to 2FA buttons
+            if (enable2FABtn != null) {
+                addButtonHoverAnimation(enable2FABtn);
+            }
+            if (disable2FABtn != null) {
+                addButtonHoverAnimation(disable2FABtn);
+            }
+        } else {
+            // Hide 2FA section for clients and guides
+            twoFactorSection.setVisible(false);
+            twoFactorSection.setManaged(false);
+        }
+    }
+
+    /**
+     * Update 2FA status display
+     */
+    private void update2FAStatus() {
+        if (currentUser != null && twoFactorStatusLabel != null && enable2FABtn != null && disable2FABtn != null) {
+            if (currentUser.isTwoFactorEnabled()) {
+                // 2FA is enabled
+                twoFactorStatusLabel.setText("Activé");
+                twoFactorStatusLabel.setStyle("-fx-background-color: #28a745; -fx-background-radius: 15; -fx-text-fill: white; -fx-padding: 4 10; -fx-font-size: 12px; -fx-font-weight: bold;");
+
+                // Show disable button, hide enable button
+                enable2FABtn.setVisible(false);
+                enable2FABtn.setManaged(false);
+                disable2FABtn.setVisible(true);
+                disable2FABtn.setManaged(true);
+            } else {
+                // 2FA is disabled
+                twoFactorStatusLabel.setText("Désactivé");
+                twoFactorStatusLabel.setStyle("-fx-background-color: #dc3545; -fx-background-radius: 15; -fx-text-fill: white; -fx-padding: 4 10; -fx-font-size: 12px; -fx-font-weight: bold;");
+
+                // Show enable button, hide disable button
+                enable2FABtn.setVisible(true);
+                enable2FABtn.setManaged(true);
+                disable2FABtn.setVisible(false);
+                disable2FABtn.setManaged(false);
+            }
+        }
+    }
+
+    /**
+     * Handle enable 2FA button click
+     */
+    @FXML
+    private void handleEnable2FA(ActionEvent event) {
+        if (currentUser == null) return;
+
+        try {
+            // Load face enrollment dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/faceEnrollment.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller
+            FaceEnrollmentController controller = loader.getController();
+
+            // Set success callback to refresh UI
+            controller.setOnSuccessCallback(() -> {
+                // Refresh user from database
+                try {
+                    User refreshedUser = serviceUser.recupererParId(currentUser.getIdUtilisateur());
+                    if (refreshedUser != null) {
+                        currentUser = refreshedUser;
+                        UserSession.getInstance().setCurrentUser(currentUser);
+                        update2FAStatus();
+
+                        // Show success message
+                        showAlert(Alert.AlertType.INFORMATION, "2FA Activé",
+                                "L'authentification à deux facteurs a été activée avec succès!\n" +
+                                "Votre prochaine connexion nécessitera une vérification faciale.");
+                    }
+                } catch (Exception e) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur",
+                            "Erreur lors de la mise à jour: " + e.getMessage());
+                }
+            });
+
+            // Create and show modal window
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Configuration 2FA - PlaNova");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.getIcons().add(new Image("/logo.PNG"));
+
+            // Center on parent window
+            Stage parentStage = (Stage) enable2FABtn.getScene().getWindow();
+            stage.initOwner(parentStage);
+
+            stage.show();
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir l'interface de configuration 2FA: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handle disable 2FA button click
+     */
+    @FXML
+    private void handleDisable2FA(ActionEvent event) {
+        if (currentUser == null) return;
+
+        // Confirmation dialog
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Désactiver 2FA");
+        confirmAlert.setHeaderText("Désactiver l'Authentification à Deux Facteurs");
+        confirmAlert.setContentText("Êtes-vous sûr de vouloir désactiver l'authentification à deux facteurs?\n\n" +
+                "Cela réduira la sécurité de votre compte.");
+
+        // Custom buttons
+        ButtonType disableButton = new ButtonType("Désactiver", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        confirmAlert.getButtonTypes().setAll(disableButton, cancelButton);
+
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == disableButton) {
+                try {
+                    // Disable 2FA in database
+                    currentUser.setTwoFactorEnabled(false);
+                    currentUser.setFaceModelData(null);
+                    serviceUser.modifier(currentUser);
+
+                    // Update UI
+                    update2FAStatus();
+
+                    // Show success message
+                    showAlert(Alert.AlertType.INFORMATION, "2FA Désactivé",
+                            "L'authentification à deux facteurs a été désactivée.");
+
+                } catch (Exception e) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur",
+                            "Erreur lors de la désactivation de 2FA: " + e.getMessage());
+                }
+            }
         });
     }
 }

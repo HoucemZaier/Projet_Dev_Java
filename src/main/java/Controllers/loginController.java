@@ -17,8 +17,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
 import javafx.application.Platform;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import java.awt.Desktop;
 import java.net.URI;
 import java.io.IOException;
@@ -149,19 +151,13 @@ public class  loginController {
             // Store user in session
             UserSession.getInstance().setCurrentUser(authenticatedUser);
 
-            // Navigate based on user role
-            if (UserSession.getInstance().isClient() || UserSession.getInstance().isGuide()) {
-                // Clients and Guides go to explore interface
-                navigateToExplore(authenticatedUser);
-            } else if (UserSession.getInstance().canAccessDashboard()) {
-                // Admin and Moderator go to dashboard
-                navigateToDashboard(authenticatedUser);
+            // Check if 2FA is enabled for this user
+            if (authenticatedUser.isTwoFactorEnabled() && authenticatedUser.getFaceModelData() != null) {
+                // Show 2FA face verification dialog
+                show2FAVerification(authenticatedUser);
             } else {
-                // Other roles not allowed
-                UserSession.getInstance().logout();
-                showAlert(Alert.AlertType.ERROR, "Accès refusé",
-                    "Ce type de compte n'a pas d'interface dédiée. Contactez l'administrateur.");
-                return;
+                // Proceed with normal login flow
+                proceedWithLogin(authenticatedUser);
             }
 
         } catch (SQLException e) {
@@ -813,6 +809,85 @@ public class  loginController {
                 processGoogleOAuthSuccess(authCode.trim());
             }
         });
+    }
+
+    /**
+     * Show 2FA face verification dialog
+     */
+    private void show2FAVerification(User user) {
+        try {
+            // Load face verification dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/faceVerification.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller
+            FaceVerificationController controller = loader.getController();
+            controller.setUserToVerify(user);
+
+            // Set callbacks
+            controller.setCallbacks(
+                // Success callback
+                () -> {
+                    Platform.runLater(() -> proceedWithLogin(user));
+                },
+                // Failure callback
+                () -> {
+                    Platform.runLater(() -> {
+                        UserSession.getInstance().logout();
+                        showAlert(Alert.AlertType.WARNING, "Vérification 2FA échouée",
+                                "La vérification faciale a échoué ou a été annulée.\n" +
+                                "Veuillez réessayer ou contactez votre administrateur.");
+                    });
+                }
+            );
+
+            // Create and show modal window
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Vérification 2FA - PlaNova");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+
+            // Center on parent window
+            Stage parentStage = (Stage) emailField.getScene().getWindow();
+            stage.initOwner(parentStage);
+
+            // Add icon
+            try {
+                stage.getIcons().add(new Image("/logo.PNG"));
+            } catch (Exception e) {
+                // Icon loading failed, continue without icon
+            }
+
+            stage.show();
+
+        } catch (IOException e) {
+            // If 2FA dialog fails to load, proceed without 2FA verification
+            System.err.println("Failed to load 2FA verification dialog: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur 2FA",
+                    "Impossible de charger l'interface de vérification 2FA.\n" +
+                    "Connexion en mode normal.");
+            proceedWithLogin(user);
+        }
+    }
+
+    /**
+     * Proceed with normal login flow after authentication (and optional 2FA)
+     */
+    private void proceedWithLogin(User authenticatedUser) {
+        // Navigate based on user role
+        if (UserSession.getInstance().isClient() || UserSession.getInstance().isGuide()) {
+            // Clients and Guides go to explore interface
+            navigateToExplore(authenticatedUser);
+        } else if (UserSession.getInstance().canAccessDashboard()) {
+            // Admin and Moderator go to dashboard
+            navigateToDashboard(authenticatedUser);
+        } else {
+            // Other roles not allowed
+            UserSession.getInstance().logout();
+            showAlert(Alert.AlertType.ERROR, "Accès refusé",
+                "Ce type de compte n'a pas d'interface dédiée. Contactez l'administrateur.");
+        }
     }
 
 

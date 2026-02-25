@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.FaceEnrollmentController"
+           style="-fx-background-color: rgba(0,0,0,0.7);">
+      <VBox alignment="CENTER" spacing="30.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 10); -fx-max-width: 500; -fx-max-height: 600;">
+            <!-- Header -->
+            <VBox alignment="CENTER" spacing="15.0">
+                  <Text fill="#2c3e50" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 28px; -fx-font-weight: bold;" text="🔐 Authentification à Deux Facteurs" />
+                  <Text fill="#7f8c8d" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 16px; -fx-text-alignment: center;" text="Configurez la reconnaissance faciale pour sécuriser votre compte" textAlignment="CENTER" wrappingWidth="400.0" />
+            </VBox>
+
+            <!-- Camera Preview Area -->
+            <VBox fx:id="cameraPreviewArea" alignment="CENTER" spacing="15.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 15; -fx-border-color: #dee2e6; -fx-border-radius: 15; -fx-border-width: 2;">
+                  <StackPane fx:id="cameraContainer" prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #343a40; -fx-background-radius: 10;">
+                        <Label fx:id="cameraStatusLabel" style="-fx-text-fill: white; -fx-font-size: 14px;" text="📷 Préparation de la caméra..." />
+                  </StackPane>
+
+                  <!-- Progress Section -->
+                  <VBox alignment="CENTER" spacing="10.0">
+                        <Label fx:id="progressLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #495057;" text="Prêt à commencer" />
+                        <ProgressBar fx:id="captureProgressBar" prefWidth="250.0" progress="0.0" style="-fx-accent: #4a6fa5;" />
+                        <Text fx:id="instructionLabel" style="-fx-font-size: 12px; -fx-text-fill: #6c757d; -fx-text-alignment: center;" text="Positionnez votre visage dans le cadre et cliquez sur Démarrer" textAlignment="CENTER" wrappingWidth="280.0" />
+                  </VBox>
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding>
+            </VBox>
+
+            <!-- Status Messages -->
+            <VBox fx:id="statusMessagesArea" alignment="CENTER" spacing="10.0" visible="false" managed="false">
+                  <HBox alignment="CENTER" spacing="10.0">
+                        <Label fx:id="statusIcon" style="-fx-font-size: 18px;" text="✅" />
+                        <Label fx:id="statusMessage" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #28a745;" text="Configuration terminée avec succès!" />
+                  </HBox>
+                  <Text fx:id="statusDetails" style="-fx-font-size: 12px; -fx-text-fill: #6c757d; -fx-text-alignment: center;" text="La reconnaissance faciale est maintenant active pour votre compte." textAlignment="CENTER" wrappingWidth="400.0" />
+            </VBox>
+
+            <!-- Action Buttons -->
+            <HBox alignment="CENTER" spacing="20.0">
+                  <Button fx:id="startCaptureBtn" mnemonicParsing="false" onAction="#handleStartCapture"
+                          style="-fx-background-color: #4a6fa5; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 15 25; -fx-font-size: 14px; -fx-min-width: 120px; -fx-effect: dropshadow(gaussian, rgba(74,111,165,0.3), 10, 0, 0, 3);"
+                          text="🎬 Démarrer" />
+
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#handleCancel"
+                          style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-color: #dc3545; -fx-border-radius: 10; -fx-border-width: 2; -fx-text-fill: #dc3545; -fx-font-weight: bold; -fx-padding: 15 25; -fx-font-size: 14px; -fx-min-width: 120px;"
+                          text="❌ Annuler" />
+
+                  <Button fx:id="finishBtn" mnemonicParsing="false" onAction="#handleFinish" visible="false" managed="false"
+                          style="-fx-background-color: #28a745; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 15 25; -fx-font-size: 14px; -fx-min-width: 120px; -fx-effect: dropshadow(gaussian, rgba(40,167,69,0.3), 10, 0, 0, 3);"
+                          text="✅ Terminer" />
+            </HBox>
+
+            <!-- Security Info -->
+            <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: #e3f2fd; -fx-background-radius: 10; -fx-padding: 15;">
+                  <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1565c0;" text="🔒 Sécurité et Confidentialité" />
+                  <Text style="-fx-font-size: 11px; -fx-text-fill: #1976d2; -fx-text-alignment: center;" text="Vos données biométriques sont cryptées et stockées localement." textAlignment="CENTER" wrappingWidth="400.0" />
+                  <Text style="-fx-font-size: 11px; -fx-text-fill: #1976d2; -fx-text-alignment: center;" text="Elles ne sont jamais partagées avec des tiers." textAlignment="CENTER" wrappingWidth="400.0" />
+            </VBox>
+         <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+         </padding>
+      </VBox>
+</StackPane>

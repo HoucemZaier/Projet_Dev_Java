@@ -9,14 +9,17 @@ public class User {
     private String pays;
     private String imageurl;
     private int status; // 0 = active, 1 = blocked
+    private boolean twoFactorEnabled; // Two-factor authentication enabled
+    private String faceModelData; // Base64 encoded face recognition model
 
     // Constructeur vide
     public User() {
     }
 
-    // Constructeur complet avec status
+    // Constructeur complet avec status et 2FA
     public User(int idUtilisateur, String nom, String prenom, String email,
-                String motDePasse, String pays, String imageurl, int status) {
+                String motDePasse, String pays, String imageurl, int status,
+                boolean twoFactorEnabled, String faceModelData) {
         this.idUtilisateur = idUtilisateur;
         this.nom = nom;
         this.prenom = prenom;
@@ -25,6 +28,14 @@ public class User {
         this.pays = pays;
         this.imageurl = imageurl;
         this.status = status;
+        this.twoFactorEnabled = twoFactorEnabled;
+        this.faceModelData = faceModelData;
+    }
+
+    // Constructeur complet avec status (pour compatibilité)
+    public User(int idUtilisateur, String nom, String prenom, String email,
+                String motDePasse, String pays, String imageurl, int status) {
+        this(idUtilisateur, nom, prenom, email, motDePasse, pays, imageurl, status, false, null);
     }
 
     // Constructeur complet sans status (pour compatibilité)
@@ -43,6 +54,8 @@ public class User {
         this.pays = pays;
         this.imageurl = imageurl;
         this.status = 0; // default active
+        this.twoFactorEnabled = false; // default disabled
+        this.faceModelData = null;
     }
 
     // Getters et Setters
@@ -116,6 +129,22 @@ public class User {
 
     public boolean isActive() {
         return status == 0;
+    }
+
+    public boolean isTwoFactorEnabled() {
+        return twoFactorEnabled;
+    }
+
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) {
+        this.twoFactorEnabled = twoFactorEnabled;
+    }
+
+    public String getFaceModelData() {
+        return faceModelData;
+    }
+
+    public void setFaceModelData(String faceModelData) {
+        this.faceModelData = faceModelData;
     }
 
     @Override
