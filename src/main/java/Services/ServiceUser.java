@@ -21,8 +21,8 @@ public class ServiceUser implements IService<User> {
 
     @Override
     public void ajouter(User user) throws SQLException {
-        // 1. Insérer dans la table utilisateur avec les champs 2FA
-        String sqlUser = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, pays, imageurl, status, two_factor_enabled, face_model_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // 1. Insérer dans la table utilisateur avec les champs 2FA et TOTP
+        String sqlUser = "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, pays, imageurl, status, two_factor_enabled, face_model_data, totp_secret_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS);
@@ -36,6 +36,7 @@ public class ServiceUser implements IService<User> {
             pstmt.setInt(7, user.getStatus()); // Add status field
             pstmt.setBoolean(8, user.isTwoFactorEnabled()); // Add 2FA enabled field
             pstmt.setString(9, user.getFaceModelData()); // Add face model data field
+            pstmt.setString(10, user.getTotpSecretKey()); // Add TOTP secret key field
 
             int affectedRows = pstmt.executeUpdate();
 
@@ -153,8 +154,8 @@ public class ServiceUser implements IService<User> {
             passwordToSave = PasswordUtils.hashPassword(passwordToSave);
         }
 
-        final String sqlWithPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ?, status = ?, two_factor_enabled = ?, face_model_data = ? WHERE id_utilisateur = ?";
-        final String sqlWithoutPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, pays = ?, imageurl = ?, status = ?, two_factor_enabled = ?, face_model_data = ? WHERE id_utilisateur = ?";
+        final String sqlWithPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, mot_de_passe = ?, pays = ?, imageurl = ?, status = ?, two_factor_enabled = ?, face_model_data = ?, totp_secret_key = ? WHERE id_utilisateur = ?";
+        final String sqlWithoutPassword = "UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, pays = ?, imageurl = ?, status = ?, two_factor_enabled = ?, face_model_data = ?, totp_secret_key = ? WHERE id_utilisateur = ?";
 
         try {
             PreparedStatement pstmt;
@@ -169,7 +170,8 @@ public class ServiceUser implements IService<User> {
                 pstmt.setInt(7, user.getStatus());
                 pstmt.setBoolean(8, user.isTwoFactorEnabled());
                 pstmt.setString(9, user.getFaceModelData());
-                pstmt.setInt(10, user.getIdUtilisateur());
+                pstmt.setString(10, user.getTotpSecretKey());
+                pstmt.setInt(11, user.getIdUtilisateur());
             } else {
                 // Do not update password (e.g. when saving account info only) so we never overwrite with null
                 pstmt = connection.prepareStatement(sqlWithoutPassword);
@@ -181,7 +183,8 @@ public class ServiceUser implements IService<User> {
                 pstmt.setInt(6, user.getStatus());
                 pstmt.setBoolean(7, user.isTwoFactorEnabled());
                 pstmt.setString(8, user.getFaceModelData());
-                pstmt.setInt(9, user.getIdUtilisateur());
+                pstmt.setString(9, user.getTotpSecretKey());
+                pstmt.setInt(10, user.getIdUtilisateur());
             }
 
             int rowsAffected = pstmt.executeUpdate();
@@ -504,6 +507,7 @@ public class ServiceUser implements IService<User> {
         // Get 2FA fields from database
         boolean twoFactorEnabled = rs.getBoolean("two_factor_enabled");
         String faceModelData = rs.getString("face_model_data");
+        String totpSecretKey = rs.getString("totp_secret_key");
 
         // Utiliser le polymorphisme pour déterminer le type en vérifiant les tables spécifiques
         if (isAdmin(id)) {
@@ -513,6 +517,7 @@ public class ServiceUser implements IService<User> {
             admin.setStatus(status); // Set status
             admin.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
             admin.setFaceModelData(faceModelData); // Set face model data
+            admin.setTotpSecretKey(totpSecretKey); // Set TOTP secret key
             user = admin;
         } else if (isClient(id)) {
             String cin = getCinClient(id);
@@ -521,6 +526,7 @@ public class ServiceUser implements IService<User> {
             client.setStatus(status); // Set status
             client.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
             client.setFaceModelData(faceModelData); // Set face model data
+            client.setTotpSecretKey(totpSecretKey); // Set TOTP secret key
             user = client;
         } else if (isGuide(id)) {
             Guide guide = new Guide(id, nom, prenom, email, motDePasse, pays, imageurl);
@@ -528,6 +534,7 @@ public class ServiceUser implements IService<User> {
             guide.setStatus(status); // Set status
             guide.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
             guide.setFaceModelData(faceModelData); // Set face model data
+            guide.setTotpSecretKey(totpSecretKey); // Set TOTP secret key
             user = guide;
         } else if (isModerateur(id)) {
             String matricule = getMatriculeModerateur(id);
@@ -536,12 +543,14 @@ public class ServiceUser implements IService<User> {
             moderateur.setStatus(status); // Set status
             moderateur.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
             moderateur.setFaceModelData(faceModelData); // Set face model data
+            moderateur.setTotpSecretKey(totpSecretKey); // Set TOTP secret key
             user = moderateur;
         } else {
             // Type inconnu, créer un User générique
             user = new User(id, nom, prenom, email, motDePasse, pays, imageurl, status);
             user.setTwoFactorEnabled(twoFactorEnabled); // Set 2FA status
             user.setFaceModelData(faceModelData); // Set face model data
+            user.setTotpSecretKey(totpSecretKey); // Set TOTP secret key
         }
 
         return user;
@@ -580,34 +589,103 @@ public class ServiceUser implements IService<User> {
         return null;
     }
 
-    // Méthodes helper pour déterminer le type d'utilisateur en utilisant le polymorphisme (vérification des tables)
-    private boolean isAdmin(int id) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM admin WHERE id_admin = ?";
-        PreparedStatement pstmt = connection.prepareStatement(sql);
-        pstmt.setInt(1, id);
-        ResultSet rs = pstmt.executeQuery();
-        return rs.next() && rs.getInt(1) > 0;
+    /**
+     * Check if there are users with Face ID configured
+     */
+    public boolean hasUsersWithFaceId() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM utilisateur WHERE two_factor_enabled = 1 AND face_model_data IS NOT NULL AND status = 0";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        }
     }
 
-    private boolean isClient(int id) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM client WHERE id_client = ?";
-        PreparedStatement pstmt = connection.prepareStatement(sql);
-        pstmt.setInt(1, id);
-        ResultSet rs = pstmt.executeQuery();
-        return rs.next() && rs.getInt(1) > 0;
+    /**
+     * Get all users with Face ID enabled (active users only)
+     */
+    public List<User> getUsersWithFaceId() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM utilisateur WHERE two_factor_enabled = 1 AND face_model_data IS NOT NULL AND status = 0";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                User user = createUserFromResultSet(rs);
+                if (user != null) {
+                    users.add(user);
+                }
+            }
+        }
+
+        return users;
     }
 
-    private boolean isGuide(int id) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM guide WHERE id_guide = ?";
-        PreparedStatement pstmt = connection.prepareStatement(sql);
-        pstmt.setInt(1, id);
-        ResultSet rs = pstmt.executeQuery();
-        return rs.next() && rs.getInt(1) > 0;
+    /**
+     * Update user's TOTP secret key for Microsoft Authenticator
+     */
+    public void updateTotpSecretKey(int userId, String totpSecretKey) throws SQLException {
+        String sql = "UPDATE utilisateur SET totp_secret_key = ? WHERE id_utilisateur = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, totpSecretKey);
+            pstmt.setInt(2, userId);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Aucun utilisateur trouvé avec l'ID: " + userId);
+            }
+        }
+    }
+
+    /**
+     * Get user's TOTP secret key
+     */
+    public String getTotpSecretKey(int userId) throws SQLException {
+        String sql = "SELECT totp_secret_key FROM utilisateur WHERE id_utilisateur = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("totp_secret_key");
+            }
+            return null;
+        }
     }
 
     private boolean isModerateur(int id) throws SQLException {
         // Check if user exists in employee table (for Moderateur)
         String sql = "SELECT COUNT(*) FROM employee WHERE id_employee = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        }
+    }
+
+    private boolean isAdmin(int id) throws SQLException {
+        // Check if user exists in admin table
+        String sql = "SELECT COUNT(*) FROM admin WHERE id_admin = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        }
+    }
+
+    private boolean isClient(int id) throws SQLException {
+        // Check if user exists in client table
+        String sql = "SELECT COUNT(*) FROM client WHERE id_client = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        }
+    }
+
+    private boolean isGuide(int id) throws SQLException {
+        // Check if user exists in guide table
+        String sql = "SELECT COUNT(*) FROM guide WHERE id_guide = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();

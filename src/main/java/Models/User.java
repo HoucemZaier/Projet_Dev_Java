@@ -11,6 +11,7 @@ public class User {
     private int status; // 0 = active, 1 = blocked
     private boolean twoFactorEnabled; // Two-factor authentication enabled
     private String faceModelData; // Base64 encoded face recognition model
+    private String totpSecretKey; // Secret key for TOTP (Microsoft Authenticator)
 
     // Constructeur vide
     public User() {
@@ -19,7 +20,7 @@ public class User {
     // Constructeur complet avec status et 2FA
     public User(int idUtilisateur, String nom, String prenom, String email,
                 String motDePasse, String pays, String imageurl, int status,
-                boolean twoFactorEnabled, String faceModelData) {
+                boolean twoFactorEnabled, String faceModelData, String totpSecretKey) {
         this.idUtilisateur = idUtilisateur;
         this.nom = nom;
         this.prenom = prenom;
@@ -30,6 +31,14 @@ public class User {
         this.status = status;
         this.twoFactorEnabled = twoFactorEnabled;
         this.faceModelData = faceModelData;
+        this.totpSecretKey = totpSecretKey;
+    }
+
+    // Constructeur complet avec status et 2FA (sans TOTP pour compatibilité)
+    public User(int idUtilisateur, String nom, String prenom, String email,
+                String motDePasse, String pays, String imageurl, int status,
+                boolean twoFactorEnabled, String faceModelData) {
+        this(idUtilisateur, nom, prenom, email, motDePasse, pays, imageurl, status, twoFactorEnabled, faceModelData, null);
     }
 
     // Constructeur complet avec status (pour compatibilité)
@@ -56,6 +65,7 @@ public class User {
         this.status = 0; // default active
         this.twoFactorEnabled = false; // default disabled
         this.faceModelData = null;
+        this.totpSecretKey = null;
     }
 
     // Getters et Setters
@@ -145,6 +155,21 @@ public class User {
 
     public void setFaceModelData(String faceModelData) {
         this.faceModelData = faceModelData;
+    }
+
+    public String getTotpSecretKey() {
+        return totpSecretKey;
+    }
+
+    public void setTotpSecretKey(String totpSecretKey) {
+        this.totpSecretKey = totpSecretKey;
+    }
+
+    /**
+     * Check if user has TOTP (Microsoft Authenticator) enabled
+     */
+    public boolean isTotpEnabled() {
+        return totpSecretKey != null && !totpSecretKey.trim().isEmpty();
     }
 
     @Override

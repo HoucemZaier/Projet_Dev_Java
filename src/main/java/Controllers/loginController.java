@@ -4,8 +4,7 @@ import Models.User;
 import Models.Client;
 import Services.ServiceUser;
 import Services.SocialAuthService;
-import Controllers.ExploreController;
-import Controllers.dashboardController;
+
 import utils.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
@@ -45,8 +44,7 @@ public class  loginController {
     private Button facebookBtn;
     @FXML
     private Button googleBtn;
-    @FXML
-    private javafx.scene.control.Hyperlink forgotPasswordLink;
+
 
     private final ServiceUser serviceUser = new ServiceUser();
     private SocialAuthService socialAuthService;
@@ -152,9 +150,18 @@ public class  loginController {
             UserSession.getInstance().setCurrentUser(authenticatedUser);
 
             // Check if 2FA is enabled for this user
-            if (authenticatedUser.isTwoFactorEnabled() && authenticatedUser.getFaceModelData() != null) {
-                // Show 2FA face verification dialog
-                show2FAVerification(authenticatedUser);
+            if (authenticatedUser.isTwoFactorEnabled()) {
+                // Check which 2FA methods are available
+                boolean hasFaceId = authenticatedUser.getFaceModelData() != null;
+                boolean hasTotp = authenticatedUser.isTotpEnabled();
+
+                if (hasFaceId || hasTotp) {
+                    // Show 2FA verification dialog
+                    show2FAVerification(authenticatedUser);
+                } else {
+                    // 2FA is enabled but no methods configured - proceed with normal login
+                    proceedWithLogin(authenticatedUser);
+                }
             } else {
                 // Proceed with normal login flow
                 proceedWithLogin(authenticatedUser);
@@ -171,35 +178,392 @@ public class  loginController {
         }
     }
 
+    /**
+     * Show beautiful styled alert with animations
+     */
+    private void showStyledAlert(String title, String message, String type) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        
+        // Create custom styled content
+        VBox mainContainer = new VBox();
+        
+        String headerColor;
+        String headerIcon;
+        String borderColor;
+        
+        switch (type) {
+            case "success":
+                headerColor = "linear-gradient(to right, #10b981, #059669)";
+                headerIcon = "✅";
+                borderColor = "rgba(16,185,129,0.3)";
+                break;
+            case "error":
+                headerColor = "linear-gradient(to right, #ef4444, #dc2626)";
+                headerIcon = "❌";
+                borderColor = "rgba(239,68,68,0.3)";
+                break;
+            case "warning":
+                headerColor = "linear-gradient(to right, #f59e0b, #d97706)";
+                headerIcon = "⚠️";
+                borderColor = "rgba(245,158,11,0.3)";
+                break;
+            default:
+                headerColor = "linear-gradient(to right, #667eea, #764ba2)";
+                headerIcon = "ℹ️";
+                borderColor = "rgba(103,126,234,0.3)";
+        }
+        
+        mainContainer.setStyle(
+            "-fx-background-color: linear-gradient(to bottom, #f8fafc, #ffffff);" +
+            "-fx-background-radius: 15;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);" +
+            "-fx-border-color: " + borderColor + ";" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 15;" +
+            "-fx-min-width: 350;" +
+            "-fx-pref-width: 350;"
+        );
+        
+        // Header section
+        VBox headerSection = new VBox(10);
+        headerSection.setPadding(new javafx.geometry.Insets(25));
+        headerSection.setStyle("-fx-background-color: " + headerColor + "; -fx-background-radius: 15 15 0 0;");
+        headerSection.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        Label iconLabel = new Label(headerIcon);
+        iconLabel.setStyle("-fx-font-size: 30px;");
+        
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle(
+            "-fx-font-size: 20px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-text-alignment: center;"
+        );
+        
+        headerSection.getChildren().addAll(iconLabel, titleLabel);
+        
+        // Content section
+        VBox contentSection = new VBox(20);
+        contentSection.setPadding(new javafx.geometry.Insets(25));
+        contentSection.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        Label messageLabel = new Label(message);
+        messageLabel.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-text-fill: #374151;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-text-alignment: center;" +
+            "-fx-wrap-text: true;"
+        );
+        messageLabel.setWrapText(true);
+        
+        contentSection.getChildren().add(messageLabel);
+        
+        // Button section
+        javafx.scene.layout.HBox buttonSection = new javafx.scene.layout.HBox();
+        buttonSection.setPadding(new javafx.geometry.Insets(0, 25, 25, 25));
+        buttonSection.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        Button okButton = new Button("OK");
+        okButton.setStyle(
+            "-fx-background-color: " + headerColor + ";" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-padding: 12 30;" +
+            "-fx-cursor: hand;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(103,126,234,0.3), 8, 0, 0, 3);"
+        );
+        
+        // Button hover effect
+        okButton.setOnMouseEntered(e -> okButton.setOpacity(0.9));
+        okButton.setOnMouseExited(e -> okButton.setOpacity(1.0));
+        
+        buttonSection.getChildren().add(okButton);
+        mainContainer.getChildren().addAll(headerSection, contentSection, buttonSection);
+        
+        alert.getDialogPane().setContent(mainContainer);
+        alert.getDialogPane().getButtonTypes().clear();
+        
+        // Add entrance animation
+        Platform.runLater(() -> {
+            mainContainer.setScaleX(0.8);
+            mainContainer.setScaleY(0.8);
+            mainContainer.setOpacity(0.0);
+            
+            javafx.animation.Timeline scaleTimeline = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(javafx.util.Duration.ZERO,
+                    new javafx.animation.KeyValue(mainContainer.scaleXProperty(), 0.8),
+                    new javafx.animation.KeyValue(mainContainer.scaleYProperty(), 0.8),
+                    new javafx.animation.KeyValue(mainContainer.opacityProperty(), 0.0)
+                ),
+                new javafx.animation.KeyFrame(javafx.util.Duration.millis(300),
+                    new javafx.animation.KeyValue(mainContainer.scaleXProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT),
+                    new javafx.animation.KeyValue(mainContainer.scaleYProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT),
+                    new javafx.animation.KeyValue(mainContainer.opacityProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT)
+                )
+            );
+            scaleTimeline.play();
+        });
+        
+        okButton.setOnAction(e -> alert.close());
+        alert.show();
+    }
+
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        TextInputDialog emailDialog = new TextInputDialog();
+        // Create beautiful custom email input dialog
+        Dialog<String> emailDialog = new Dialog<>();
         emailDialog.setTitle("Réinitialiser le mot de passe");
-        emailDialog.setHeaderText("Entrez l'email de votre compte");
-        emailDialog.setContentText("Email:");
-        emailDialog.showAndWait().ifPresent(email -> {
-            if (email.trim().isEmpty()) return;
-            Dialog<String> passDialog = new Dialog<>();
-            passDialog.setTitle("Réinitialiser le mot de passe");
-            passDialog.setHeaderText("Entrez un nouveau mot de passe pour " + email.trim());
-            javafx.scene.control.PasswordField newPass = new javafx.scene.control.PasswordField();
-            newPass.setPromptText("Nouveau mot de passe");
-            passDialog.getDialogPane().setContent(newPass);
-            passDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-            passDialog.setResultConverter(btn -> btn == ButtonType.OK ? newPass.getText() : null);
-            passDialog.showAndWait().ifPresent(newPassword -> {
-                if (newPassword == null || newPassword.isEmpty()) return;
-                try {
-                    if (serviceUser.resetPasswordByEmail(email.trim(), newPassword)) {
-                        showAlert(Alert.AlertType.INFORMATION, "Mot de passe réinitialisé", "Mot de passe mis à jour. Vous pouvez maintenant vous connecter avec votre email et le nouveau mot de passe.");
-                    } else {
-                        showAlert(Alert.AlertType.WARNING, "Échec de la réinitialisation", "Aucun compte trouvé avec cet email, ou une erreur s'est produite.");
-                    }
-                } catch (SQLException e) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la réinitialisation du mot de passe: " + e.getMessage());
-                }
-            });
+        emailDialog.setHeaderText(null);
+
+        // Ensure dialog can be closed properly
+        emailDialog.setResizable(false);
+
+        // Create custom styled content
+        VBox mainContainer = new VBox();
+        mainContainer.setStyle(
+            "-fx-background-color: linear-gradient(to bottom, #f8fafc, #ffffff);" +
+            "-fx-background-radius: 15;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);" +
+            "-fx-border-color: rgba(59,130,246,0.2);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 15;" +
+            "-fx-min-width: 400;" +
+            "-fx-pref-width: 400;"
+        );
+
+        // Header section
+        VBox headerSection = new VBox(10);
+        headerSection.setPadding(new javafx.geometry.Insets(25));
+        headerSection.setStyle("-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-background-radius: 15 15 0 0;");
+        headerSection.setAlignment(javafx.geometry.Pos.CENTER);
+
+        Label iconLabel = new Label("🔑");
+        iconLabel.setStyle("-fx-font-size: 40px;");
+
+        Label titleLabel = new Label("Mot de passe oublié?");
+        titleLabel.setStyle(
+            "-fx-font-size: 24px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+
+        Label subtitleLabel = new Label("Entrez votre email pour réinitialiser");
+        subtitleLabel.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-text-fill: rgba(255,255,255,0.9);" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+
+        headerSection.getChildren().addAll(iconLabel, titleLabel, subtitleLabel);
+
+        // Content section
+        VBox contentSection = new VBox(20);
+        contentSection.setPadding(new javafx.geometry.Insets(25));
+
+        Label emailLabel = new Label("Adresse email");
+        emailLabel.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-text-fill: #374151;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+
+        TextField emailField = new TextField();
+        emailField.setPromptText("exemple@planova.tn");
+        emailField.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 15 20;" +
+            "-fx-background-color: white;" +
+            "-fx-border-color: #d1d5db;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+
+        // Focus effect for email field
+        emailField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                emailField.setStyle(emailField.getStyle().replace("-fx-border-color: #d1d5db;", "-fx-border-color: #667eea;"));
+            } else {
+                emailField.setStyle(emailField.getStyle().replace("-fx-border-color: #667eea;", "-fx-border-color: #d1d5db;"));
+            }
         });
+
+        // Info section
+        VBox infoContainer = new VBox(8);
+        infoContainer.setStyle(
+            "-fx-background-color: rgba(16,185,129,0.1);" +
+            "-fx-background-radius: 10;" +
+            "-fx-padding: 15;" +
+            "-fx-border-color: rgba(16,185,129,0.3);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 10;"
+        );
+
+        Label infoLabel = new Label("ℹ️ Information importante");
+        infoLabel.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: #059669;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+
+        Label infoText = new Label("Si votre compte a l'authentification à double facteur activée, vous devrez vérifier votre identité avant de pouvoir réinitialiser votre mot de passe.");
+        infoText.setStyle(
+            "-fx-font-size: 12px;" +
+            "-fx-text-fill: #047857;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-wrap-text: true;"
+        );
+        infoText.setWrapText(true);
+
+        infoContainer.getChildren().addAll(infoLabel, infoText);
+        contentSection.getChildren().addAll(emailLabel, emailField, infoContainer);
+
+        // Button section
+        javafx.scene.layout.HBox buttonSection = new javafx.scene.layout.HBox(15);
+        buttonSection.setPadding(new javafx.geometry.Insets(0, 25, 25, 25));
+        buttonSection.setAlignment(javafx.geometry.Pos.CENTER);
+
+        Button cancelButton = new Button("Annuler");
+        cancelButton.setStyle(
+            "-fx-background-color: transparent;" +
+            "-fx-border-color: #9ca3af;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 10;" +
+            "-fx-text-fill: #6b7280;" +
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-padding: 12 25;" +
+            "-fx-cursor: hand;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-background-radius: 10;"
+        );
+
+        Button continueButton = new Button("🚀 Continuer");
+        continueButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #667eea, #764ba2);" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-padding: 12 25;" +
+            "-fx-cursor: hand;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(103,126,234,0.3), 8, 0, 0, 3);"
+        );
+
+        // Button hover effects
+        cancelButton.setOnMouseEntered(e -> {
+            cancelButton.setStyle(cancelButton.getStyle().replace("-fx-border-color: #9ca3af;", "-fx-border-color: #667eea;")
+                                                              .replace("-fx-text-fill: #6b7280;", "-fx-text-fill: #667eea;"));
+        });
+        cancelButton.setOnMouseExited(e -> {
+            cancelButton.setStyle(cancelButton.getStyle().replace("-fx-border-color: #667eea;", "-fx-border-color: #9ca3af;")
+                                                              .replace("-fx-text-fill: #667eea;", "-fx-text-fill: #6b7280;"));
+        });
+
+        continueButton.setOnMouseEntered(e -> {
+            continueButton.setStyle(continueButton.getStyle().replace(
+                "-fx-background-color: linear-gradient(to right, #667eea, #764ba2);",
+                "-fx-background-color: linear-gradient(to right, #5a6fd8, #6b46a3);"
+            ));
+        });
+        continueButton.setOnMouseExited(e -> {
+            continueButton.setStyle(continueButton.getStyle().replace(
+                "-fx-background-color: linear-gradient(to right, #5a6fd8, #6b46a3);",
+                "-fx-background-color: linear-gradient(to right, #667eea, #764ba2);"
+            ));
+        });
+
+        buttonSection.getChildren().addAll(cancelButton, continueButton);
+        mainContainer.getChildren().addAll(headerSection, contentSection, buttonSection);
+
+        emailDialog.getDialogPane().setContent(mainContainer);
+        emailDialog.getDialogPane().getButtonTypes().clear(); // Remove default buttons
+
+        // Add entrance animation
+        Platform.runLater(() -> {
+            mainContainer.setScaleX(0.8);
+            mainContainer.setScaleY(0.8);
+            mainContainer.setOpacity(0.0);
+
+            javafx.animation.Timeline scaleTimeline = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(javafx.util.Duration.ZERO,
+                    new javafx.animation.KeyValue(mainContainer.scaleXProperty(), 0.8),
+                    new javafx.animation.KeyValue(mainContainer.scaleYProperty(), 0.8),
+                    new javafx.animation.KeyValue(mainContainer.opacityProperty(), 0.0)
+                ),
+                new javafx.animation.KeyFrame(javafx.util.Duration.millis(300),
+                    new javafx.animation.KeyValue(mainContainer.scaleXProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT),
+                    new javafx.animation.KeyValue(mainContainer.scaleYProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT),
+                    new javafx.animation.KeyValue(mainContainer.opacityProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT)
+                )
+            );
+            scaleTimeline.play();
+        });
+
+        // Button actions
+        cancelButton.setOnAction(e -> {
+            // Force close by accessing the underlying Stage
+            try {
+                Stage stage = (Stage) emailDialog.getDialogPane().getScene().getWindow();
+                stage.close();
+                returnToLoginInterface();
+            } catch (Exception ex) {
+                // Fallback to normal close
+                emailDialog.setResult(null);
+                emailDialog.close();
+                returnToLoginInterface();
+            }
+        });
+
+        continueButton.setOnAction(e -> {
+            String email = emailField.getText().trim();
+            if (email.isEmpty()) {
+                showStyledAlert("❌ Erreur", "Veuillez entrer une adresse email.", "error");
+                return;
+            }
+
+            emailDialog.close();
+
+            try {
+                // First, check if the user exists and has 2FA enabled
+                User user = serviceUser.findByEmail(email);
+                if (user == null) {
+                    showStyledAlert("❌ Compte non trouvé", "Aucun compte trouvé avec cet email.", "error");
+                    return;
+                }
+
+                // Check if user has 2FA enabled
+                if (user.isTwoFactorEnabled() && (user.getFaceModelData() != null || user.isTotpEnabled())) {
+                    // Show 2FA verification before allowing password reset
+                    show2FAVerificationForPasswordReset(user, email);
+                } else {
+                    // No 2FA, proceed with direct password reset
+                    showPasswordResetDialog(email);
+                }
+
+            } catch (SQLException ex) {
+                showStyledAlert("❌ Erreur", "Erreur lors de la vérification du compte: " + ex.getMessage(), "error");
+            }
+        });
+
+        emailDialog.show();
+
+        // Focus on email field
+        Platform.runLater(() -> emailField.requestFocus());
     }
 
     @FXML
@@ -586,8 +950,23 @@ public class  loginController {
                          "Bienvenue " + client.getPrenom() + " " + client.getNom() + "!\n" +
                          "Connexion via Facebook établie avec succès.");
 
-                // Navigate to explore interface
-                navigateToExplore(client);
+                // Check if client has 2FA enabled
+                if (client.isTwoFactorEnabled()) {
+                    // Check which 2FA methods are available
+                    boolean hasFaceId = client.getFaceModelData() != null;
+                    boolean hasTotp = client.isTotpEnabled();
+
+                    if (hasFaceId || hasTotp) {
+                        // Show 2FA verification dialog for client
+                        show2FAVerification(client);
+                    } else {
+                        // 2FA is enabled but no methods configured - proceed with normal login
+                        proceedWithLogin(client);
+                    }
+                } else {
+                    // No 2FA, proceed directly to explore interface
+                    proceedWithLogin(client);
+                }
 
             } else {
                 System.out.println("❌ Client is null after authentication");
@@ -722,8 +1101,23 @@ public class  loginController {
                          "Bienvenue " + client.getPrenom() + " " + client.getNom() + "!\n" +
                          "Connexion via Google établie avec succès.");
 
-                // Navigate to explore interface
-                navigateToExplore(client);
+                // Check if client has 2FA enabled
+                if (client.isTwoFactorEnabled()) {
+                    // Check which 2FA methods are available
+                    boolean hasFaceId = client.getFaceModelData() != null;
+                    boolean hasTotp = client.isTotpEnabled();
+
+                    if (hasFaceId || hasTotp) {
+                        // Show 2FA verification dialog for client
+                        show2FAVerification(client);
+                    } else {
+                        // 2FA is enabled but no methods configured - proceed with normal login
+                        proceedWithLogin(client);
+                    }
+                } else {
+                    // No 2FA, proceed directly to explore interface
+                    proceedWithLogin(client);
+                }
             } else {
                 System.out.println("❌ Google Client is null after authentication");
                 showAlert(AlertType.ERROR, "Erreur", "Impossible de récupérer les informations utilisateur de Google.");
@@ -812,16 +1206,16 @@ public class  loginController {
     }
 
     /**
-     * Show 2FA face verification dialog
+     * Show 2FA verification dialog with support for both Face ID and TOTP
      */
     private void show2FAVerification(User user) {
         try {
-            // Load face verification dialog
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/faceVerification.fxml"));
+            // Load unified 2FA verification dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/twoFactorVerification.fxml"));
             Parent root = loader.load();
 
             // Get the controller
-            FaceVerificationController controller = loader.getController();
+            TwoFactorVerificationController controller = loader.getController();
             controller.setUserToVerify(user);
 
             // Set callbacks
@@ -835,7 +1229,7 @@ public class  loginController {
                     Platform.runLater(() -> {
                         UserSession.getInstance().logout();
                         showAlert(Alert.AlertType.WARNING, "Vérification 2FA échouée",
-                                "La vérification faciale a échoué ou a été annulée.\n" +
+                                "La vérification d'authentification à double facteur a échoué ou a été annulée.\n" +
                                 "Veuillez réessayer ou contactez votre administrateur.");
                     });
                 }
@@ -872,24 +1266,376 @@ public class  loginController {
     }
 
     /**
-     * Proceed with normal login flow after authentication (and optional 2FA)
+     * Show 2FA verification dialog for password reset
      */
-    private void proceedWithLogin(User authenticatedUser) {
-        // Navigate based on user role
-        if (UserSession.getInstance().isClient() || UserSession.getInstance().isGuide()) {
-            // Clients and Guides go to explore interface
-            navigateToExplore(authenticatedUser);
-        } else if (UserSession.getInstance().canAccessDashboard()) {
-            // Admin and Moderator go to dashboard
-            navigateToDashboard(authenticatedUser);
-        } else {
-            // Other roles not allowed
-            UserSession.getInstance().logout();
-            showAlert(Alert.AlertType.ERROR, "Accès refusé",
-                "Ce type de compte n'a pas d'interface dédiée. Contactez l'administrateur.");
+    private void show2FAVerificationForPasswordReset(User user, String email) {
+        try {
+            // Load unified 2FA verification dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/twoFactorVerification.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller
+            TwoFactorVerificationController controller = loader.getController();
+            controller.setUserToVerify(user);
+
+            // Set callbacks
+            controller.setCallbacks(
+                // Success callback - proceed with password reset
+                () -> {
+                    Platform.runLater(() -> {
+                        showPasswordResetDialog(email);
+                    });
+                },
+                // Failure callback
+                () -> {
+                    Platform.runLater(() -> {
+                        showAlert(Alert.AlertType.WARNING, "Vérification 2FA échouée",
+                                "La vérification d'authentification à double facteur a échoué.\n" +
+                                "Vous devez vérifier votre identité pour réinitialiser votre mot de passe.");
+                    });
+                }
+            );
+
+            // Create and show modal window
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Vérification 2FA - PlaNova");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+
+            // Center on parent window
+            Stage parentStage = (Stage) emailField.getScene().getWindow();
+            stage.initOwner(parentStage);
+
+            // Add icon
+            try {
+                stage.getIcons().add(new Image("/logo.PNG"));
+            } catch (Exception e) {
+                // Icon loading failed, continue without icon
+            }
+
+            stage.show();
+
+        } catch (IOException e) {
+            // If 2FA dialog fails to load, show error message
+            System.err.println("Failed to load 2FA verification dialog for password reset: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur 2FA",
+                    "Impossible de charger l'interface de vérification 2FA.\n" +
+                    "Veuillez contacter l'administrateur.");
         }
     }
 
+    /**
+     * Show password reset dialog after successful verification
+     */
+    private void showPasswordResetDialog(String email) {
+        Dialog<String> passDialog = new Dialog<>();
+        passDialog.setTitle("Réinitialiser le mot de passe");
+        passDialog.setHeaderText(null);
+        
+        // Ensure dialog can be closed properly
+        passDialog.setResizable(false);
+
+        // Create custom styled content
+        VBox mainContainer = new VBox();
+        mainContainer.setStyle(
+            "-fx-background-color: linear-gradient(to bottom, #f8fafc, #ffffff);" +
+            "-fx-background-radius: 15;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 5);" +
+            "-fx-border-color: rgba(59,130,246,0.2);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 15;" +
+            "-fx-min-width: 450;" +
+            "-fx-pref-width: 450;"
+        );
+        
+        // Header section
+        VBox headerSection = new VBox(10);
+        headerSection.setPadding(new javafx.geometry.Insets(25, 25, 20, 25));
+        headerSection.setStyle("-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-background-radius: 15 15 0 0;");
+        
+        Label titleLabel = new Label("🔐 Nouveau Mot de Passe");
+        titleLabel.setStyle(
+            "-fx-font-size: 24px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+        
+        Label subtitleLabel = new Label("pour " + email);
+        subtitleLabel.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-text-fill: rgba(255,255,255,0.9);" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+        
+        headerSection.getChildren().addAll(titleLabel, subtitleLabel);
+        
+        // Content section
+        VBox contentSection = new VBox(20);
+        contentSection.setPadding(new javafx.geometry.Insets(25));
+        
+        // Password fields with beautiful styling
+        VBox passwordContainer = new VBox(15);
+        
+        Label newPassLabel = new Label("Nouveau mot de passe");
+        newPassLabel.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-text-fill: #374151;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+        
+        javafx.scene.control.PasswordField newPass = new javafx.scene.control.PasswordField();
+        newPass.setPromptText("Entrez votre nouveau mot de passe");
+        newPass.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 15 20;" +
+            "-fx-background-color: white;" +
+            "-fx-border-color: #d1d5db;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+        
+        // Focus effect for new password field
+        newPass.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                newPass.setStyle(newPass.getStyle().replace("-fx-border-color: #d1d5db;", "-fx-border-color: #667eea;"));
+            } else {
+                newPass.setStyle(newPass.getStyle().replace("-fx-border-color: #667eea;", "-fx-border-color: #d1d5db;"));
+            }
+        });
+        
+        Label confirmPassLabel = new Label("Confirmer le mot de passe");
+        confirmPassLabel.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-text-fill: #374151;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+        
+        javafx.scene.control.PasswordField confirmPass = new javafx.scene.control.PasswordField();
+        confirmPass.setPromptText("Confirmez votre nouveau mot de passe");
+        confirmPass.setStyle(
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 15 20;" +
+            "-fx-background-color: white;" +
+            "-fx-border-color: #d1d5db;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+        
+        // Focus effect for confirm password field
+        confirmPass.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                confirmPass.setStyle(confirmPass.getStyle().replace("-fx-border-color: #d1d5db;", "-fx-border-color: #667eea;"));
+            } else {
+                confirmPass.setStyle(confirmPass.getStyle().replace("-fx-border-color: #667eea;", "-fx-border-color: #d1d5db;"));
+            }
+        });
+        
+        passwordContainer.getChildren().addAll(newPassLabel, newPass, confirmPassLabel, confirmPass);
+        
+        // Requirements section with beautiful styling
+        VBox requirementsContainer = new VBox(10);
+        requirementsContainer.setStyle(
+            "-fx-background-color: rgba(103,126,234,0.05);" +
+            "-fx-background-radius: 10;" +
+            "-fx-padding: 20;" +
+            "-fx-border-color: rgba(103,126,234,0.2);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 10;"
+        );
+        
+        Label requirementsTitle = new Label("📋 Exigences du mot de passe");
+        requirementsTitle.setStyle(
+            "-fx-font-size: 16px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: #667eea;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+        );
+        
+        VBox requirementsList = new VBox(8);
+        String[] requirements = {
+            "• Au moins 8 caractères",
+            "• Une lettre majuscule",
+            "• Un chiffre",
+            "• Un caractère spécial (!@#$%^&*)"
+        };
+        
+        for (String req : requirements) {
+            Label reqLabel = new Label(req);
+            reqLabel.setStyle(
+                "-fx-font-size: 13px;" +
+                "-fx-text-fill: #6b7280;" +
+                "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;"
+            );
+            requirementsList.getChildren().add(reqLabel);
+        }
+        
+        requirementsContainer.getChildren().addAll(requirementsTitle, requirementsList);
+        contentSection.getChildren().addAll(passwordContainer, requirementsContainer);
+        
+        // Button section
+        javafx.scene.layout.HBox buttonSection = new javafx.scene.layout.HBox(15);
+        buttonSection.setPadding(new javafx.geometry.Insets(0, 25, 25, 25));
+        buttonSection.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        Button cancelButton = new Button("Annuler");
+        cancelButton.setStyle(
+            "-fx-background-color: transparent;" +
+            "-fx-border-color: #9ca3af;" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 10;" +
+            "-fx-text-fill: #6b7280;" +
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-padding: 12 30;" +
+            "-fx-cursor: hand;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-background-radius: 10;"
+        );
+        
+        Button confirmButton = new Button("✅ Confirmer");
+        confirmButton.setStyle(
+            "-fx-background-color: linear-gradient(to right, #667eea, #764ba2);" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: 600;" +
+            "-fx-padding: 12 30;" +
+            "-fx-cursor: hand;" +
+            "-fx-font-family: 'Inter', 'Segoe UI', sans-serif;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(three-pass-box, rgba(103,126,234,0.3), 8, 0, 0, 3);"
+        );
+        
+        // Button hover effects
+        cancelButton.setOnMouseEntered(e -> {
+            cancelButton.setStyle(cancelButton.getStyle().replace("-fx-border-color: #9ca3af;", "-fx-border-color: #667eea;")
+                                                              .replace("-fx-text-fill: #6b7280;", "-fx-text-fill: #667eea;"));
+        });
+        cancelButton.setOnMouseExited(e -> {
+            cancelButton.setStyle(cancelButton.getStyle().replace("-fx-border-color: #667eea;", "-fx-border-color: #9ca3af;")
+                                                              .replace("-fx-text-fill: #667eea;", "-fx-text-fill: #6b7280;"));
+        });
+        
+        confirmButton.setOnMouseEntered(e -> {
+            confirmButton.setStyle(confirmButton.getStyle().replace(
+                "-fx-background-color: linear-gradient(to right, #667eea, #764ba2);",
+                "-fx-background-color: linear-gradient(to right, #5a6fd8, #6b46a3);"
+            ));
+        });
+        confirmButton.setOnMouseExited(e -> {
+            confirmButton.setStyle(confirmButton.getStyle().replace(
+                "-fx-background-color: linear-gradient(to right, #5a6fd8, #6b46a3);",
+                "-fx-background-color: linear-gradient(to right, #667eea, #764ba2);"
+            ));
+        });
+        
+        buttonSection.getChildren().addAll(cancelButton, confirmButton);
+        
+        mainContainer.getChildren().addAll(headerSection, contentSection, buttonSection);
+        
+        passDialog.getDialogPane().setContent(mainContainer);
+        passDialog.getDialogPane().getButtonTypes().clear(); // Remove default buttons
+        
+        // Add entrance animation
+        Platform.runLater(() -> {
+            mainContainer.setScaleX(0.8);
+            mainContainer.setScaleY(0.8);
+            mainContainer.setOpacity(0.0);
+            
+            javafx.animation.Timeline scaleTimeline = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(javafx.util.Duration.ZERO,
+                    new javafx.animation.KeyValue(mainContainer.scaleXProperty(), 0.8),
+                    new javafx.animation.KeyValue(mainContainer.scaleYProperty(), 0.8),
+                    new javafx.animation.KeyValue(mainContainer.opacityProperty(), 0.0)
+                ),
+                new javafx.animation.KeyFrame(javafx.util.Duration.millis(300),
+                    new javafx.animation.KeyValue(mainContainer.scaleXProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT),
+                    new javafx.animation.KeyValue(mainContainer.scaleYProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT),
+                    new javafx.animation.KeyValue(mainContainer.opacityProperty(), 1.0, javafx.animation.Interpolator.EASE_OUT)
+                )
+            );
+            scaleTimeline.play();
+        });
+        
+        // Button actions
+        cancelButton.setOnAction(e -> {
+            // Force close by accessing the underlying Stage
+            try {
+                Stage stage = (Stage) passDialog.getDialogPane().getScene().getWindow();
+                stage.close();
+                returnToLoginInterface();
+            } catch (Exception ex) {
+                // Fallback to normal close
+                passDialog.setResult(null);
+                passDialog.close();
+                returnToLoginInterface();
+            }
+        });
+
+        confirmButton.setOnAction(e -> {
+            String password = newPass.getText();
+            String confirm = confirmPass.getText();
+            
+            // Validate inputs without blocking the interface
+            if (password == null || password.trim().isEmpty()) {
+                showNonBlockingAlert("❌ Erreur", "Veuillez entrer un mot de passe.", "error");
+                newPass.requestFocus();
+                return;
+            }
+            
+            if (!password.equals(confirm)) {
+                showNonBlockingAlert("❌ Erreur", "Les mots de passe ne correspondent pas.", "error");
+                confirmPass.requestFocus();
+                return;
+            }
+            
+            if (!isPasswordStrong(password)) {
+                showNonBlockingAlert("⚠️ Mot de passe faible",
+                             "Le mot de passe doit contenir au moins 8 caractères avec une majuscule, un chiffre et un caractère spécial.", "warning");
+                newPass.requestFocus();
+                return;
+            }
+            
+            // If validation passes, proceed with password reset
+            try {
+                if (serviceUser.resetPasswordByEmail(email, password)) {
+                    passDialog.close(); // Close the password dialog first
+                    showNonBlockingAlert("✅ Succès",
+                             "Mot de passe mis à jour avec succès!\n\nVous pouvez maintenant vous connecter avec votre nouveau mot de passe.", "success");
+                } else {
+                    showNonBlockingAlert("❌ Échec", "Erreur lors de la mise à jour du mot de passe. Veuillez réessayer.", "error");
+                }
+            } catch (SQLException ex) {
+                showNonBlockingAlert("❌ Erreur", "Échec de la réinitialisation du mot de passe: " + ex.getMessage(), "error");
+            }
+        });
+        
+        passDialog.show();
+    }
+
+    /**
+     * Validate password strength
+     */
+    private boolean isPasswordStrong(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+
+        boolean hasUpper = password.matches(".*[A-Z].*");
+        boolean hasDigit = password.matches(".*\\d.*");
+        boolean hasSpecial = password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*");
+
+        return hasUpper && hasDigit && hasSpecial;
+    }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
@@ -897,5 +1643,72 @@ public class  loginController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+
+    /**
+     * Show non-blocking alert that doesn't interfere with other dialogs
+     */
+    private void showNonBlockingAlert(String title, String message, String type) {
+        // Use a simple, lightweight Alert that actually closes properly
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initModality(Modality.NONE); // Non-modal
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        // Style the alert with the appropriate icon
+        String icon;
+        switch (type) {
+            case "success":
+                icon = "✅ ";
+                break;
+            case "error":
+                icon = "❌ ";
+                break;
+            case "warning":
+                icon = "⚠️ ";
+                break;
+            default:
+                icon = "ℹ️ ";
+        }
+        alert.setContentText(icon + message);
+
+        // Ensure the alert closes properly
+        alert.showAndWait();
+    }
+
+    /**
+     * Proceed with login after successful authentication (and 2FA if enabled)
+     */
+    private void proceedWithLogin(User user) {
+        // Navigate based on user type
+        if (user instanceof Client) {
+            navigateToExplore(user);
+        } else {
+            // Admin, Moderateur, or Guide - go to dashboard
+            navigateToDashboard(user);
+        }
+
+        System.out.println("Utilisateur connecté avec succès: " + user.getEmail());
+    }
+
+    private void returnToLoginInterface() {
+        try {
+            // Reset all form fields
+            emailField.clear();
+            passwordField.clear();
+            passwordTextField.clear();
+            // Reset visibility toggle
+            passwordField.setVisible(true);
+            passwordTextField.setVisible(false);
+            passwordToggleBtn.setText("👁");
+
+            // Focus on email field
+            Platform.runLater(emailField::requestFocus);
+
+        } catch (Exception e) {
+            System.err.println("Erreur lors du retour à l'interface de connexion: " + e.getMessage());
+        }
     }
 }

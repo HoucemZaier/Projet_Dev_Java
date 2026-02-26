@@ -76,6 +76,8 @@ public class accountmanagement implements Initializable {
     // 2FA elements
     @FXML private VBox twoFactorSection;
     @FXML private Label twoFactorStatusLabel;
+    @FXML private Label faceIdStatusLabel;
+    @FXML private Label totpStatusLabel;
     @FXML private Button enable2FABtn;
     @FXML private Button disable2FABtn;
 
@@ -830,65 +832,77 @@ public class accountmanagement implements Initializable {
      */
     private void update2FAStatus() {
         if (currentUser != null && twoFactorStatusLabel != null && enable2FABtn != null && disable2FABtn != null) {
-            if (currentUser.isTwoFactorEnabled()) {
+            boolean hasFaceId = currentUser.getFaceModelData() != null;
+            boolean hasTotp = currentUser.isTotpEnabled();
+            boolean is2FAEnabled = currentUser.isTwoFactorEnabled() && (hasFaceId || hasTotp);
+
+            // Debug logging
+            System.out.println("=== 2FA Status Update ===");
+            System.out.println("User ID: " + currentUser.getIdUtilisateur());
+            System.out.println("TOTP Secret Key: " + (currentUser.getTotpSecretKey() != null ? "Present (length=" + currentUser.getTotpSecretKey().length() + ")" : "NULL"));
+            System.out.println("Has TOTP: " + hasTotp);
+            System.out.println("Has FaceID: " + hasFaceId);
+            System.out.println("2FA Enabled Flag: " + currentUser.isTwoFactorEnabled());
+            System.out.println("Overall 2FA Status: " + is2FAEnabled);
+            System.out.println("========================");
+
+            if (is2FAEnabled) {
                 // 2FA is enabled
                 twoFactorStatusLabel.setText("Activé");
-                twoFactorStatusLabel.setStyle("-fx-background-color: #28a745; -fx-background-radius: 15; -fx-text-fill: white; -fx-padding: 4 10; -fx-font-size: 12px; -fx-font-weight: bold;");
+                twoFactorStatusLabel.setStyle("-fx-background-color: #28a745; -fx-background-radius: 20; -fx-text-fill: white; -fx-padding: 6 15; -fx-font-size: 12px; -fx-font-weight: bold;");
 
-                // Show disable button, hide enable button
-                enable2FABtn.setVisible(false);
-                enable2FABtn.setManaged(false);
+                // Update button text
+                enable2FABtn.setText("⚙️ Reconfigurer 2FA");
                 disable2FABtn.setVisible(true);
                 disable2FABtn.setManaged(true);
             } else {
                 // 2FA is disabled
                 twoFactorStatusLabel.setText("Désactivé");
-                twoFactorStatusLabel.setStyle("-fx-background-color: #dc3545; -fx-background-radius: 15; -fx-text-fill: white; -fx-padding: 4 10; -fx-font-size: 12px; -fx-font-weight: bold;");
+                twoFactorStatusLabel.setStyle("-fx-background-color: #dc3545; -fx-background-radius: 20; -fx-text-fill: white; -fx-padding: 6 15; -fx-font-size: 12px; -fx-font-weight: bold;");
 
-                // Show enable button, hide disable button
-                enable2FABtn.setVisible(true);
-                enable2FABtn.setManaged(true);
+                // Update button text
+                enable2FABtn.setText("⚙️ Configurer 2FA");
                 disable2FABtn.setVisible(false);
                 disable2FABtn.setManaged(false);
+            }
+
+            // Update individual method status
+            if (faceIdStatusLabel != null) {
+                if (hasFaceId) {
+                    faceIdStatusLabel.setText("✅ Configuré");
+                    faceIdStatusLabel.setStyle("-fx-text-fill: #28a745; -fx-font-weight: bold;");
+                } else {
+                    faceIdStatusLabel.setText("❌ Non configuré");
+                    faceIdStatusLabel.setStyle("-fx-text-fill: #dc3545;");
+                }
+            }
+
+            if (totpStatusLabel != null) {
+                if (hasTotp) {
+                    totpStatusLabel.setText("✅ Configuré");
+                    totpStatusLabel.setStyle("-fx-text-fill: #28a745; -fx-font-weight: bold;");
+                } else {
+                    totpStatusLabel.setText("❌ Non configuré");
+                    totpStatusLabel.setStyle("-fx-text-fill: #dc3545;");
+                }
             }
         }
     }
 
     /**
-     * Handle enable 2FA button click
+     * Handle setup 2FA button click
      */
     @FXML
-    private void handleEnable2FA(ActionEvent event) {
+    private void handleSetup2FA(ActionEvent event) {
         if (currentUser == null) return;
 
         try {
-            // Load face enrollment dialog
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/faceEnrollment.fxml"));
+            // Load unified 2FA setup dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/twoFactorSetup.fxml"));
             Parent root = loader.load();
 
             // Get the controller
-            FaceEnrollmentController controller = loader.getController();
-
-            // Set success callback to refresh UI
-            controller.setOnSuccessCallback(() -> {
-                // Refresh user from database
-                try {
-                    User refreshedUser = serviceUser.recupererParId(currentUser.getIdUtilisateur());
-                    if (refreshedUser != null) {
-                        currentUser = refreshedUser;
-                        UserSession.getInstance().setCurrentUser(currentUser);
-                        update2FAStatus();
-
-                        // Show success message
-                        showAlert(Alert.AlertType.INFORMATION, "2FA Activé",
-                                "L'authentification à deux facteurs a été activée avec succès!\n" +
-                                "Votre prochaine connexion nécessitera une vérification faciale.");
-                    }
-                } catch (Exception e) {
-                    showAlert(Alert.AlertType.ERROR, "Erreur",
-                            "Erreur lors de la mise à jour: " + e.getMessage());
-                }
-            });
+            TwoFactorSetupController controller = loader.getController();
 
             // Create and show modal window
             Stage stage = new Stage();
@@ -896,11 +910,36 @@ public class accountmanagement implements Initializable {
             stage.setTitle("Configuration 2FA - PlaNova");
             stage.setScene(new Scene(root));
             stage.setResizable(false);
-            stage.getIcons().add(new Image("/logo.PNG"));
 
             // Center on parent window
             Stage parentStage = (Stage) enable2FABtn.getScene().getWindow();
             stage.initOwner(parentStage);
+
+            // Add close handler to refresh status
+            stage.setOnCloseRequest(e -> {
+                // Refresh user from database to get updated 2FA settings
+                try {
+                    User refreshedUser = serviceUser.recupererParId(currentUser.getIdUtilisateur());
+                    if (refreshedUser != null) {
+                        currentUser = refreshedUser;
+                        UserSession.getInstance().setCurrentUser(currentUser);
+                        update2FAStatus();
+
+                        // Notify profile update callback if set
+                        if (profileUpdateCallback != null) {
+                            profileUpdateCallback.run();
+                        }
+                    }
+                } catch (Exception ex) {
+                    System.err.println("Failed to refresh user data: " + ex.getMessage());
+                }
+            });
+
+            try {
+                stage.getIcons().add(new Image("/logo.PNG"));
+            } catch (Exception e) {
+                // Icon loading failed, continue without icon
+            }
 
             stage.show();
 
@@ -917,36 +956,65 @@ public class accountmanagement implements Initializable {
     private void handleDisable2FA(ActionEvent event) {
         if (currentUser == null) return;
 
-        // Confirmation dialog
+        // Enhanced confirmation dialog with better styling
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Désactiver 2FA");
-        confirmAlert.setHeaderText("Désactiver l'Authentification à Deux Facteurs");
+        confirmAlert.setHeaderText("🔒 Désactiver l'Authentification à Deux Facteurs");
+
+        String methods = "";
+        if (currentUser.getFaceModelData() != null) {
+            methods += "• Reconnaissance faciale\n";
+        }
+        if (currentUser.isTotpEnabled()) {
+            methods += "• Microsoft Authenticator\n";
+        }
+
         confirmAlert.setContentText("Êtes-vous sûr de vouloir désactiver l'authentification à deux facteurs?\n\n" +
-                "Cela réduira la sécurité de votre compte.");
+                "Méthodes actuellement configurées:\n" + methods + "\n" +
+                "⚠️ Attention: Cela réduira considérablement la sécurité de votre compte.");
 
         // Custom buttons
-        ButtonType disableButton = new ButtonType("Désactiver", ButtonBar.ButtonData.OK_DONE);
+        ButtonType disableButton = new ButtonType("🔓 Désactiver", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButton = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
         confirmAlert.getButtonTypes().setAll(disableButton, cancelButton);
+
+        // Add icon to dialog
+        try {
+            Stage dialogStage = (Stage) confirmAlert.getDialogPane().getScene().getWindow();
+            dialogStage.getIcons().add(new Image("/logo.PNG"));
+        } catch (Exception e) {
+            // Icon loading failed, continue without icon
+        }
 
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == disableButton) {
                 try {
-                    // Disable 2FA in database
+                    // Disable 2FA in database - clear all 2FA data
                     currentUser.setTwoFactorEnabled(false);
                     currentUser.setFaceModelData(null);
+                    currentUser.setTotpSecretKey(null);
                     serviceUser.modifier(currentUser);
+
+                    // Update session
+                    UserSession.getInstance().setCurrentUser(currentUser);
 
                     // Update UI
                     update2FAStatus();
 
+                    // Notify profile update callback if set
+                    if (profileUpdateCallback != null) {
+                        profileUpdateCallback.run();
+                    }
+
                     // Show success message
                     showAlert(Alert.AlertType.INFORMATION, "2FA Désactivé",
-                            "L'authentification à deux facteurs a été désactivée.");
+                            "✅ L'authentification à deux facteurs a été complètement désactivée.\n\n" +
+                            "Toutes les méthodes d'authentification (reconnaissance faciale et Microsoft Authenticator) " +
+                            "ont été supprimées de votre compte.");
 
                 } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erreur",
-                            "Erreur lors de la désactivation de 2FA: " + e.getMessage());
+                            "❌ Erreur lors de la désactivation de 2FA: " + e.getMessage());
                 }
             }
         });

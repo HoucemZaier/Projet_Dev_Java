@@ -273,6 +273,37 @@ public class FaceRecognitionService {
     }
 
     /**
+     * Preprocess face image for better recognition
+     */
+    private Mat preprocessFaceImage(Mat faceImage) {
+        try {
+            Mat processed = faceImage.clone();
+
+            // Apply histogram equalization for better contrast
+            Mat enhanced = new Mat();
+            Imgproc.equalizeHist(processed, enhanced);
+
+            // Apply bilateral filter for noise reduction while preserving edges
+            Mat filtered = new Mat();
+            Imgproc.bilateralFilter(enhanced, filtered, 9, 75, 75);
+
+            // Apply slight Gaussian blur for smoothing
+            Mat blurred = new Mat();
+            Imgproc.GaussianBlur(filtered, blurred, new Size(3, 3), 0);
+
+            // Clean up intermediate results
+            processed.release();
+            enhanced.release();
+            filtered.release();
+
+            return blurred;
+
+        } catch (Exception e) {
+            return faceImage.clone();
+        }
+    }
+
+    /**
      * More lenient face quality check
      */
     private boolean isGoodQualityFace(Mat faceImage) {
@@ -331,6 +362,48 @@ public class FaceRecognitionService {
         }
 
         return bestFace;
+    }
+
+    /**
+     * Practical face comparison with stored faces for verification
+     */
+    private double practicalCompareFaceWithStored(Mat currentFace, String[] storedFaces) {
+        double maxScore = 0.0;
+        int validComparisons = 0;
+
+        for (String storedFaceData : storedFaces) {
+            if (storedFaceData == null || storedFaceData.trim().isEmpty()) continue;
+
+            try {
+                // Decode stored face image
+                byte[] storedImageBytes = Base64.decodeBase64(storedFaceData.trim());
+                Mat storedImage = Imgcodecs.imdecode(new MatOfByte(storedImageBytes), Imgcodecs.IMREAD_GRAYSCALE);
+
+                if (!storedImage.empty()) {
+                    // Resize to match current face
+                    Mat resizedStoredFace = new Mat();
+                    Imgproc.resize(storedImage, resizedStoredFace, new Size(150, 150));
+
+                    // Calculate similarity
+                    double similarity = calculateFaceSimilarity(currentFace, resizedStoredFace);
+
+                    if (similarity > maxScore) {
+                        maxScore = similarity;
+                    }
+
+                    validComparisons++;
+                    resizedStoredFace.release();
+                }
+
+                storedImage.release();
+
+            } catch (Exception e) {
+                System.err.println("⚠️ Erreur lors de la comparaison: " + e.getMessage());
+            }
+        }
+
+        // Return the highest similarity score as percentage
+        return validComparisons > 0 ? maxScore / 100.0 : 0.0;
     }
 
     /**
@@ -407,7 +480,7 @@ public class FaceRecognitionService {
             long startTime = System.currentTimeMillis();
             long timeout = 10000; // 10 seconds - faster timeout
             int matchAttempts = 0;
-            int requiredMatches = Math.max(2, Math.min(2, storedFaces.length / 4)); // Very lenient: max 2 matches required
+            int requiredMatches = Math.max(1, storedFaces.length / 4); // Require at least 1, or 1/4 of stored faces
             int successfulMatches = 0;
             int maxAttempts = 25; // Fewer attempts for speed
 
@@ -539,387 +612,263 @@ public class FaceRecognitionService {
     }
 
     /**
-     * Strict practical comparison method to prevent false positives
+     * Verify user identity by comparing current face with stored face model data
+     * @param storedFaceModelData Base64 encoded face model data from database
+     * @return true if face matches, false otherwise
      */
-    private double practicalCompareFaceWithStored(Mat currentFace, String[] storedFaces) {
-        try {
-            List<Double> allScores = new ArrayList<>();
-            List<Double> templateScores = new ArrayList<>();
-            List<Double> histogramScores = new ArrayList<>();
-            int validComparisons = 0;
-            int maxComparisons = Math.min(storedFaces.length, 8);
-
-            for (int i = 0; i < maxComparisons; i++) {
-                String storedFaceBase64 = storedFaces[i];
-                if (storedFaceBase64 == null || storedFaceBase64.trim().isEmpty()) {
-                    continue;
-                }
-
-                try {
-                    byte[] storedFaceBytes = Base64.decodeBase64(storedFaceBase64);
-                    Mat storedFace = Imgcodecs.imdecode(new MatOfByte(storedFaceBytes), Imgcodecs.IMREAD_GRAYSCALE);
-
-                    if (!storedFace.empty()) {
-                        Mat resizedStoredFace = new Mat();
-                        Imgproc.resize(storedFace, resizedStoredFace, currentFace.size());
-
-                        // Calculate both algorithms
-                        double templateScore = calculateTemplateMatchScore(currentFace, resizedStoredFace);
-                        double histogramScore = calculateHistogramScore(currentFace, resizedStoredFace);
-
-                        // Debug logging for first comparison only
-                        if (i == 0 && validComparisons == 0) {
-                            System.out.println("🔍 Debug - Template: " + String.format("%.2f", templateScore * 100) +
-                                "%, Histogram: " + String.format("%.2f", histogramScore * 100) + "%");
-                        }
-
-                        // Store individual scores for validation
-                        templateScores.add(templateScore);
-                        histogramScores.add(histogramScore);
-
-                        // Strict validation: Both algorithms must show some reasonable score
-                        if (templateScore > 0.15 && histogramScore > 0.15) {
-                            // Both algorithms agree there's some similarity
-                            double combinedScore = (templateScore * 0.6) + (histogramScore * 0.4);
-                            allScores.add(combinedScore);
-                        } else if (templateScore > 0.25 || histogramScore > 0.35) {
-                            // One algorithm shows strong similarity
-                            double combinedScore = Math.max(templateScore, histogramScore) * 0.8; // Reduced confidence
-                            allScores.add(combinedScore);
-                        } else {
-                            // Neither algorithm shows confidence - add low score
-                            allScores.add(Math.max(templateScore, histogramScore) * 0.5);
-                        }
-
-                        validComparisons++;
-                        resizedStoredFace.release();
-                        storedFace.release();
-                    }
-                } catch (Exception e) {
-                    System.err.println("⚠️ Erreur comparaison image " + i + ": " + e.getMessage());
-                }
-            }
-
-            if (validComparisons == 0) {
-                return 0.0;
-            }
-
-            // Calculate statistics
-            double averageScore = allScores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            double maxScore = allScores.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
-            double avgTemplate = templateScores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            double avgHistogram = histogramScores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-
-            // Strict validation: require both algorithms to perform reasonably
-            if (avgTemplate < 0.12 && avgHistogram < 0.12) {
-                System.out.println("🚫 Rejet: Aucun algorithme ne montre de correspondance significative");
-                return Math.min(0.35, averageScore); // Cap at 35% if both algorithms fail
-            }
-
-            // Base score calculation
-            double finalScore = Math.max(averageScore, maxScore * 0.7);
-
-            // Conservative confidence boosts (much smaller)
-            long strongScores = allScores.stream().mapToLong(score -> score > 0.4 ? 1 : 0).sum();
-            long decentScores = allScores.stream().mapToLong(score -> score > 0.25 ? 1 : 0).sum();
-
-            if (strongScores >= 2 && avgTemplate > 0.20 && avgHistogram > 0.20) {
-                finalScore = Math.min(1.0, finalScore + 0.08); // Small boost for consistent strong scores
-            } else if (decentScores >= 3 && (avgTemplate > 0.15 || avgHistogram > 0.25)) {
-                finalScore = Math.min(1.0, finalScore + 0.05); // Tiny boost for multiple decent scores
-            }
-
-            // Additional validation: if one algorithm consistently fails, reduce confidence
-            if (avgTemplate < 0.10 || avgHistogram < 0.05) {
-                finalScore *= 0.85; // 15% penalty for algorithm failure
-                System.out.println("⚠️ Pénalité appliquée: Un algorithme montre des scores très faibles");
-            }
-
-            return finalScore;
-
-        } catch (Exception e) {
-            System.err.println("❌ Erreur comparaison faciale: " + e.getMessage());
-            return 0.0;
+    public boolean verifyIdentity(String storedFaceModelData) {
+        if (storedFaceModelData == null || storedFaceModelData.trim().isEmpty()) {
+            System.err.println("❌ Aucune donnée de modèle facial fournie");
+            return false;
         }
-    }
 
-    /**
-     * Ultra-precise comparison with enhanced algorithms
-     */
-    private double ultraPreciseCompareFaceWithStored(Mat currentFace, String[] storedFaces) {
         try {
-            List<Double> allScores = new ArrayList<>();
-            int validComparisons = 0;
-
-            for (String storedFaceBase64 : storedFaces) {
-                if (storedFaceBase64 == null || storedFaceBase64.trim().isEmpty()) {
-                    continue;
-                }
-
-                try {
-                    byte[] storedFaceBytes = Base64.decodeBase64(storedFaceBase64);
-                    Mat storedFace = Imgcodecs.imdecode(new MatOfByte(storedFaceBytes), Imgcodecs.IMREAD_GRAYSCALE);
-
-                    if (!storedFace.empty()) {
-                        Mat resizedStoredFace = new Mat();
-                        Imgproc.resize(storedFace, resizedStoredFace, currentFace.size());
-
-                        // Multiple comparison algorithms with enhanced weights
-                        double templateScore = calculateTemplateMatchScore(currentFace, resizedStoredFace);
-                        double histogramScore = calculateHistogramScore(currentFace, resizedStoredFace);
-                        double structuralScore = calculateStructuralSimilarity(currentFace, resizedStoredFace);
-                        double gradientScore = calculateGradientSimilarity(currentFace, resizedStoredFace);
-
-                        // Enhanced weighted combination
-                        double combinedScore = (templateScore * 0.35) + (histogramScore * 0.25) +
-                                             (structuralScore * 0.25) + (gradientScore * 0.15);
-
-                        allScores.add(combinedScore);
-                        validComparisons++;
-
-                        resizedStoredFace.release();
-                        storedFace.release();
-                    }
-                } catch (Exception e) {
-                    System.err.println("⚠️ Erreur lors de la comparaison avec une image stockée: " + e.getMessage());
-                }
-            }
-
-            if (validComparisons == 0) {
-                return 0.0;
-            }
-
-            // Calculate statistics for better accuracy
-            double averageScore = allScores.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            long highScores = allScores.stream().mapToLong(score -> score > 0.8 ? 1 : 0).sum();
-            long mediumScores = allScores.stream().mapToLong(score -> score > 0.7 && score <= 0.8 ? 1 : 0).sum();
-
-            // Enhanced confidence calculation
-            if (highScores >= 3 && averageScore > 0.75) {
-                averageScore = Math.min(1.0, averageScore + 0.05); // Small boost for multiple high scores
-            } else if (highScores >= 2 && mediumScores >= 2 && averageScore > 0.70) {
-                averageScore = Math.min(1.0, averageScore + 0.03); // Smaller boost for mixed scores
-            }
-
-            return averageScore;
-
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors de la comparaison faciale ultra-précise: " + e.getMessage());
-            return 0.0;
-        }
-    }
-
-    /**
-     * Calculate template matching score with enhanced normalization
-     */
-    private double calculateTemplateMatchScore(Mat current, Mat stored) {
-        try {
-            Mat result = new Mat();
-            Imgproc.matchTemplate(current, stored, result, Imgproc.TM_CCOEFF_NORMED);
-            Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
-            result.release();
-            return Math.max(0.0, Math.min(1.0, mmr.maxVal));
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
-
-    /**
-     * Calculate histogram similarity score with multiple bins
-     */
-    private double calculateHistogramScore(Mat current, Mat stored) {
-        try {
-            Mat histCurrent = new Mat();
-            Mat histStored = new Mat();
-
-            // Single Mat lists for histogram calculation
-            List<Mat> currentList = new ArrayList<>();
-            currentList.add(current);
-            List<Mat> storedList = new ArrayList<>();
-            storedList.add(stored);
-
-            Imgproc.calcHist(currentList, new MatOfInt(0), new Mat(), histCurrent,
-                new MatOfInt(256), new MatOfFloat(0f, 256f));
-            Imgproc.calcHist(storedList, new MatOfInt(0), new Mat(), histStored,
-                new MatOfInt(256), new MatOfFloat(0f, 256f));
-
-            Core.normalize(histCurrent, histCurrent, 0, 1, Core.NORM_MINMAX);
-            Core.normalize(histStored, histStored, 0, 1, Core.NORM_MINMAX);
-
-            double correlation = Imgproc.compareHist(histCurrent, histStored, Imgproc.HISTCMP_CORREL);
-
-            histCurrent.release();
-            histStored.release();
-
-            return Math.max(0.0, Math.min(1.0, correlation));
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
-
-    /**
-     * Calculate enhanced structural similarity
-     */
-    private double calculateStructuralSimilarity(Mat current, Mat stored) {
-        try {
-            Mat currentFloat = new Mat();
-            Mat storedFloat = new Mat();
-            current.convertTo(currentFloat, CvType.CV_32F);
-            stored.convertTo(storedFloat, CvType.CV_32F);
-
-            Scalar meanCurrent = Core.mean(currentFloat);
-            Scalar meanStored = Core.mean(storedFloat);
-
-            Mat diffCurrent = new Mat();
-            Mat diffStored = new Mat();
-            Core.subtract(currentFloat, meanCurrent, diffCurrent);
-            Core.subtract(storedFloat, meanStored, diffStored);
-
-            Mat varCurrent = new Mat();
-            Mat varStored = new Mat();
-            Mat covar = new Mat();
-
-            Core.multiply(diffCurrent, diffCurrent, varCurrent);
-            Core.multiply(diffStored, diffStored, varStored);
-            Core.multiply(diffCurrent, diffStored, covar);
-
-            double varC = Core.mean(varCurrent).val[0];
-            double varS = Core.mean(varStored).val[0];
-            double covCS = Core.mean(covar).val[0];
-
-            double c1 = 6.5025;
-            double c2 = 58.5225;
-
-            double numerator = (2 * meanCurrent.val[0] * meanStored.val[0] + c1) * (2 * covCS + c2);
-            double denominator = (meanCurrent.val[0] * meanCurrent.val[0] + meanStored.val[0] * meanStored.val[0] + c1) * (varC + varS + c2);
-
-            double ssim = denominator > 0 ? numerator / denominator : 0.0;
-
-            // Clean up
-            currentFloat.release();
-            storedFloat.release();
-            diffCurrent.release();
-            diffStored.release();
-            varCurrent.release();
-            varStored.release();
-            covar.release();
-
-            return Math.max(0.0, Math.min(1.0, ssim));
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
-
-    /**
-     * Calculate gradient similarity for edge comparison
-     */
-    private double calculateGradientSimilarity(Mat current, Mat stored) {
-        try {
-            Mat gradCurrent = new Mat();
-            Mat gradStored = new Mat();
-
-            // Calculate gradients
-            Imgproc.Sobel(current, gradCurrent, CvType.CV_64F, 1, 1, 3);
-            Imgproc.Sobel(stored, gradStored, CvType.CV_64F, 1, 1, 3);
-
-            // Convert to absolute values
-            Core.convertScaleAbs(gradCurrent, gradCurrent);
-            Core.convertScaleAbs(gradStored, gradStored);
-
-            // Calculate correlation
-            Mat result = new Mat();
-            Imgproc.matchTemplate(gradCurrent, gradStored, result, Imgproc.TM_CCOEFF_NORMED);
-            Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
-
-            gradCurrent.release();
-            gradStored.release();
-            result.release();
-
-            return Math.max(0.0, Math.min(1.0, mmr.maxVal));
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
-
-    /**
-     * Enhanced face quality check with multiple criteria
-     */
-    private boolean isHighQualityFace(Mat faceImage) {
-        try {
-            if (faceImage.empty() || faceImage.rows() < 60 || faceImage.cols() < 60) {
+            System.out.println("🔍 Démarrage de la vérification d'identité faciale...");
+            
+            VideoCapture camera = new VideoCapture(0);
+            if (!camera.isOpened()) {
+                System.err.println("❌ Impossible d'ouvrir la caméra pour la vérification");
                 return false;
             }
 
-            // Check brightness with enhanced range
-            Scalar meanIntensity = Core.mean(faceImage);
-            double brightness = meanIntensity.val[0];
-            if (brightness < 50 || brightness > 200) {
-                return false; // Too dark or too bright
+            System.out.println("📹 Caméra ouverte pour vérification");
+            
+            // Give camera time to initialize
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
             }
 
-            // Enhanced contrast check using Laplacian variance
-            Mat laplacian = new Mat();
-            Imgproc.Laplacian(faceImage, laplacian, CvType.CV_64F);
+            Mat frame = new Mat();
+            boolean faceMatched = false;
+            int maxAttempts = 30; // 30 attempts for verification
+            int attempts = 0;
+            
+            // FIXED: Parse the trained model correctly (same as verifyFace method)
+            String[] storedImages;
+            try {
+                // Decode the Base64 encoded model
+                String modelString = new String(Base64.decodeBase64(storedFaceModelData));
+                String[] parts = modelString.split("\\|");
 
-            MatOfDouble meanMat = new MatOfDouble();
-            MatOfDouble stdMat = new MatOfDouble();
-            Core.meanStdDev(laplacian, meanMat, stdMat);
+                System.out.println("🔍 DEBUG - Modèle décodé: " + parts.length + " parties");
+                System.out.println("🔍 DEBUG - Format: " + (parts.length > 0 ? parts[0] : "N/A"));
+                System.out.println("🔍 DEBUG - User ID: " + (parts.length > 1 ? parts[1] : "N/A"));
+                System.out.println("🔍 DEBUG - Nombre d'images: " + (parts.length > 2 ? parts[2] : "N/A"));
 
-            double[] stdArray = stdMat.toArray();
-            double variance = stdArray[0] * stdArray[0];
+                if (parts.length < 3 || !(parts[0].equals("FACE_MODEL_V1") || parts[0].equals("FACE_MODEL_V2"))) {
+                    System.err.println("❌ Format de modèle facial invalide");
+                    return false;
+                }
 
-            laplacian.release();
-            meanMat.release();
-            stdMat.release();
+                // Get stored face images for comparison
+                storedImages = parts[0].equals("FACE_MODEL_V2") ?
+                    parts[3].split(",") : parts[2].split(",");
 
-            // Enhanced contrast threshold
-            if (variance < 150) {
-                return false; // Too blurry
+                System.out.println("🔍 DEBUG - Images extraites: " + storedImages.length);
+
+            } catch (Exception e) {
+                System.err.println("❌ Erreur lors du décodage du modèle facial: " + e.getMessage());
+                e.printStackTrace();
+                return false;
             }
 
-            // Additional quality check: edge density
-            Mat edges = new Mat();
-            Imgproc.Canny(faceImage, edges, 50, 150);
-            int edgeCount = Core.countNonZero(edges);
-            double edgeDensity = (double) edgeCount / (faceImage.rows() * faceImage.cols());
+            if (storedImages.length == 0) {
+                System.err.println("❌ Aucune image de référence trouvée dans le modèle");
+                return false;
+            }
 
-            edges.release();
+            System.out.println("📊 Modèle facial contient " + storedImages.length + " images de référence");
 
-            return edgeDensity > 0.05 && edgeDensity < 0.3; // Good edge density range
+            while (attempts < maxAttempts && !faceMatched) {
+                if (camera.read(frame) && !frame.empty()) {
+                    attempts++;
+                    
+                    try {
+                        // Convert to grayscale
+                        Mat grayFrame = new Mat();
+                        Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
+
+                        // Detect face in current frame
+                        Mat currentFace = null;
+                        
+                        if (faceDetector != null && !faceDetector.empty()) {
+                            // Use Haar cascade detection
+                            MatOfRect faces = new MatOfRect();
+                            faceDetector.detectMultiScale(grayFrame, faces, 1.1, 3,
+                                0, new Size(50, 50), new Size());
+                            Rect[] faceArray = faces.toArray();
+                            
+                            if (faceArray.length > 0) {
+                                // Get the largest face
+                                Rect bestFace = faceArray[0];
+                                int maxArea = bestFace.width * bestFace.height;
+                                
+                                for (Rect face : faceArray) {
+                                    int area = face.width * face.height;
+                                    if (area > maxArea) {
+                                        maxArea = area;
+                                        bestFace = face;
+                                    }
+                                }
+                                
+                                currentFace = new Mat(grayFrame, bestFace);
+                            }
+                        } else {
+                            // Use central region as fallback
+                            int centerX = grayFrame.cols() / 2;
+                            int centerY = grayFrame.rows() / 2;
+                            int faceSize = Math.min(grayFrame.cols(), grayFrame.rows()) / 3;
+                            
+                            Rect faceRegion = new Rect(
+                                Math.max(0, centerX - faceSize/2),
+                                Math.max(0, centerY - faceSize/2),
+                                Math.min(faceSize, grayFrame.cols() - Math.max(0, centerX - faceSize/2)),
+                                Math.min(faceSize, grayFrame.rows() - Math.max(0, centerY - faceSize/2))
+                            );
+                            
+                            currentFace = new Mat(grayFrame, faceRegion);
+                        }
+
+                        if (currentFace != null && !currentFace.empty()) {
+                            // Preprocess current face
+                            Mat processedCurrentFace = preprocessFaceImage(currentFace);
+                            Mat resizedCurrentFace = new Mat();
+                            Imgproc.resize(processedCurrentFace, resizedCurrentFace, new Size(150, 150));
+
+                            // Compare with stored face images
+                            int matches = 0;
+                            double totalSimilarity = 0.0;
+                            int requiredMatches = Math.max(1, storedImages.length / 3); // Require 1/3 of stored images to match
+                            
+                            for (String storedImageData : storedImages) {
+                                if (storedImageData.trim().isEmpty()) continue;
+                                
+                                try {
+                                    // Decode stored image
+                                    byte[] storedImageBytes = Base64.decodeBase64(storedImageData.trim());
+                                    Mat storedImage = Imgcodecs.imdecode(new MatOfByte(storedImageBytes), Imgcodecs.IMREAD_GRAYSCALE);
+                                    
+                                    if (!storedImage.empty()) {
+                                        // Resize to match current face
+                                        Mat resizedStoredFace = new Mat();
+                                        Imgproc.resize(storedImage, resizedStoredFace, new Size(150, 150));
+                                        
+                                        // Calculate similarity using template matching and histogram comparison
+                                        double similarity = calculateFaceSimilarity(resizedCurrentFace, resizedStoredFace);
+                                        totalSimilarity += similarity;
+                                        
+                                        // DEBUG: Print detailed similarity information
+                                        System.out.println("🔍 Debug - Image " + (matches + 1) + ": Similarité = " + String.format("%.1f", similarity) + "%");
+
+                                        // FIXED: Much lower threshold for better matching (was 65.0, now 25.0)
+                                        if (similarity > 25.0) {
+                                            matches++;
+                                            System.out.println("✅ Correspondance trouvée! Score: " + String.format("%.1f", similarity) + "%");
+                                        } else {
+                                            System.out.println("❌ Pas de correspondance. Score trop bas: " + String.format("%.1f", similarity) + "%");
+                                        }
+                                        
+                                        resizedStoredFace.release();
+                                    }
+                                    
+                                    storedImage.release();
+                                } catch (Exception e) {
+                                    System.err.println("⚠️ Erreur lors de la comparaison avec une image stockée: " + e.getMessage());
+                                }
+                            }
+                            
+                            double averageSimilarity = storedImages.length > 0 ? totalSimilarity / storedImages.length : 0.0;
+                            
+                            System.out.println("🔍 Tentative " + attempts + ": " + matches + "/" + storedImages.length + 
+                                             " correspondances (Moyenne: " + String.format("%.1f", averageSimilarity) + "%)");
+                            
+
+                            // Check if verification is successful (FIXED: lowered threshold from 50.0 to 20.0)
+                            if (matches >= requiredMatches && averageSimilarity > 20.0) {
+                                System.out.println("✅ Vérification faciale réussie! (" + matches + " correspondances)");
+                                faceMatched = true;
+                            }
+                            
+                            processedCurrentFace.release();
+                            resizedCurrentFace.release();
+                            currentFace.release();
+                        }
+                        
+                        grayFrame.release();
+                        
+                    } catch (Exception e) {
+                        System.err.println("⚠️ Erreur lors de l'analyse de l'image " + attempts + ": " + e.getMessage());
+                    }
+                    
+                    // Small delay between attempts
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+
+            camera.release();
+            frame.release();
+            
+            if (faceMatched) {
+                System.out.println("🎉 Vérification d'identité terminée avec succès");
+            } else {
+                System.out.println("❌ Vérification d'identité échouée après " + attempts + " tentatives");
+            }
+            
+            return faceMatched;
 
         } catch (Exception e) {
+            System.err.println("❌ Erreur critique lors de la vérification d'identité: " + e.getMessage());
             return false;
         }
     }
 
     /**
-     * Enhanced face image preprocessing for maximum accuracy
+     * Calculate face similarity between two face images
      */
-    private Mat preprocessFaceImage(Mat faceImage) {
+    private double calculateFaceSimilarity(Mat face1, Mat face2) {
         try {
-            Mat processed = faceImage.clone();
+            // Template matching
+            Mat result = new Mat();
+            Imgproc.matchTemplate(face1, face2, result, Imgproc.TM_CCOEFF_NORMED);
+            Core.MinMaxLocResult minMaxLoc = Core.minMaxLoc(result);
+            double templateSimilarity = minMaxLoc.maxVal * 100;
+            
+            // Histogram comparison
+            Mat hist1 = new Mat();
+            Mat hist2 = new Mat();
+            
+            List<Mat> face1List = new ArrayList<>();
+            face1List.add(face1);
+            List<Mat> face2List = new ArrayList<>();
+            face2List.add(face2);
 
-            // Apply histogram equalization for better contrast
-            Mat enhanced = new Mat();
-            Imgproc.equalizeHist(processed, enhanced);
-
-            // Apply bilateral filter for noise reduction while preserving edges
-            Mat filtered = new Mat();
-            Imgproc.bilateralFilter(enhanced, filtered, 9, 75, 75);
-
-            // Apply slight Gaussian blur for smoothing
-            Mat blurred = new Mat();
-            Imgproc.GaussianBlur(filtered, blurred, new Size(3, 3), 0);
-
-            // Clean up intermediate results
-            processed.release();
-            enhanced.release();
-            filtered.release();
-
-            return blurred;
-
+            Imgproc.calcHist(face1List, new MatOfInt(0), new Mat(),
+                            hist1, new MatOfInt(256), new MatOfFloat(0, 256));
+            Imgproc.calcHist(face2List, new MatOfInt(0), new Mat(),
+                            hist2, new MatOfInt(256), new MatOfFloat(0, 256));
+            
+            double histogramSimilarity = Imgproc.compareHist(hist1, hist2, Imgproc.HISTCMP_CORREL) * 100;
+            
+            // Combine both measures (template matching has more weight)
+            double combinedSimilarity = (templateSimilarity * 0.7) + (histogramSimilarity * 0.3);
+            
+            result.release();
+            hist1.release();
+            hist2.release();
+            
+            return combinedSimilarity;
+            
         } catch (Exception e) {
-            return faceImage.clone();
+            System.err.println("⚠️ Erreur lors du calcul de similarité: " + e.getMessage());
+            return 0.0;
         }
     }
 
