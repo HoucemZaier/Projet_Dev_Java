@@ -14,8 +14,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.chart.LineChart;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -60,6 +65,16 @@ public class dashboardController implements Initializable {
     private Label userRoleLabel;
     @FXML
     private ImageView userProfileImage;
+    @FXML
+    private HBox userProfileHBox;
+    @FXML
+    private StackPane notificationStackPane;
+    @FXML
+    private Label notificationBadge;
+    @FXML
+    private javafx.scene.chart.LineChart<String, Number> bookingChart;
+    @FXML
+    private VBox recentBookingsList;
 
     private User currentUser;
     private Stage accountStage;
@@ -84,10 +99,21 @@ public class dashboardController implements Initializable {
             }
         });
 
-        // Hide user management button for Moderateur
-        if (UserSession.getInstance().isModerator()) {
+        // Hide user management button for Moderateur and Guide
+        if (UserSession.getInstance().isModerator() || UserSession.getInstance().isGuide()) {
             userManagementBtn.setVisible(false);
             userManagementBtn.setManaged(false);
+        }
+
+        // Hide notification icon for non-admin users (Moderateur and Guide can't see admin notifications)
+        if (!UserSession.getInstance().isAdmin()) {
+            notificationStackPane.setVisible(false);
+            notificationStackPane.setManaged(false);
+        } else {
+            // Load notification count for admin users
+            loadNotificationCount();
+            // Start periodic notification refresh
+            startNotificationRefresh();
         }
 
         // Initialize account stage as null
@@ -159,6 +185,119 @@ public class dashboardController implements Initializable {
             return;
         }
         navigateTo("/gestionUser.fxml", "User Management");
+    }
+
+    @FXML
+    private void handleNotifications(javafx.scene.input.MouseEvent event) {
+        // Check if current user is Admin
+        if (!UserSession.getInstance().isAdmin()) {
+            showAlert(Alert.AlertType.ERROR, "Accès Refusé",
+                    "Seuls les administrateurs peuvent accéder aux notifications.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminNotifications.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller and set the callback for notification updates
+            AdminNotificationsController notificationController = loader.getController();
+            notificationController.setOnNotificationUpdate(this::loadNotificationCount);
+
+            Stage notificationStage = new Stage();
+            notificationStage.setTitle("PlaNova - Notifications Administrateur");
+            notificationStage.setScene(new Scene(root));
+            notificationStage.setResizable(true);
+            notificationStage.initModality(Modality.NONE); // Allow working with dashboard while notifications are open
+            notificationStage.setWidth(650);
+            notificationStage.setHeight(750);
+
+            // Center on screen
+            notificationStage.centerOnScreen();
+
+            // When notification window is closed, refresh the notification count
+            notificationStage.setOnHidden(e -> loadNotificationCount());
+
+            notificationStage.show();
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible d'ouvrir les notifications: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Load and display notification count in the badge
+     */
+    private void loadNotificationCount() {
+        try {
+            Services.NotificationService notificationService = new Services.NotificationService();
+            int notificationCount = notificationService.getUnreadNotificationsCount();
+
+            javafx.application.Platform.runLater(() -> {
+                if (notificationCount > 0) {
+                    // Check if count increased for pulse animation
+                    boolean countIncreased = false;
+                    if (notificationBadge.isVisible()) {
+                        try {
+                            int currentCount = Integer.parseInt(notificationBadge.getText());
+                            countIncreased = notificationCount > currentCount;
+                        } catch (NumberFormatException ignored) {}
+                    } else {
+                        countIncreased = true; // First time showing
+                    }
+
+                    notificationBadge.setText(String.valueOf(notificationCount));
+                    notificationBadge.setVisible(true);
+
+                    // Add pulse animation for new notifications
+                    if (countIncreased) {
+                        addNotificationPulseAnimation();
+                    }
+                } else {
+                    notificationBadge.setVisible(false);
+                }
+            });
+
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement du nombre de notifications: " + e.getMessage());
+            // Hide badge on error
+            javafx.application.Platform.runLater(() -> notificationBadge.setVisible(false));
+        }
+    }
+
+    /**
+     * Start periodic notification refresh every 30 seconds
+     */
+    private void startNotificationRefresh() {
+        javafx.animation.Timeline timeline = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(javafx.util.Duration.seconds(30), e -> loadNotificationCount())
+        );
+        timeline.setCycleCount(javafx.animation.Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    /**
+     * Add pulse animation to notification badge for new notifications
+     */
+    private void addNotificationPulseAnimation() {
+        javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(600), notificationStackPane);
+        scaleTransition.setFromX(1.0);
+        scaleTransition.setFromY(1.0);
+        scaleTransition.setToX(1.2);
+        scaleTransition.setToY(1.2);
+        scaleTransition.setCycleCount(4);
+        scaleTransition.setAutoReverse(true);
+        scaleTransition.play();
+    }
+
+    /**
+     * Public method to refresh notification count (can be called from external sources)
+     */
+    public void refreshNotifications() {
+        if (UserSession.getInstance().isAdmin() && notificationStackPane.isVisible()) {
+            loadNotificationCount();
+        }
     }
 
     @FXML

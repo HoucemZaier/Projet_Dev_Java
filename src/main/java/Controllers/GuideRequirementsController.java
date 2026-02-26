@@ -4,15 +4,18 @@ import Models.Client;
 import Models.Guide;
 import Models.User;
 import Services.ServiceUser;
+import Services.FileUploadService;
+import Services.NotificationService;
 import utils.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -21,9 +24,16 @@ public class GuideRequirementsController implements Initializable {
 
     @FXML private Button confirmBtn;
     @FXML private Button cancelBtn;
+    @FXML private Button uploadCvBtn;
+    @FXML private Label cvStatusLabel;
 
     private User currentUser;
     private ServiceUser serviceUser = new ServiceUser();
+    private FileUploadService fileUploadService = new FileUploadService();
+    private NotificationService notificationService = new NotificationService();
+
+    private File selectedCvFile;
+    private String cvCloudLink;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -32,6 +42,12 @@ public class GuideRequirementsController implements Initializable {
         // Add hover animations to buttons
         addButtonAnimations(confirmBtn);
         addButtonAnimations(cancelBtn);
+        addButtonAnimations(uploadCvBtn);
+
+        // Initially disable confirm button until CV is uploaded
+        confirmBtn.setDisable(true);
+        cvStatusLabel.setText("📄 Veuillez télécharger votre CV (PDF, DOC, DOCX - Max 5MB)");
+        cvStatusLabel.setStyle("-fx-text-fill: #e74c3c;");
     }
 
     private void addButtonAnimations(Button button) {
@@ -56,6 +72,48 @@ public class GuideRequirementsController implements Initializable {
     }
 
     @FXML
+    private void handleUploadCV(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionnez votre CV");
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Documents PDF", "*.pdf"),
+            new FileChooser.ExtensionFilter("Documents Word", "*.doc", "*.docx"),
+            new FileChooser.ExtensionFilter("Tous les documents", "*.pdf", "*.doc", "*.docx")
+        );
+
+        Stage stage = (Stage) uploadCvBtn.getScene().getWindow();
+        selectedCvFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedCvFile != null) {
+            try {
+                // Upload CV to cloud storage
+                String clientFullName = currentUser.getPrenom() + "_" + currentUser.getNom();
+                cvCloudLink = fileUploadService.uploadCV(selectedCvFile, clientFullName);
+
+                // Update UI
+                cvStatusLabel.setText("✅ CV téléchargé avec succès: " + selectedCvFile.getName());
+                cvStatusLabel.setStyle("-fx-text-fill: #27ae60;");
+
+                // Enable confirm button
+                confirmBtn.setDisable(false);
+
+                // Add success animation
+                FadeTransition fadeSuccess = new FadeTransition(Duration.millis(300), cvStatusLabel);
+                fadeSuccess.setFromValue(0.5);
+                fadeSuccess.setToValue(1.0);
+                fadeSuccess.play();
+
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur d'Upload",
+                    "Impossible de télécharger le CV: " + e.getMessage());
+
+                cvStatusLabel.setText("❌ Erreur lors du téléchargement du CV");
+                cvStatusLabel.setStyle("-fx-text-fill: #e74c3c;");
+            }
+        }
+    }
+
+    @FXML
     private void handleConfirm(ActionEvent event) {
         try {
             // Validate that current user is a client
@@ -64,67 +122,32 @@ public class GuideRequirementsController implements Initializable {
                 return;
             }
 
-            // Create new Guide from current Client
-            Client client = (Client) currentUser;
-            Guide newGuide = new Guide(
-                client.getNom(),
-                client.getPrenom(),
-                client.getEmail(),
-                client.getMotDePasse(),
-                client.getPays(),
-                client.getImageurl()
-            );
-
-            // Set the ID to maintain data integrity
-            newGuide.setIdUtilisateur(client.getIdUtilisateur());
-
-            // Convert client to guide in database
-            boolean conversionSuccess = convertClientToGuide(client, newGuide);
-
-            if (conversionSuccess) {
-                // Update session with new guide user
-                UserSession.getInstance().setCurrentUser(newGuide);
-
-                // Show success message
-                showAlert(Alert.AlertType.INFORMATION, "Succès",
-                         "Félicitations! Votre compte a été converti en compte Guide.\n" +
-                         "Vous pouvez maintenant créer et gérer des excursions touristiques.");
-
-                // Close dialog
-                closeDialog();
-
-                // Refresh parent window if needed
-                refreshParentWindow();
-
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                         "Échec de la conversion du compte. Veuillez réessayer ou contacter le support.");
+            // Validate that CV has been uploaded
+            if (cvCloudLink == null || cvCloudLink.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "CV Requis",
+                    "Veuillez télécharger votre CV avant de confirmer votre demande.");
+                return;
             }
 
-        } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur de Base de Données",
-                     "Erreur lors de la conversion: " + e.getMessage());
+            Client client = (Client) currentUser;
+
+            // Send notification to admin with CV link
+            notificationService.sendGuideApplicationNotification(client, cvCloudLink);
+
+            // Show success message - application is now pending
+            showAlert(Alert.AlertType.INFORMATION, "Demande Envoyée",
+                "🎯 Votre demande pour devenir Guide a été envoyée avec succès!\n\n" +
+                "📄 CV: " + selectedCvFile.getName() + "\n" +
+                "⏳ Status: En attente d'approbation\n\n" +
+                "Un administrateur examinera votre CV et vous contactera bientôt.\n" +
+                "Vous recevrez une notification une fois que votre demande aura été traitée.");
+
+            // Close dialog
+            closeDialog();
+
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur Inattendue",
-                     "Une erreur inattendue s'est produite: " + e.getMessage());
-        }
-    }
-
-    private boolean convertClientToGuide(Client client, Guide guide) throws SQLException {
-        // Begin transaction-like operation
-        try {
-            // First, delete client-specific data
-            serviceUser.supprimer(client.getIdUtilisateur());
-
-            // Then, add as guide
-            serviceUser.ajouter(guide);
-
-            return true;
-
-        } catch (SQLException e) {
-            // Log error and re-throw
-            System.err.println("Erreur lors de la conversion Client vers Guide: " + e.getMessage());
-            throw e;
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                "Une erreur s'est produite lors de l'envoi de votre demande: " + e.getMessage());
         }
     }
 

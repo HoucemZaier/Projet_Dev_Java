@@ -4,7 +4,7 @@ public class Client extends User {
     private int id_client ;
     private String cin;
 
-    public Client() {
+    public Client(String testNom, String testPrenom, String mail, String password, String tunisie, String s) {
         super();
     }
 

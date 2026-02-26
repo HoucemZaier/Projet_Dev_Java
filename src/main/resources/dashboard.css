@@ -360,6 +360,35 @@
     -fx-font-family: "Inter", sans-serif;
 }
 
+/* Notification Badge */
+.notification-badge {
+    -fx-background-color: linear-gradient(to bottom right, #ff4757, #ff3838);
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: 800;
+    -fx-padding: 3 7 3 7;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-min-width: 18;
+    -fx-min-height: 18;
+    -fx-alignment: center;
+    -fx-font-family: "Inter", sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(255, 71, 87, 0.4), 6, 0, 0, 2);
+    -fx-border-color: white;
+    -fx-border-width: 2;
+}
+
+/* Notification Icon Container */
+.notification-container {
+    -fx-transition: all 0.3s ease;
+}
+
+.notification-container:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-effect: dropshadow(gaussian, rgba(255, 193, 7, 0.5), 10, 0, 0, 3);
+}
+
 /* Avatar */
 .user-info .image-view {
     -fx-effect: dropshadow(gaussian, #cccccc, 5, 0, 0, 0);

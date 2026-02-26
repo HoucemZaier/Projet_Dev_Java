@@ -59,6 +59,7 @@
                                     </font>
                                 </Button>
 
+
                                 <Button fx:id="destinationsBtn" maxWidth="Infinity" styleClass="menu-button" text="Destinations">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0">
@@ -230,11 +231,20 @@
                             <children>
                                 <TextField promptText="Rechercher quelque chose..." styleClass="search-field" />
                                 <Button styleClass="new-entry-button" text="+ Nouvelle Entrée" />
-                                <ImageView fitHeight="20.0" fitWidth="20.0">
-                                    <image>
-                                        <Image url="https://img.icons8.com/fluency/48/appointment-reminders.png" />
-                                    </image>
-                                </ImageView>
+                                <!-- Notification Icon with Badge -->
+                                <StackPane fx:id="notificationStackPane" onMouseClicked="#handleNotifications"
+                                          styleClass="notification-container" style="-fx-cursor: hand;">
+                                    <children>
+                                        <ImageView fitHeight="26.0" fitWidth="26.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/appointment-reminders--v1.png" />
+                                            </image>
+                                        </ImageView>
+                                        <!-- Red notification badge -->
+                                        <Label fx:id="notificationBadge" text="3" visible="false" styleClass="notification-badge"
+                                               StackPane.alignment="TOP_RIGHT" translateX="-3" translateY="3"/>
+                                    </children>
+                                </StackPane>
                                 <HBox fx:id="userProfileHBox" alignment="CENTER" spacing="10" onMouseClicked="#handleUserProfile" style="-fx-cursor: hand;">
                                     <children>
                                         <VBox alignment="CENTER_RIGHT">

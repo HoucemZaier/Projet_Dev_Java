@@ -3,6 +3,7 @@ package Controllers;
 import Models.User;
 import Models.Client;
 import Services.ServiceUser;
+import Services.NotificationService;
 import utils.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
@@ -83,6 +84,7 @@ public class accountmanagement implements Initializable {
 
     private User currentUser;
     private ServiceUser serviceUser;
+    private NotificationService notificationService;
     private boolean isPanelVisible = false;
     private Runnable profileUpdateCallback;
 
@@ -109,6 +111,7 @@ public class accountmanagement implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         serviceUser = new ServiceUser();
+        notificationService = new NotificationService();
 
         // Load user data from session
         loadUserData();
@@ -120,6 +123,7 @@ public class accountmanagement implements Initializable {
             becomeGuideBtn.setManaged(isClient);
 
             if (isClient) {
+                checkGuideApplicationStatus();
                 addButtonHoverAnimation(becomeGuideBtn);
             }
         }
@@ -763,14 +767,83 @@ public class accountmanagement implements Initializable {
             // Show dialog and wait for result
             dialogStage.showAndWait();
 
-            // Refresh user data in case conversion happened
+            // Refresh user data and check application status after dialog closes
             loadUserData();
+            checkGuideApplicationStatus();
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir la fenêtre de demande de guide: " + e.getMessage());
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur Inattendue", "Une erreur s'est produite: " + e.getMessage());
         }
+    }
+
+    /**
+     * Check if client has pending guide application and update button state
+     */
+    private void checkGuideApplicationStatus() {
+        if (currentUser == null || !(currentUser instanceof Client) || becomeGuideBtn == null) {
+            return;
+        }
+
+        // Run check in background to avoid blocking UI
+        javafx.concurrent.Task<Boolean> checkTask = new javafx.concurrent.Task<>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return notificationService.hasClientPendingGuideApplication(currentUser.getEmail());
+            }
+        };
+
+        checkTask.setOnSucceeded(e -> {
+            boolean hasPendingApplication = checkTask.getValue();
+            javafx.application.Platform.runLater(() -> {
+                if (hasPendingApplication) {
+                    // Disable button and update styling for pending state
+                    becomeGuideBtn.setDisable(true);
+                    becomeGuideBtn.setText("⏳ Demande en Attente");
+                    becomeGuideBtn.setStyle(
+                        "-fx-background-color: #fbbf24; " +
+                        "-fx-text-fill: #92400e; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-background-radius: 15; " +
+                        "-fx-border-radius: 15; " +
+                        "-fx-padding: 12 20; " +
+                        "-fx-font-size: 13px; " +
+                        "-fx-cursor: default;"
+                    );
+
+                    // Add tooltip to explain the state
+                    Tooltip tooltip = new Tooltip("Votre demande pour devenir guide est en cours de traitement par l'administration");
+                    tooltip.setStyle("-fx-font-size: 12px; -fx-background-color: #374151; -fx-text-fill: white; -fx-background-radius: 8;");
+                    Tooltip.install(becomeGuideBtn, tooltip);
+                } else {
+                    // Enable button and restore normal styling
+                    becomeGuideBtn.setDisable(false);
+                    becomeGuideBtn.setText("🎯 Devenir Guide");
+                    becomeGuideBtn.setStyle(
+                        "-fx-background-color: linear-gradient(to bottom right, #10b981, #059669); " +
+                        "-fx-text-fill: white; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-background-radius: 15; " +
+                        "-fx-border-radius: 15; " +
+                        "-fx-padding: 12 20; " +
+                        "-fx-font-size: 13px; " +
+                        "-fx-cursor: hand; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.3), 8, 0, 0, 3);"
+                    );
+
+                    // Remove tooltip
+                    Tooltip.uninstall(becomeGuideBtn, null);
+                }
+            });
+        });
+
+        checkTask.setOnFailed(e -> {
+            System.err.println("❌ Erreur lors de la vérification du statut de demande: " +
+                             checkTask.getException().getMessage());
+        });
+
+        new Thread(checkTask).start();
     }
 
     private void addButtonHoverAnimation(Button button) {
@@ -802,11 +875,11 @@ public class accountmanagement implements Initializable {
     private void initialize2FASection() {
         if (twoFactorSection == null) return;
 
-        // Check if user is admin or moderator
+        // Check if user is admin, moderator, or client (allow 2FA for these roles)
         String userType = UserSession.getInstance().getCurrentUserType();
-        boolean isAdminOrModerator = "Admin".equals(userType) || "Moderateur".equals(userType);
+        boolean canUse2FA = "Admin".equals(userType) || "Moderateur".equals(userType) || "Client".equals(userType);
 
-        if (isAdminOrModerator) {
+        if (canUse2FA) {
             twoFactorSection.setVisible(true);
             twoFactorSection.setManaged(true);
 
@@ -821,7 +894,7 @@ public class accountmanagement implements Initializable {
                 addButtonHoverAnimation(disable2FABtn);
             }
         } else {
-            // Hide 2FA section for clients and guides
+            // Hide 2FA section only for guides
             twoFactorSection.setVisible(false);
             twoFactorSection.setManaged(false);
         }
