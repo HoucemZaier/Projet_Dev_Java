@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefHeight="800.0" prefWidth="1280.0" styleClass="root-background" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.dashboardController">
+    <children>
+        <VBox  maxWidth="210.0" prefWidth="210.0" spacing="8" styleClass="sidebar">
+            <padding>
+                <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+            <children>
+                <Label prefHeight="71.0" prefWidth="185.0" styleClass="logo-text" text="Planova">
+                    <graphic>
+                        <ImageView fitHeight="71.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+                            <image>     
+                                <Image url="/images/logo.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Label>
+
+                <VBox spacing="5" VBox.vgrow="ALWAYS">
+                    <padding><Insets top="30" /></padding>
+                    <children>
+                        <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button-active" text="Overview">
+                            <graphic>
+                                <ImageView fitHeight="16.0" fitWidth="16.0">
+                                    <image>
+                                        <Image url="https://img.icons8.com/ios-filled/50/ffffff/grid-2.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="userManagementBtn" maxWidth="Infinity" onAction="#handleUserManagement" styleClass="menu-button" text="User Management">
+                            <graphic>
+                                <ImageView fitHeight="40.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/user.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="billetsBtn" maxWidth="Infinity" onAction="#handleBillets" styleClass="menu-button" text="Billets">
+                            <graphic>
+                                <ImageView fitHeight="51.0" fitWidth="69.0">
+                                    <image>
+                                        <Image url="@../images/billets.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="hotelsBtn" maxWidth="Infinity" onAction="#handleHotels" styleClass="menu-button" text="Hotels">
+                            <graphic>
+                                <ImageView fitHeight="49.0" fitWidth="42.0">
+                                    <image>
+                                        <Image url="@../images/hotel.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="excursionsBtn" maxWidth="Infinity" onAction="#handleExcursions" styleClass="menu-button" text="Excursions">
+                            <graphic>
+                                <ImageView fitHeight="42.0" fitWidth="43.0">
+                                    <image>
+                                        <Image url="@../images/excursion.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="blogBtn" maxWidth="Infinity" onAction="#handleBlog" styleClass="menu-button" text="Blog Posts">
+                            <graphic>
+                                <ImageView fitHeight="40.0" fitWidth="41.0">
+                                    <image>
+                                        <Image url="@../images/post.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="forumBtn" maxWidth="Infinity" onAction="#handleForum" styleClass="menu-button" text="Community Forum">
+                            <graphic>
+                                <ImageView fitHeight="36.0" fitWidth="39.0">
+                                    <image>
+                                        <Image url="@../images/forum.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="activitiesBtn" maxWidth="Infinity" onAction="#handleActivities" styleClass="menu-button" text="Activities">
+                            <graphic>
+                                <ImageView fitHeight="45.0" fitWidth="42.0">
+                                    <image>
+                                        <Image url="@../images/activité.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </children>
+                </VBox>
+
+                <VBox spacing="5">
+                    <children>
+                        <Button fx:id="settingsBtn" maxWidth="Infinity" onAction="#handleSettings" styleClass="menu-button" text="Settings">
+                            <graphic>
+                                <ImageView fitHeight="46.0" fitWidth="43.0">
+                                    <image>
+                                        <Image url="@../images/settings.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="logoutBtn" maxWidth="Infinity" onAction="#handleLogout" styleClass="menu-button" text="Logout">
+                            <graphic>
+                                <ImageView fitHeight="38.0" fitWidth="40.0">
+                                    <image>
+                                        <Image url="@../images/logout.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+
+        <VBox spacing="20" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets bottom="20" left="30" right="30" top="20" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <children>
+                        <VBox>
+                            <children>
+                                <Label styleClass="dashboard-title" text="Dashboard" />
+                                <Label styleClass="welcome-text" text="Welcome back, Admin Panel" />
+                            </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox alignment="CENTER" spacing="15" styleClass="top-bar-right-panel">
+                            <children>
+                                <TextField promptText="Search anything..." styleClass="search-field" />
+                                <Button styleClass="new-entry-button" text="+ New Entry" />
+                                <ImageView fitHeight="20.0" fitWidth="20.0">
+                                    <image>
+                                        <Image url="https://img.icons8.com/material-outlined/48/2b3674/appointment-reminders.png" />
+                                    </image>
+                                </ImageView>
+                                <HBox alignment="CENTER" spacing="10">
+                                    <children>
+                                        <VBox alignment="CENTER_RIGHT">
+                                            <children>
+                                                <Label styleClass="user-name" text="Alex Thompson" />
+                                                <Label styleClass="user-role" text="Super Admin" />
+                                            </children>
+                                        </VBox>
+                                        <ImageView fitHeight="36.0" fitWidth="36.0">
+                                            <image>
+                                                <Image url="https://i.pravatar.cc/100?u=admin" />
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+
+                <HBox spacing="20">
+                    <children>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-positive" text="+12.5%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Total Revenue" />
+                                <Label styleClass="card-value" text="\$42,500" />
+                            </children>
+                        </VBox>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-positive" text="+8.2%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Total Clients" />
+                                <Label styleClass="card-value" text="1,284" />
+                            </children>
+                        </VBox>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-negative" text="-2.4%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Active Tours" />
+                                <Label styleClass="card-value" text="48" />
+                            </children>
+                        </VBox>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-positive" text="+6.1%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Satisfaction" />
+                                <Label styleClass="card-value" text="98%" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <HBox spacing="20" VBox.vgrow="ALWAYS">
+                    <children>
+                        <VBox styleClass="chart-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="section-title" text="Booking Analytics" />
+                                <LineChart fx:id="bookingChart" createSymbols="false" legendVisible="false" verticalGridLinesVisible="false">
+                                    <xAxis><CategoryAxis side="BOTTOM" /></xAxis>
+                                    <yAxis><NumberAxis side="LEFT" /></yAxis>
+                                </LineChart>
+                            </children>
+                        </VBox>
+
+                        <VBox prefWidth="300.0" spacing="15" styleClass="recent-bookings-card">
+                            <children>
+                                <Label styleClass="section-title" text="Recent Bookings" />
+                                <VBox fx:id="recentBookingsList" spacing="10" />
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Button maxWidth="Infinity" styleClass="view-all-button" text="View All Reports" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</HBox>
