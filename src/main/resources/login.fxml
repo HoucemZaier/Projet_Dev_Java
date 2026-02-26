@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<HBox prefWidth="1100" prefHeight="700"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.loginController"
+      stylesheets="@login.css">
+
+    <!-- LEFT PANEL -->
+    <VBox spacing="18"
+          alignment="CENTER_LEFT"
+          styleClass="left-panel"
+          prefWidth="420">
+
+        <!-- LOGO -->
+        <ImageView fitWidth="70" fitHeight="70">
+            <image>
+                <Image url="@logo.png"/>
+            </image>
+        </ImageView>
+
+        <!-- TITLE -->
+        <Label text="PlaNova" styleClass="title"/>
+
+        <!-- SUBTITLE -->
+        <Label text="Votre prochaine aventure, planifiée intelligemment"
+               wrapText="true"
+               styleClass="subtitle"/>
+
+        <!-- SPACE -->
+        <Region prefHeight="25"/>
+
+        <!-- INPUTS -->
+        <VBox spacing="15">
+            <TextField fx:id="emailField" promptText="Adresse Email" styleClass="input"/>
+
+            <!-- PASSWORD WITH TOGGLE -->
+            <HBox alignment="CENTER_LEFT" spacing="0" styleClass="password-container">
+                <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                              style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0; -fx-font-size: 15px;"
+                              HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="passwordTextField" promptText="Mot de passe"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0; -fx-font-size: 15px;"
+                          visible="false" managed="false"
+                          HBox.hgrow="ALWAYS"/>
+                <Button fx:id="passwordToggleBtn" onAction="#togglePasswordVisibility"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8;"
+                       text="👁"/>
+            </HBox>
+        </VBox>
+
+        <!-- FORGOT PASSWORD -->
+        <Hyperlink fx:id="forgotPasswordLink" text="Mot de passe oublié?" styleClass="forgot-link" onAction="#handleForgotPassword"/>
+
+        <!-- SPACE -->
+        <Region prefHeight="20"/>
+
+        <!-- BUTTONS -->
+        <HBox spacing="20">
+            <Button fx:id="loginBtn" onAction="#handleLogin" text="Connexion" styleClass="login-btn"/>
+            <Button fx:id="signupBtn" onAction="#handleSignup" text="Créer un Compte" styleClass="signup-btn"/>
+        </HBox>
+
+        <!-- SPACE -->
+        <Region prefHeight="20"/>
+
+        <!-- DIVIDER -->
+        <HBox alignment="CENTER" spacing="12">
+            <Line strokeWidth="1" stroke="#E5E7EB" startX="0" endX="85"/>
+            <Label text="ou continuer avec" styleClass="divider-text"/>
+            <Line strokeWidth="1" stroke="#E5E7EB" startX="0" endX="85"/>
+        </HBox>
+
+        <!-- SPACE -->
+        <Region prefHeight="5"/>
+
+        <!-- SOCIAL AUTHENTICATION INFO -->
+        <Label text="Authentification sociale pour les clients uniquement"
+               styleClass="social-info-text"
+               alignment="CENTER"/>
+
+        <!-- SPACE -->
+        <Region prefHeight="10"/>
+
+        <!-- SOCIAL AUTHENTICATION BUTTONS -->
+        <HBox spacing="25" alignment="CENTER">
+            <Button fx:id="facebookBtn" onAction="#handleFacebookLogin" styleClass="facebook-btn">
+                <graphic>
+                    <ImageView fitWidth="32" fitHeight="32">
+                        <image>
+                            <Image url="https://img.icons8.com/ios-glyphs/90/FFFFFF/facebook-new.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="googleBtn" onAction="#handleGoogleLogin" styleClass="google-btn">
+                <graphic>
+                    <ImageView fitWidth="32" fitHeight="32">
+                        <image>
+                            <Image url="https://img.icons8.com/ios-glyphs/90/FFFFFF/google-logo.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+
+    </VBox>
+
+    <!-- RIGHT IMAGE -->
+    <ImageView fitWidth="680" fitHeight="700" preserveRatio="false" smooth="true" HBox.hgrow="ALWAYS">
+        <image>
+            <Image url="@plane.jpg"/>
+        </image>
+    </ImageView>
+</HBox>

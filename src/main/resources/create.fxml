@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<HBox prefWidth="1100" prefHeight="700"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.CreateAccountController"
+      stylesheets="@login.css">
+
+    <!-- LEFT PANEL WITH SCROLL -->
+    <ScrollPane fitToWidth="true" prefWidth="420" prefHeight="700" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+                style="-fx-border-style: none; -fx-background-color: transparent;">
+        <VBox spacing="18"
+              alignment="TOP_LEFT"
+              styleClass="left-panel"
+              prefWidth="400"
+              minHeight="800">
+            <!-- LOGO -->
+            <ImageView fitWidth="70" fitHeight="70">
+                <image>
+                    <Image url="@logo.png"/>
+                </image>
+            </ImageView>
+
+            <!-- TITLE -->
+            <Label text="Créer un Compte" styleClass="title"/>
+
+            <!-- SUBTITLE -->
+            <Label text="Créer un nouveau compte utilisateur"
+                   wrapText="true"
+                   styleClass="subtitle"/>
+
+            <!-- SPACE -->
+            <Region prefHeight="20"/>
+
+            <!-- USER TYPE SELECTION -->
+            <ComboBox fx:id="userTypeComboBox" promptText="Sélectionner le Type d'Utilisateur" styleClass="input">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Client"/>
+                        <String fx:value="Admin"/>
+                        <String fx:value="Moderateur"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+
+            <!-- DYNAMIC INPUTS BASED ON TYPE -->
+            <TextField fx:id="cinField" promptText="CIN (pour Client)" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeField" promptText="Matricule" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeModField" promptText="Matricule " styleClass="input" visible="false"/>
+            <TextField fx:id="nomField" promptText="Nom" styleClass="input"/>
+            <TextField fx:id="prenomField" promptText="Prénom" styleClass="input"/>
+            <TextField fx:id="emailField" promptText="Adresse Email" styleClass="input"/>
+
+            <!-- PASSWORD WITH TOGGLE -->
+            <HBox alignment="CENTER_LEFT" spacing="0" styleClass="input">
+                <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                              style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                              HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="passwordTextField" promptText="Mot de passe"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                          visible="false" managed="false"
+                          HBox.hgrow="ALWAYS"/>
+                <Button fx:id="passwordToggleBtn" onAction="#togglePasswordVisibility"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 5; -fx-min-width: 30px; -fx-pref-width: 30px; -fx-font-size: 16px; -fx-opacity: 1.0;"
+                       text="👁"/>
+            </HBox>
+
+            <!-- PASSWORD REQUIREMENTS -->
+            <VBox spacing="10" style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 15;">
+                <Label text="Exigences du mot de passe:" style="-fx-font-weight: bold; -fx-text-fill: #34495e; -fx-font-size: 13px;"/>
+                <VBox spacing="5">
+                    <Label fx:id="lengthReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• 8+ caractères" />
+                    <Label fx:id="upperReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Majuscule" />
+                    <Label fx:id="numberReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Chiffre" />
+                    <Label fx:id="specialReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Caractère spécial" />
+                </VBox>
+            </VBox>
+
+            <!-- CONFIRM PASSWORD WITH TOGGLE -->
+            <HBox alignment="CENTER_LEFT" spacing="0" styleClass="input">
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirmer le mot de passe"
+                              style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                              HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="confirmPasswordTextField" promptText="Confirmer le mot de passe"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                          visible="false" managed="false"
+                          HBox.hgrow="ALWAYS"/>
+                <Button fx:id="confirmPasswordToggleBtn" onAction="#toggleConfirmPasswordVisibility"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 5; -fx-min-width: 30px; -fx-pref-width: 30px; -fx-font-size: 16px; -fx-opacity: 1.0;"
+                       text="👁"/>
+            </HBox>
+
+            <TextField fx:id="paysField" promptText="Pays" styleClass="input"/>
+
+            <!-- IMAGE UPLOAD -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Image:" styleClass="image-label"/>
+                <Button fx:id="imageButton" text="Choisir une Image" onAction="#handleImageUpload" styleClass="image-btn"/>
+            </HBox>
+
+            <!-- SPACE BEFORE BUTTONS -->
+            <Region prefHeight="25"/>
+
+            <!-- BUTTONS -->
+            <VBox spacing="15" alignment="CENTER">
+                <HBox spacing="15" alignment="CENTER">
+                    <Button fx:id="createAccountBtn" onAction="#handleCreateAccount" text="Créer le Compte"
+                           styleClass="login-btn"
+                           style="-fx-min-width: 160px; -fx-min-height: 50px; -fx-pref-width: 160px; -fx-pref-height: 50px; -fx-background-color: #3b4cff; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10px; -fx-cursor: hand; -fx-opacity: 1.0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 2);"/>
+                    <Button fx:id="backToLoginBtn" onAction="#handleBackToLogin" text="Retour"
+                           styleClass="signup-btn"
+                           style="-fx-min-width: 120px; -fx-min-height: 50px; -fx-pref-width: 120px; -fx-pref-height: 50px; -fx-background-color: transparent; -fx-border-color: #3b4cff; -fx-border-width: 2px; -fx-text-fill: #3b4cff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10px; -fx-border-radius: 10px; -fx-cursor: hand; -fx-opacity: 1.0;"/>
+                </HBox>
+            </VBox>
+
+            <!-- SPACE AFTER BUTTONS -->
+            <Region prefHeight="30"/>
+
+            <!-- SOCIAL -->
+            <HBox spacing="25">
+                <Label text="Facebook" styleClass="social"/>
+                <Label text="LinkedIn" styleClass="social"/>
+                <Label text="Google" styleClass="social"/>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- RIGHT IMAGE -->
+    <ImageView fitWidth="680" fitHeight="700" preserveRatio="false" smooth="true" HBox.hgrow="ALWAYS">
+        <image>
+            <Image url="@plane.jpg"/>
+        </image>
+    </ImageView>
+
+</HBox>

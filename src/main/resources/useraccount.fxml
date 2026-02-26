@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to bottom right, #f5f7fa, #e9ecf2);" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.accountmanagement">
+    <center>
+        <!-- Add ScrollPane to make the interface scrollable -->
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: transparent; -fx-background-color: transparent;" BorderPane.alignment="CENTER">
+            <content>
+                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <VBox alignment="TOP_CENTER" maxWidth="1100.0" spacing="25.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <!-- Header with User Info -->
+                                <AnchorPane style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, #cccccc, 20, 0, 0, 10);">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="20.0" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0">
+                                    <children>
+                                        <StackPane fx:id="avatarStackPane" onMouseClicked="#handleAvatarClick" style="-fx-cursor: hand;">
+                                            <children>
+                                                <ImageView fx:id="userAvatarImage" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" visible="false" />
+                                                <Circle fx:id="userAvatarCircle" fill="#4a6fa5" radius="40.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" />
+                                                <Label fx:id="userInitials" style="-fx-font-size: 32px; -fx-text-fill: white;" text="??" />
+                                            </children>
+                                        </StackPane>
+                                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Text fx:id="userFullName" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 28px; -fx-font-weight: bold;" text="User Name" />
+                                                <HBox spacing="10.0">
+                                                    <children>
+                                                        <Label fx:id="userRoleLabel" style="-fx-background-color: #4a6fa5; -fx-background-radius: 15; -fx-text-fill: white; -fx-padding: 5 15;" text="Role" />
+                                                        <Label style="-fx-background-color: #28a745; -fx-background-radius: 15; -fx-text-fill: white; -fx-padding: 5 15;" text="Active" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                        <Label fx:id="userIdLabel" style="-fx-text-fill: #666;" text="ID: ---" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </AnchorPane>
+
+                        <!-- Main Content Grid -->
+                        <GridPane hgap="20.0" style="-fx-background-color: transparent;" vgap="20.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <!-- Account Information Card -->
+                                <VBox spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, #cccccc, 15, 0, 0, 5);" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                            <children>
+                                                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="📋 Informations du Compte" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label style="-fx-text-fill: #6c757d;" text="Modifiez vos informations personnelles" />
+                                            </children>
+                                        </HBox>
+                                        <Separator prefWidth="200.0" />
+
+                                        <GridPane hgap="15.0" vgap="15.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" percentWidth="30.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="70.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints vgrow="SOMETIMES" />
+                                                <RowConstraints vgrow="SOMETIMES" />
+                                                <RowConstraints vgrow="SOMETIMES" />
+                                                <RowConstraints vgrow="SOMETIMES" />
+                                                <RowConstraints vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                            <children>
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Nom" />
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Prénom" GridPane.rowIndex="1" />
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Email" GridPane.rowIndex="2" />
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Pays" GridPane.rowIndex="3" />
+                                                <Label fx:id="roleLabel" style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Rôle" GridPane.rowIndex="4" />
+                                                <TextField fx:id="nomField" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" promptText="Nom" GridPane.columnIndex="1" />
+                                                <TextField fx:id="prenomField" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" promptText="Prénom" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <TextField fx:id="emailField" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="paysField" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" promptText="Pays" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="roleField" editable="false" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10; -fx-background-color: #f8f9fa;" promptText="Rôle" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                            </children>
+                                        </GridPane>
+
+                                        <HBox spacing="15.0" alignment="CENTER">
+                                            <children>
+                                                <Button fx:id="saveChangesBtn" mnemonicParsing="false" onAction="#handleSaveChanges"
+                                                       style="-fx-background-color: #4a6fa5; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 120px; -fx-pref-width: 120px; -fx-font-size: 14px;"
+                                                       text="Sauvegarder" />
+                                                <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#handleCancel"
+                                                       style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-border-color: #dc3545; -fx-border-radius: 10; -fx-text-fill: #dc3545; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 100px; -fx-pref-width: 100px; -fx-font-size: 14px;"
+                                                       text="Annuler" />
+                                                <!-- BECOME GUIDE BUTTON (only for clients) -->
+                                                <Button fx:id="becomeGuideBtn" mnemonicParsing="false" onAction="#handleBecomeGuide"
+                                                       style="-fx-background-color: #28a745; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-effect: dropshadow(gaussian, #28a745, 10, 0, 0, 3); -fx-min-width: 140px; -fx-pref-width: 140px; -fx-font-size: 14px;"
+                                                       text="Devenir Guide" visible="false" managed="false"/>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                    </padding>
+                                </VBox>
+
+                                <!-- Security Settings Card -->
+                                <VBox spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, #cccccc, 15, 0, 0, 5);" GridPane.columnIndex="1">
+                                    <children>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                            <children>
+                                                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="🔒 Paramètres de Sécurité" />
+                                                <Region HBox.hgrow="ALWAYS" />
+                                                <Label style="-fx-text-fill: #6c757d;" text="Mettez à jour votre mot de passe" />
+                                            </children>
+                                        </HBox>
+                                        <Separator prefWidth="200.0" />
+
+                                        <VBox spacing="15.0">
+                                            <children>
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Mot de Passe Actuel" />
+                                                        <PasswordField fx:id="currentPasswordField" promptText="Entrez le mot de passe actuel" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Nouveau Mot de Passe" />
+                                                        <PasswordField fx:id="newPasswordField" promptText="Entrez le nouveau mot de passe" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Confirmer Nouveau Mot de Passe" />
+                                                        <PasswordField fx:id="confirmPasswordField" promptText="Confirmez le nouveau mot de passe" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10;" />
+                                                    </children>
+                                                </VBox>
+
+                                                <HBox alignment="CENTER_RIGHT">
+                                                    <children>
+                                                        <Button fx:id="updatePasswordBtn" mnemonicParsing="false" onAction="#handleUpdatePassword"
+                                                               style="-fx-background-color: #4a6fa5; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 20; -fx-min-width: 150px; -fx-pref-width: 150px; -fx-font-size: 14px;"
+                                                               text="Modifier Mot de Passe" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+
+                                        <!-- 2FA Section (only for admins and moderators) -->
+                                        <VBox fx:id="twoFactorSection" spacing="20.0" style="-fx-background-color: linear-gradient(to bottom right, #f8f9fa, #e9ecef); -fx-background-radius: 15; -fx-padding: 25; -fx-border-color: #dee2e6; -fx-border-radius: 15; -fx-border-width: 1; -fx-effect: dropshadow(gaussian, #cccccc, 10, 0, 0, 5);" visible="false" managed="false">
+                                            <children>
+                                                <!-- 2FA Header -->
+                                                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                                    <children>
+                                                        <VBox spacing="3.0" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="🔐 Authentification à Deux Facteurs" />
+                                                                <Label style="-fx-font-size: 13px; -fx-text-fill: #6c757d;" text="Sécurisez votre compte avec des méthodes d'authentification avancées" />
+                                                            </children>
+                                                        </VBox>
+                                                        <Label fx:id="twoFactorStatusLabel" style="-fx-background-color: #dc3545; -fx-background-radius: 20; -fx-text-fill: white; -fx-padding: 6 15; -fx-font-size: 12px; -fx-font-weight: bold;" text="Désactivé" />
+                                                    </children>
+                                                </HBox>
+
+                                                <Separator prefWidth="200.0" style="-fx-background-color: #dee2e6;" />
+
+                                                <!-- 2FA Methods Grid -->
+                                                <GridPane hgap="20.0" vgap="15.0">
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                                                    </columnConstraints>
+                                                    <rowConstraints>
+                                                        <RowConstraints vgrow="SOMETIMES" />
+                                                        <RowConstraints vgrow="SOMETIMES" />
+                                                    </rowConstraints>
+
+                                                    <!-- Face ID Method -->
+                                                    <VBox spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-border-color: #e9ecef; -fx-border-radius: 12; -fx-border-width: 1; -fx-effect: dropshadow(gaussian, #cccccc, 5, 0, 0, 2);" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                                        <children>
+                                                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                                                <children>
+                                                                    <Label style="-fx-background-color: #3498db; -fx-background-radius: 25; -fx-text-fill: white; -fx-font-size: 20px; -fx-min-width: 40px; -fx-min-height: 40px; -fx-alignment: center;" text="👤" />
+                                                                    <VBox spacing="2.0">
+                                                                        <children>
+                                                                            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Reconnaissance Faciale" />
+                                                                            <Label fx:id="faceIdStatusLabel" style="-fx-font-size: 11px; -fx-text-fill: #6c757d;" text="Non configuré" />
+                                                                        </children>
+                                                                    </VBox>
+                                                                </children>
+                                                            </HBox>
+                                                        </children>
+                                                    </VBox>
+
+                                                    <!-- Microsoft Authenticator Method -->
+                                                    <VBox spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-border-color: #e9ecef; -fx-border-radius: 12; -fx-border-width: 1; -fx-effect: dropshadow(gaussian, #cccccc, 5, 0, 0, 2);" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                                        <children>
+                                                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                                                <children>
+                                                                    <Label style="-fx-background-color: #e74c3c; -fx-background-radius: 25; -fx-text-fill: white; -fx-font-size: 20px; -fx-min-width: 40px; -fx-min-height: 40px; -fx-alignment: center;" text="🔐" />
+                                                                    <VBox spacing="2.0">
+                                                                        <children>
+                                                                            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Microsoft Authenticator" />
+                                                                            <Label fx:id="totpStatusLabel" style="-fx-font-size: 11px; -fx-text-fill: #6c757d;" text="Non configuré" />
+                                                                        </children>
+                                                                    </VBox>
+                                                                </children>
+                                                            </HBox>
+                                                        </children>
+                                                    </VBox>
+
+                                                    <!-- Action Buttons -->
+                                                    <HBox alignment="CENTER" spacing="15.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                                                        <children>
+                                                            <Button fx:id="enable2FABtn" mnemonicParsing="false" onAction="#handleSetup2FA"
+                                                                   style="-fx-background-color: linear-gradient(to bottom, #667eea, #764ba2); -fx-background-radius: 25; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 15 30; -fx-min-width: 200px; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, #667eea, 10, 0, 0, 3);"
+                                                                   text="⚙️ Configurer 2FA" />
+
+                                                            <Button fx:id="disable2FABtn" mnemonicParsing="false" onAction="#handleDisable2FA" visible="false" managed="false"
+                                                                   style="-fx-background-color: linear-gradient(to bottom, #dc3545, #c82333); -fx-background-radius: 25; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 15 30; -fx-min-width: 180px; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, #dc3545, 10, 0, 0, 3);"
+                                                                   text="❌ Désactiver 2FA" />
+                                                        </children>
+                                                    </HBox>
+                                                </GridPane>
+
+                                                <!-- Security Features List -->
+                                                <VBox spacing="8.0" style="-fx-background-color: #e8f5e8; -fx-background-radius: 10; -fx-padding: 15;">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #28a745;" text="✨ Fonctionnalités de sécurité incluses:" />
+                                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                            <children>
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #28a745; -fx-font-weight: bold;" text="✓" />
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #495057;" text="Reconnaissance faciale haute précision avec OpenCV" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                            <children>
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #28a745; -fx-font-weight: bold;" text="✓" />
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #495057;" text="Codes TOTP synchronisés avec Microsoft Authenticator" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                            <children>
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #28a745; -fx-font-weight: bold;" text="✓" />
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #495057;" text="Données biométriques cryptées et stockées localement" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                                            <children>
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #28a745; -fx-font-weight: bold;" text="✓" />
+                                                                <Label style="-fx-font-size: 12px; -fx-text-fill: #495057;" text="Protection multi-couches contre les accès non autorisés" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+
+                                        <!-- Password Strength Indicator -->
+                                        <VBox spacing="10.0" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 15;">
+                                            <children>
+                                                <Label style="-fx-font-weight: bold; -fx-text-fill: #34495e;" text="Exigences du mot de passe:" />
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <Label fx:id="lengthReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• 8+ caractères" />
+                                                        <Label fx:id="upperReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Majuscule" />
+                                                        <Label fx:id="numberReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Chiffre" />
+                                                        <Label fx:id="specialReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Caractère spécial" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                    </padding>
+                                </VBox>
+                            </children>
+                        </GridPane>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefWidth="400" prefHeight="250" spacing="20" styleClass="delete-dialog"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.DeleteConfirmationController"
+      stylesheets="@login.css">
+
+    <padding>
+        <javafx.geometry.Insets top="20" left="20" right="20" bottom="20"/>
+    </padding>
+
+    <!-- ICON -->
+    <HBox alignment="CENTER">
+        <ImageView fitWidth="48" fitHeight="48">
+            <image>
+                <Image url="https://img.icons8.com/color/48/error.png"/>
+            </image>
+        </ImageView>
+    </HBox>
+
+    <!-- MESSAGE -->
+    <VBox spacing="10" alignment="CENTER">
+        <Label text="Supprimer Utilisateur" styleClass="title"/>
+        <Label fx:id="messageLabel" text="Êtes-vous sûr de vouloir supprimer cet utilisateur?"
+               wrapText="true" styleClass="subtitle"/>
+        <Label fx:id="userDetailsLabel" text="Les détails de l'utilisateur seront affichés ici"
+               wrapText="true" styleClass="subtitle"/>
+    </VBox>
+
+    <!-- BUTTONS -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button fx:id="cancelBtn" text="Annuler" styleClass="signup-btn" onAction="#cancel"/>
+        <Button fx:id="confirmDeleteBtn" text="Supprimer" styleClass="delete-btn" onAction="#confirmDelete"/>
+    </HBox>
+
+</VBox>

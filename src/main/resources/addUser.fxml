@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+
+<HBox prefWidth="1100" prefHeight="700"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.AddUserController"
+      stylesheets="@login.css">
+
+    <!-- LEFT PANEL WITH SCROLL -->
+    <ScrollPane fitToWidth="true" prefWidth="420" style="-fx-border-style: none; -fx-background-color: transparent;">
+        <VBox spacing="18"
+              alignment="TOP_LEFT"
+              styleClass="left-panel"
+              prefWidth="400">
+
+            <!-- LOGO -->
+            <ImageView fitWidth="70" fitHeight="70">
+                <image>
+                    <Image url="@logo.png"/>
+                </image>
+            </ImageView>
+
+            <!-- TITLE -->
+            <Label text="Ajouter un Utilisateur" styleClass="title"/>
+
+            <!-- SUBTITLE -->
+            <Label text="Créer un nouveau compte utilisateur"
+                   wrapText="true"
+                   styleClass="subtitle"/>
+
+            <!-- SPACE -->
+            <Region prefHeight="20"/>
+
+            <!-- USER TYPE -->
+            <ComboBox fx:id="userTypeCombo" promptText="Sélectionner le Type d'Utilisateur" styleClass="input">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Client"/>
+                        <String fx:value="Admin"/>
+                        <String fx:value="Moderateur"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+
+            <!-- INPUTS -->
+            <TextField fx:id="nomField" promptText="Nom" styleClass="input"/>
+            <TextField fx:id="prenomField" promptText="Prénom" styleClass="input"/>
+            <TextField fx:id="emailField" promptText="Email" styleClass="input"/>
+
+            <!-- PASSWORD WITH TOGGLE -->
+            <HBox alignment="CENTER_LEFT" spacing="0" styleClass="input">
+                <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                              style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                              HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="passwordTextField" promptText="Mot de passe"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                          visible="false" managed="false"
+                          HBox.hgrow="ALWAYS"/>
+                <Button fx:id="passwordToggleBtn" onAction="#togglePasswordVisibility"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 5;"
+                       text="👁"/>
+            </HBox>
+
+            <!-- PASSWORD REQUIREMENTS -->
+            <VBox spacing="10" style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 15;">
+                <Label text="Exigences du mot de passe:" style="-fx-font-weight: bold; -fx-text-fill: #34495e; -fx-font-size: 13px;"/>
+                <VBox spacing="5">
+                    <Label fx:id="lengthReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• 8+ caractères" />
+                    <Label fx:id="upperReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Majuscule" />
+                    <Label fx:id="numberReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Chiffre" />
+                    <Label fx:id="specialReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Caractère spécial" />
+                </VBox>
+            </VBox>
+
+            <TextField fx:id="paysField" promptText="Pays" styleClass="input"/>
+            <TextField fx:id="cinField" promptText="CIN (pour Client)" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeField" promptText="Matricule" styleClass="input" visible="false"/>
+
+            <!-- IMAGE UPLOAD -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Image:" styleClass="image-label"/>
+                <Button fx:id="chooseImageBtn" text="Choisir une Image" styleClass="image-btn" onAction="#chooseImage"/>
+            </HBox>
+
+            <!-- SPACE -->
+            <Region prefHeight="15"/>
+
+            <!-- BUTTONS -->
+            <HBox spacing="15">
+                <Button text="Ajouter Utilisateur" styleClass="login-btn" onAction="#addUser"/>
+                <Button text="Annuler" styleClass="signup-btn" onAction="#cancel"/>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- RIGHT IMAGE -->
+    <ImageView fitWidth="680" fitHeight="700" preserveRatio="false" smooth="true" HBox.hgrow="ALWAYS">
+        <image>
+            <Image url="@plane.jpg"/>
+        </image>
+    </ImageView>
+
+</HBox>

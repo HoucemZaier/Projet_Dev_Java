@@ -17,10 +17,11 @@ public class MainFX extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         try {
-            openWindow("/AffichierPrive.fxml", "Liste Transports Privés");
-            openWindow("/affichierPublique.fxml", "Liste Transports Publics");
-            openWindow("/AfficheClientPrive.fxml", "Liste Transports Privés (Client)");
-            openWindow("/AfficheClientPublique.fxml", "Liste Transports Publics (Client)");
+            //openWindow("/AffichierPrive.fxml", "Liste Transports Privés");
+            //openWindow("/affichierPublique.fxml", "Liste Transports Publics");
+            //openWindow("/AfficheClientPrive.fxml", "Liste Transports Privés (Client)");
+            //openWindow("/AfficheClientPublique.fxml", "Liste Transports Publics (Client)");
+            openWindow("/dashbord.fxml", "Dashboard");
 
 
         } catch (IOException e) {
