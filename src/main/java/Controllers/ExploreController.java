@@ -1,8 +1,10 @@
 package Controllers;
 
 import Models.User;
+import Services.NotificationService;
 import utils.UserSession;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,6 +23,7 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ExploreController implements Initializable {
@@ -46,6 +49,9 @@ public class ExploreController implements Initializable {
         setupSearchFunctionality();
         setupUserProfileClick();
         setupLogoutButtonAnimation();
+
+        // Check for client notifications (guide application status, etc.)
+        checkClientNotifications();
     }
 
     private void loadUserInfo() {
@@ -428,12 +434,42 @@ public class ExploreController implements Initializable {
             accountmanagement controller = loader.getController();
             if (controller != null) {
                 controller.setCurrentUser(UserSession.getInstance().getCurrentUser());
+
+                // Set callback to refresh notifications when account window is closed
+                controller.setProfileUpdateCallback(() -> {
+                    System.out.println("🔄 Account updated, refreshing notifications...");
+                    // Delay the notification check to allow time for any guide application changes
+                    Platform.runLater(() -> {
+                        try {
+                            Thread.sleep(1000); // Small delay
+                            checkClientNotifications();
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
+                    });
+                });
             }
 
             Stage newStage = new Stage();
             newStage.setScene(new Scene(root));
             newStage.setTitle("PlaNova - Account Management");
             newStage.setResizable(true);
+
+            // Add callback when window closes
+            newStage.setOnHidden(e -> {
+                // Check for new notifications when account window closes
+                javafx.concurrent.Task<Void> refreshTask = new javafx.concurrent.Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        Thread.sleep(500); // Small delay to allow notifications to be created
+                        return null;
+                    }
+                };
+
+                refreshTask.setOnSucceeded(event -> checkClientNotifications());
+                new Thread(refreshTask).start();
+            });
+
             newStage.show();
 
         } catch (IOException e) {
@@ -447,6 +483,125 @@ public class ExploreController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Check for client notifications about guide application status
+     */
+    private void checkClientNotifications() {
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            return;
+        }
+
+        // Run notification check in background to avoid blocking UI
+        javafx.concurrent.Task<List<String>> notificationTask = new javafx.concurrent.Task<>() {
+            @Override
+            protected List<String> call() throws Exception {
+                NotificationService notificationService = new NotificationService();
+                return notificationService.getClientNotifications(currentUser.getEmail());
+            }
+        };
+
+        notificationTask.setOnSucceeded(e -> {
+            List<String> notifications = notificationTask.getValue();
+            if (!notifications.isEmpty()) {
+                Platform.runLater(() -> showClientNotifications(notifications));
+            }
+        });
+
+        notificationTask.setOnFailed(e -> {
+            Throwable exception = notificationTask.getException();
+            System.err.println("Erreur lors du chargement des notifications client: " + exception.getMessage());
+        });
+
+        new Thread(notificationTask).start();
+    }
+
+    /**
+     * Show client notifications in a professional dialog
+     */
+    private void showClientNotifications(List<String> notifications) {
+        try {
+            // Create notification dialog
+            Alert notificationAlert = new Alert(Alert.AlertType.INFORMATION);
+            notificationAlert.setTitle("Notifications");
+            notificationAlert.setHeaderText("Nouvelles notifications");
+
+            // Process notifications to create readable content
+            StringBuilder content = new StringBuilder();
+            for (String notification : notifications) {
+                if (notification.contains("DEMANDE GUIDE REJETÉE")) {
+                    content.append("❌ Demande de Guide Rejetée\n\n");
+
+                    // Extract rejection reason
+                    if (notification.contains("Raison:")) {
+                        String reason = notification.substring(notification.indexOf("Raison:") + 7);
+                        if (reason.contains("\n")) {
+                            reason = reason.substring(0, reason.indexOf("\n")).trim();
+                        }
+                        content.append("Raison: ").append(reason).append("\n\n");
+                    }
+
+                    content.append("Vous pouvez soumettre une nouvelle demande après avoir corrigé les points mentionnés.\n\n");
+
+                } else if (notification.contains("DEMANDE GUIDE APPROUVÉE")) {
+                    content.append("✅ Félicitations! Demande de Guide Approuvée\n\n");
+                    content.append("Votre compte a été converti en compte Guide.\n");
+                    content.append("Vous pouvez maintenant accéder aux fonctionnalités de guide.\n\n");
+                }
+            }
+
+            notificationAlert.setContentText(content.toString());
+
+            // Style the dialog
+            DialogPane dialogPane = notificationAlert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/dashboard.css").toExternalForm());
+            dialogPane.setStyle("-fx-background-color: linear-gradient(to bottom right, #f8fafc, #e2e8f0); " +
+                               "-fx-border-color: #e2e8f0; -fx-border-radius: 15; -fx-background-radius: 15;");
+
+            // Show dialog and mark notifications as read after user acknowledges
+            notificationAlert.showAndWait().ifPresent(result -> {
+                if (result == ButtonType.OK) {
+                    markNotificationsAsRead(notifications);
+                }
+            });
+
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'affichage des notifications: " + e.getMessage());
+            // Simple fallback
+            showAlert(Alert.AlertType.INFORMATION, "Notifications",
+                     "Vous avez " + notifications.size() + " nouvelle(s) notification(s).");
+        }
+    }
+
+    /**
+     * Mark client notifications as read
+     */
+    private void markNotificationsAsRead(List<String> notifications) {
+        javafx.concurrent.Task<Void> markAsReadTask = new javafx.concurrent.Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                NotificationService notificationService = new NotificationService();
+                User currentUser = UserSession.getInstance().getCurrentUser();
+
+                for (String notification : notifications) {
+                    notificationService.markClientNotificationAsRead(currentUser.getEmail(), notification);
+                }
+                return null;
+            }
+        };
+
+        markAsReadTask.setOnSucceeded(e -> {
+            System.out.println("✅ Notifications marquées comme lues");
+        });
+
+        markAsReadTask.setOnFailed(e -> {
+            System.err.println("❌ Erreur lors du marquage des notifications comme lues: " +
+                             markAsReadTask.getException().getMessage());
+        });
+
+        new Thread(markAsReadTask).start();
     }
 }
 

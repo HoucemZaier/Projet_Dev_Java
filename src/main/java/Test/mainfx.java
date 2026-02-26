@@ -51,12 +51,12 @@ public class mainfx extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Start with automatic face login screen instead of regular login
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/autoFaceLogin.fxml"));
+            // Start with regular login screen - autoFaceLogin removed to prevent conflicts
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
             Parent root = loader.load();
 
             Scene scene = new Scene(root);
-            primaryStage.setTitle("PlaNova - Authentification Automatique");
+            primaryStage.setTitle("PlaNova - Connexion");
             primaryStage.setScene(scene);
             primaryStage.setResizable(false);
             primaryStage.centerOnScreen();
@@ -70,28 +70,9 @@ public class mainfx extends Application {
             primaryStage.show();
 
         } catch (Exception e) {
-            // If automatic face login fails to load, fall back to regular login
-            System.err.println("⚠️ Automatic face login failed to load, falling back to regular login: " + e.getMessage());
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
-                Parent root = loader.load();
-
-                Scene scene = new Scene(root);
-                primaryStage.setTitle("PlaNova - Login");
-                primaryStage.setScene(scene);
-                primaryStage.setResizable(false);
-                primaryStage.centerOnScreen();
-
-                primaryStage.setOnCloseRequest(event -> {
-                    System.out.println("🔄 Window closing, cleaning up OAuth server...");
-                    SocialAuthService.shutdown();
-                });
-
-                primaryStage.show();
-            } catch (Exception e2) {
-                e2.printStackTrace();
-                System.err.println("❌ Critical error: Could not load any login interface: " + e2.getMessage());
-            }
+            System.err.println("❌ Failed to load login interface: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
         }
     }
 }

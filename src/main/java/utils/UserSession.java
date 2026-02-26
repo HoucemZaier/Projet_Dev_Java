@@ -57,8 +57,8 @@ public class UserSession {
     }
 
     public boolean canAccessDashboard() {
-        // Only Admin and Moderateur can access dashboard
-        return isAdmin() || isModerator();
+        // Admin, Moderateur, and Guide can access dashboard
+        return isAdmin() || isModerator() || isGuide();
     }
 
     public boolean canAccessUserManagement() {

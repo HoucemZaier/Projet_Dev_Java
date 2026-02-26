@@ -692,4 +692,21 @@ public class ServiceUser implements IService<User> {
             return rs.next() && rs.getInt(1) > 0;
         }
     }
+
+    /**
+     * Get user by email address
+     */
+    public User getUserByEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM utilisateur WHERE email = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return createUserFromResultSet(rs);
+            }
+
+            return null;
+        }
+    }
 }

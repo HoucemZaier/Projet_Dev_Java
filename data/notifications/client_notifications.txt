@@ -1,0 +1,14 @@
+[2026-02-26 13:04:41] ? DEMANDE GUIDE REJETÉE
+Email: ihebdhib22@gmail.com
+Status: Votre demande pour devenir guide a été rejetée
+Raison: Rejeté par dhib. Raison: Cv non confirmerr
+Vous pouvez soumettre une nouvelle demande après avoir corrigé les points mentionnés.
+---
+
+[2026-02-26 13:06:17] ? DEMANDE GUIDE APPROUVÉE
+Email: ihebdhib22@gmail.com
+Status: Félicitations! Votre demande pour devenir guide a été approuvée
+Note: Demande approuvée par dhib
+Votre compte a été converti en compte Guide. Vous pouvez maintenant accéder aux fonctionnalités de guide.
+---
+
