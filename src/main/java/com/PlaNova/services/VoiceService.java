@@ -9,6 +9,7 @@ public class VoiceService {
     private File audioFile;
 
     public VoiceService() {
+    
         format = new AudioFormat(16000, 16, 1, true, false);
     }
 

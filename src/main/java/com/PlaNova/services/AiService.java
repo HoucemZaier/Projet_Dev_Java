@@ -11,7 +11,7 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class AiService {
-    private static final String API_KEY = "AIzaSyD0nnZd_n-Qwl2kXCLgDcNGX3XXN-qaZFc";
+    private static final String API_KEY = "API_KEY";
     private static final String GEMINI_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key="
             + API_KEY;
 
