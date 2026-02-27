@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color:#f1f5f9;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ListActiviteController">
+
+    <!-- ================= HEADER ================= -->
+    <BorderPane style="-fx-background-color: white;                        -fx-padding: 20 25;                        -fx-border-color: #e2e8f0;                        -fx-border-width: 0 0 1 0;">
+        <left>
+            <VBox spacing="5">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Rectangle arcHeight="5" arcWidth="5" fill="#10b981" height="30" width="4" />
+                    <Label style="-fx-text-fill: #1e293b;" text="Gestion des Activités">
+                        <font><Font name="Segoe UI Semibold" size="22" /></font>
+                    </Label>
+                </HBox>
+                <Label style="-fx-text-fill: #64748b;" text="Ajoutez, modifiez ou supprimez des activités.">
+                    <font><Font name="Segoe UI" size="13" /></font>
+                </Label>
+            </VBox>
+        </left>
+        <right>
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+
+                <Button fx:id="btnNotifications" onAction="#handleNotifications" prefHeight="40" style="-fx-background-color:#ef4444;                                -fx-text-fill:white;                                -fx-background-radius:8;                                -fx-font-weight:bold;                                -fx-cursor:hand;" text="🔔 (0)" />
+
+                <!-- ✅ NOUVEAU : Bouton Chatbot IA -->
+                <Button onAction="#handleChatbot" prefHeight="40" style="-fx-background-color: linear-gradient(to right,#7c3aed,#6d28d9);                                -fx-text-fill:white;                                -fx-background-radius:8;                                -fx-font-weight:bold;                                -fx-cursor:hand;                                -fx-padding:0 16;" text="🤖 PlanovaBot" />
+
+                <!-- ✅ NOUVEAU : Bouton Calendrier -->
+                <Button onAction="#handleCalendar" prefHeight="40" style="-fx-background-color: linear-gradient(to right,#f59e0b,#d97706);                                -fx-text-fill:white;                                -fx-background-radius:8;                                -fx-font-weight:bold;                                -fx-cursor:hand;                                -fx-padding:0 16;" text="📅 Calendrier" />
+
+                <Button onAction="#handleAjouterActivite" prefHeight="40" style="-fx-background-color: linear-gradient(to right,#10b981,#0DA2E7);                                -fx-text-fill:white;                                -fx-background-radius:8;                                -fx-font-weight:bold;                                -fx-padding:0 20;" text="+ Ajouter Activité" />
+
+                <Button onAction="#afficherStats" prefHeight="40" style="-fx-background-color:#64748b;                                -fx-text-fill:white;                                -fx-background-radius:8;                                -fx-font-weight:bold;                                -fx-padding:0 20;" text="📊 Statistique" />
+            </HBox>
+        </right>
+    </BorderPane>
+
+    <!-- ================= FILTRES — RECHERCHE AJAX ================= -->
+    <VBox style="-fx-padding: 15 25 8 25; -fx-background-color: white;                  -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label style="-fx-font-size:16px;" text="🔍" />
+                    <TextField fx:id="txtRecherche" prefHeight="44" prefWidth="762.0" promptText="Recherche en temps réel par nom, lieu ou description..." style="-fx-background-radius:8;                                       -fx-background-color:#f8fafc;                                       -fx-border-color:#cbd5e1;                                       -fx-border-radius:8;                                       -fx-border-width:1.5;                                       -fx-padding:0 15;                                       -fx-font-size:13px;" HBox.hgrow="ALWAYS" />
+                </HBox>
+                <Label fx:id="searchResultLabel" style="-fx-font-size:11px; -fx-padding:3 0 0 28;" text="" />
+            </VBox>
+
+            <Button fx:id="btnTriPrix" onAction="#trierPrixDynamic" prefHeight="44" style="-fx-background-color:#f1f5f9;                            -fx-text-fill:#475569;                            -fx-background-radius:8;                            -fx-cursor:hand;                            -fx-font-weight:bold;                            -fx-padding:0 16;" text="Trier par prix ⬆️" />
+        </HBox>
+    </VBox>
+
+    <!-- ================= LISTE ACTIVITÉS ================= -->
+    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+        <content>
+            <Pagination fx:id="pagination" maxPageIndicatorCount="5" />
+        </content>
+    </ScrollPane>
+
+</VBox>

@@ -1,0 +1,176 @@
+package Services;
+
+import Models.Activite;
+import Models.Excursion;
+import utils.MyDatabase;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ServiceActivite implements Iservice<Activite> {
+
+    private final Connection connection;
+
+    public ServiceActivite() {
+        connection = MyDatabase.getInstance().getConnection();
+    }
+
+    // ==========================
+    // AJOUTER
+    // ==========================
+    @Override
+    public void ajouter(Activite a) throws SQLDataException {
+
+        String sql = "INSERT INTO activite " +
+                "(nom, description, date_activite, heure_activite, lieu, prix, id_excursion) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, a.getNom());
+            ps.setString(2, a.getDescription());
+            ps.setDate(3, a.getDateActivite());
+            ps.setTime(4, a.getHeureActivite());
+            ps.setString(5, a.getLieu());
+            ps.setDouble(6, a.getPrix());
+            ps.setInt(7, a.getIdExcursion());
+
+            ps.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new SQLDataException("Erreur lors de l'ajout de l'activité : " + ex.getMessage());
+        }
+    }
+
+    // ==========================
+    // SUPPRIMER
+    // ==========================
+    @Override
+    public void supprimer(int id) throws SQLDataException {
+
+        String sql = "DELETE FROM activite WHERE id_activite = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new SQLDataException("Erreur lors de la suppression : " + ex.getMessage());
+        }
+    }
+
+    // ==========================
+    // MODIFIER
+    // ==========================
+    @Override
+    public void modifier(Activite a) throws SQLDataException {
+
+        String sql = "UPDATE activite SET " +
+                "nom=?, description=?, date_activite=?, heure_activite=?, lieu=?, prix=?, id_excursion=? " +
+                "WHERE id_activite=?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, a.getNom());
+            ps.setString(2, a.getDescription());
+            ps.setDate(3, a.getDateActivite());
+            ps.setTime(4, a.getHeureActivite());
+            ps.setString(5, a.getLieu());
+            ps.setDouble(6, a.getPrix());
+            ps.setInt(7, a.getIdExcursion());
+            ps.setInt(8, a.getIdActivite());
+
+            ps.executeUpdate();
+
+        } catch (SQLException ex) {
+            throw new SQLDataException("Erreur lors de la modification : " + ex.getMessage());
+        }
+    }
+
+    // ==========================
+    // RECUPERER
+    // ==========================
+    @Override
+    public List<Activite> recuperer() throws SQLDataException {
+
+        List<Activite> list = new ArrayList<>();
+        String sql = "SELECT * FROM activite";
+
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+
+                Activite a = new Activite();
+
+                a.setIdActivite(rs.getInt("id_activite"));
+                a.setNom(rs.getString("nom"));
+                a.setDescription(rs.getString("description"));
+                a.setDateActivite(rs.getDate("date_activite"));
+                a.setHeureActivite(rs.getTime("heure_activite"));
+                a.setLieu(rs.getString("lieu"));
+                a.setPrix(rs.getDouble("prix"));
+                a.setIdExcursion(rs.getInt("id_excursion"));
+
+                list.add(a);
+            }
+
+        } catch (SQLException ex) {
+            throw new SQLDataException("Erreur lors de la récupération des activités : " + ex.getMessage());
+        }
+
+        return list;
+    }
+
+    // ==========================
+    // POUR COMBOBOX EXCURSION
+    // ==========================
+    public List<Excursion> getAllExcursions() {
+
+        List<Excursion> list = new ArrayList<>();
+        String sql = "SELECT id_excursion, titre FROM excursion";
+
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+
+                Excursion e = new Excursion();
+
+                e.setIdExcursion(rs.getInt("id_excursion"));
+                e.setTitre(rs.getString("titre")); // correction ici
+
+                list.add(e);
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des excursions : " + ex.getMessage());
+        }
+
+        return list;
+    }
+
+    // ==========================
+    // POUR COMBOBOX DESTINATION
+    // ==========================
+    public List<Integer> getAllDestinationIds() {
+
+        List<Integer> ids = new ArrayList<>();
+        String sql = "SELECT id_destination FROM destination";
+
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                ids.add(rs.getInt("id_destination"));
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erreur lors de la récupération des destinations : " + ex.getMessage());
+        }
+
+        return ids;
+    }
+}

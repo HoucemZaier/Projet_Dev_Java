@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+
+<VBox prefHeight="750.0" prefWidth="1100.0" spacing="0" style="-fx-background-color: #f1f5f9;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.CalendarController">
+
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: linear-gradient(to right, #1e293b, #2A3B4C);                  -fx-padding: 18 25;">
+        <Label style="-fx-font-size: 28px;" text="📅" textFill="WHITE" />
+        <VBox spacing="2">
+            <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" text="Calendrier Planova" />
+            <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;" text="Activités et Excursions — Vue Calendrier Interactive" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="statusLabel" style="-fx-text-fill: #10b981; -fx-font-size: 12px; -fx-font-weight: bold;" text="⏳ Chargement..." />
+        <Button onAction="#handleRefresh" style="-fx-background-color: rgba(255,255,255,0.15);                        -fx-text-fill: white;                        -fx-background-radius: 8;                        -fx-cursor: hand;                        -fx-padding: 8 18;" text="🔄 Actualiser" />
+    </HBox>
+
+    <!-- WEB VIEW FULLCALENDAR -->
+    <WebView fx:id="calendarWebView" VBox.vgrow="ALWAYS" />
+</VBox>

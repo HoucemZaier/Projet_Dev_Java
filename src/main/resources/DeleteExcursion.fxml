@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="180.0" prefWidth="320.0" spacing="15"
+      style="-fx-padding:20; -fx-background-color:#f8fafc;"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.DeleteExcursionController">
+
+    <Label text="Supprimer Excursion ?">
+        <font><Font size="20" /></font>
+    </Label>
+
+    <Label fx:id="titreLabel" style="-fx-text-fill:#1e293b; -fx-font-weight:bold;" text="Titre de l'excursion" />
+    <Label fx:id="statutLabel" style="-fx-text-fill:#475569; -fx-font-size:13;" text="Statut de l'excursion" />
+    <Label fx:id="messageLabel" style="-fx-text-fill:#ef4444; -fx-font-size:12;" visible="false" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="15">
+        <Button onAction="#handleCancel" style="-fx-background-color:#64748b; -fx-text-fill:white; -fx-background-radius:8;" text="Annuler" />
+        <Button fx:id="deleteButton" onAction="#handleDelete"
+                style="-fx-background-color:linear-gradient(to right,#f87171,#dc2626); -fx-text-fill:white; -fx-background-radius:8; -fx-font-weight:bold;"
+                text="Supprimer" />
+    </HBox>
+
+</VBox>

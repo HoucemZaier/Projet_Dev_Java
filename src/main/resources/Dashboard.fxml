@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefHeight="800.0" prefWidth="1400.0" styleClass="root-background" stylesheets="@dashboard.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.DashboardController">
+    <children>
+        <VBox maxWidth="250.0" prefWidth="250.0" spacing="10" styleClass="sidebar">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+            <children>
+                <Label prefHeight="70.0" prefWidth="180.0" styleClass="logo-text" text="Planova">
+                    <graphic>
+                        <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@logo.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Label>
+
+                <!-- Scrollable Menu Section -->
+                <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                            style="-fx-background-color: transparent; -fx-background: transparent;">
+                    <content>
+                        <VBox spacing="6" style="-fx-background-color: transparent;">
+                            <padding>
+                                <Insets top="20"/>
+                            </padding>
+                            <children>
+                                <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button-active" text="Aperçu">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/dashboard-layout.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="userManagementBtn" maxWidth="Infinity"  styleClass="menu-button" text="Gestion Utilisateurs">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/user-group-man-man.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="destinationsBtn" maxWidth="Infinity" styleClass="menu-button" text="Destinations">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/compass.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="billetsBtn" maxWidth="Infinity"  styleClass="menu-button" text="Billets">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/ticket.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="hotelsBtn" maxWidth="Infinity" styleClass="menu-button" text="Hôtels">
+
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="excursionsBtn"
+                                        maxWidth="1.7976931348623157E308"
+                                        onAction="#onExcursionClicked"
+                                        styleClass="menu-button"
+                                        text="Excursions">
+
+                                    <graphic>
+                                        <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/mountain.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+
+                                    <font>
+                                        <Font size="12"/>
+                                    </font>
+
+                                </Button>
+
+                                <!-- Transport Section -->
+                                <Button fx:id="transportPubliqueBtn" maxWidth="Infinity" styleClass="menu-button" text="Transport Publique" >
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/bus.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="transportPriveeBtn" maxWidth="Infinity" styleClass="menu-button" text="Transport Privée" >
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/taxi.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="blogBtn" maxWidth="Infinity" styleClass="menu-button" text="Articles de Blog">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/fluency/48/blog.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="forumBtn" maxWidth="Infinity" styleClass="menu-button" text="Forum Communauté">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/color/48/conference-call.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+
+                                <Button fx:id="activitiesBtn" maxWidth="Infinity" onAction="#onActiviteClicked" styleClass="menu-button" text="Activités">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0">
+                                            <image>
+                                                <Image url="https://img.icons8.com/color/48/activity-feed.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                    <font>
+                                        <Font size="12.0"/>
+                                    </font>
+                                </Button>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+
+                <VBox spacing="5">
+                    <children>
+                        <Button fx:id="settingsBtn" maxWidth="Infinity"  styleClass="menu-button" text="Paramètres">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0">
+                                    <image>
+                                        <Image url="https://img.icons8.com/fluency/48/settings.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <font>
+                                <Font size="12.0"/>
+                            </font>
+                        </Button>
+                        <Button fx:id="logoutBtn" maxWidth="Infinity" styleClass="menu-button" text="Déconnexion">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0">
+                                    <image>
+                                        <Image url="https://img.icons8.com/fluency/48/logout-rounded.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <font>
+                                <Font size="12.0"/>
+                            </font>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+
+        <VBox spacing="20" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets bottom="20" left="30" right="30" top="20" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <children>
+                        <VBox>
+                            <children>
+                                <Label styleClass="dashboard-title" text="Tableau de Bord" />
+                                <Label styleClass="welcome-text" text="Bienvenue, Panneau d'Administration" />
+                            </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox alignment="CENTER" spacing="15" styleClass="top-bar-right-panel">
+                            <children>
+                                <TextField promptText="Rechercher quelque chose..." styleClass="search-field" />
+                                <Button styleClass="new-entry-button" text="+ Nouvelle Entrée" />
+                                <ImageView fitHeight="20.0" fitWidth="20.0">
+                                    <image>
+                                        <Image url="https://img.icons8.com/fluency/48/appointment-reminders.png" />
+                                    </image>
+                                </ImageView>
+                                <HBox fx:id="userProfileHBox" alignment="CENTER" spacing="10"  style="-fx-cursor: hand;">
+                                    <children>
+                                        <VBox alignment="CENTER_RIGHT">
+                                            <children>
+                                                <Label fx:id="userNameLabel" styleClass="user-name" text="Alex Thompson" />
+                                                <Label fx:id="userRoleLabel" styleClass="user-role" text="Super Administrateur" />
+                                            </children>
+                                        </VBox>
+                                        <ImageView fx:id="userProfileImage" fitHeight="36.0" fitWidth="36.0">
+                                            <image>
+                                                <Image url="https://i.pravatar.cc/100?u=admin" />
+                                            </image>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+
+                <HBox spacing="20">
+                    <children>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-positive" text="+12.5%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Revenus Totaux" />
+                                <Label styleClass="card-value" text="\$42,500" />
+                            </children>
+                        </VBox>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-positive" text="+8.2%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Clients Totaux" />
+                                <Label styleClass="card-value" text="1,284" />
+                            </children>
+                        </VBox>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-negative" text="-2.4%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Tours Actifs" />
+                                <Label styleClass="card-value" text="48" />
+                            </children>
+                        </VBox>
+                        <VBox styleClass="info-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <HBox alignment="TOP_RIGHT">
+                                    <children><Text styleClass="percentage-text-positive" text="+6.1%" /></children>
+                                </HBox>
+                                <Label styleClass="card-title" text="Satisfaction" />
+                                <Label styleClass="card-value" text="98%" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <HBox fx:id="chartContainer" spacing="20" VBox.vgrow="ALWAYS">
+                    <children>
+                        <VBox styleClass="chart-card" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="section-title" text="Analyse des Réservations" />
+                                <LineChart fx:id="bookingChart"
+                                           createSymbols="false"
+                                           legendVisible="false"
+                                           verticalGridLinesVisible="false">
+                                    <xAxis>
+                                        <CategoryAxis side="BOTTOM" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis side="LEFT" />
+                                    </yAxis>
+                                </LineChart>
+                            </children>
+                        </VBox>
+
+                        <VBox prefWidth="300.0"
+                              spacing="15"
+                              styleClass="recent-bookings-card">
+                            <children>
+                                <Label styleClass="section-title" text="Réservations Récentes" />
+                                <VBox fx:id="recentBookingsList" spacing="10" />
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Button maxWidth="Infinity"
+                                        styleClass="view-all-button"
+                                        text="Voir Tous les Rapports" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</HBox>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="700.0" prefWidth="800.0" spacing="0" style="-fx-background-color: #f1f5f9;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ChatbotController">
+
+    <!-- ===== HEADER ===== -->
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: linear-gradient(to right, #1e293b, #2A3B4C);                  -fx-padding: 18 25;">
+        <Label style="-fx-font-size: 30px;" text="🤖" textFill="#efecec" />
+        <VBox spacing="2">
+            <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" text="PlanovaBot" />
+            <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;" text="Assistant IA — Activités &amp; Excursions" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <VBox alignment="CENTER_RIGHT" spacing="4">
+            <Label fx:id="statusLabel" style="-fx-text-fill: #10b981; -fx-font-size: 11px; -fx-font-weight: bold;" text="⏳ Chargement..." />
+            <HBox spacing="8">
+                <Button fx:id="clearButton" onAction="#handleClear" style="-fx-background-color: rgba(255,255,255,0.1);                                -fx-text-fill: #94a3b8;                                -fx-background-radius: 8;                                -fx-cursor: hand;                                -fx-font-size: 11px;                                -fx-padding: 5 12;" text="🗑 Effacer" />
+                <Button onAction="#handleRefreshData" style="-fx-background-color: rgba(16,185,129,0.2);                                -fx-text-fill: #10b981;                                -fx-background-radius: 8;                                -fx-cursor: hand;                                -fx-font-size: 11px;                                -fx-padding: 5 12;" text="🔄 Données" />
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <!-- ===== SUGGESTIONS RAPIDES ===== -->
+    <HBox spacing="8" style="-fx-padding: 10 15; -fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
+        <Label style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold;" text="Suggestions :" />
+        <Button onAction="#handleSend" style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-background-radius: 20; -fx-cursor: hand; -fx-font-size: 11px; -fx-padding: 4 12;" text="📋 Liste excursions" userData="Quelles sont toutes les excursions disponibles ?" />
+        <Button onAction="#handleSend" style="-fx-background-color: #f0fdf4; -fx-text-fill: #16a34a; -fx-background-radius: 20; -fx-cursor: hand; -fx-font-size: 11px; -fx-padding: 4 12;" text="💰 Moins cher" userData="Quelle est l'excursion la moins chère ?" />
+        <Button onAction="#handleSend" style="-fx-background-color: #fdf4ff; -fx-text-fill: #9333ea; -fx-background-radius: 20; -fx-cursor: hand; -fx-font-size: 11px; -fx-padding: 4 12;" text="🎯 Activités" userData="Montre-moi toutes les activités disponibles" />
+        <Button onAction="#handleSend" style="-fx-background-color: #fff7ed; -fx-text-fill: #ea580c; -fx-background-radius: 20; -fx-cursor: hand; -fx-font-size: 11px; -fx-padding: 4 12;" text="📅 Ce mois" userData="Quelles excursions partent en mars 2026 ?" />
+    </HBox>
+
+    <!-- ===== ZONE DE CHAT ===== -->
+    <ScrollPane fx:id="chatScrollPane" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #f1f5f9; -fx-border-width: 0;" VBox.vgrow="ALWAYS">
+        <VBox fx:id="chatContainer" spacing="10" style="-fx-padding: 15; -fx-background-color: #f1f5f9;" />
+    </ScrollPane>
+
+    <!-- ===== ZONE DE SAISIE ===== -->
+    <HBox alignment="CENTER" spacing="10" style="-fx-padding: 15 20; -fx-background-color: white;                  -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, -3);">
+        <TextField fx:id="messageField" prefHeight="44" promptText="Posez une question sur les excursions ou activités..." style="-fx-background-color: #f8fafc;                           -fx-background-radius: 22;                           -fx-border-color: #e2e8f0;                           -fx-border-radius: 22;                           -fx-border-width: 1.5;                           -fx-padding: 0 18;                           -fx-font-size: 13px;" HBox.hgrow="ALWAYS" />
+        <Button fx:id="sendButton" onAction="#handleSend" prefHeight="44" prefWidth="120" style="-fx-background-color: linear-gradient(to right, #10b981, #0DA2E7);                        -fx-text-fill: white;                        -fx-background-radius: 22;                        -fx-cursor: hand;                        -fx-font-weight: bold;                        -fx-font-size: 13px;" text="Envoyer ➤" />
+    </HBox>
+</VBox>

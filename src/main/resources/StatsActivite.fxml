@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="650.0" prefWidth="1000.0" spacing="20"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.StatsActiviteController"
+      style="-fx-padding:20; -fx-background-color:#f8fafc;">
+
+    <!-- ================= HEADER ================= -->
+    <BorderPane style="-fx-background-color: white; -fx-padding: 20 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0;">
+        <left>
+            <VBox spacing="5">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Rectangle arcHeight="5" arcWidth="5" fill="#10b981" height="30" width="4" />
+                    <Label text="Statistiques des Activités" style="-fx-text-fill: #1e293b;">
+                        <font><Font name="Segoe UI Semibold" size="22" /></font>
+                    </Label>
+                </HBox>
+                <Label text="Vue globale des statistiques des activités" style="-fx-text-fill: #64748b;">
+                    <font><Font name="Segoe UI" size="13" /></font>
+                </Label>
+            </VBox>
+        </left>
+    </BorderPane>
+
+    <!-- ================= GRAPHIQUES ================= -->
+    <HBox spacing="20">
+        <!-- BarChart -->
+        <VBox spacing="10" style="-fx-background-color:white; -fx-padding:15; -fx-background-radius:12; -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.08), 10,0,0,4);" VBox.vgrow="ALWAYS">
+            <Label text="Prix des Activités" style="-fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+            <BarChart fx:id="barChartPrix" prefHeight="350" prefWidth="450" style="-fx-font-size:12px;">
+                <xAxis><CategoryAxis label="Activité"/></xAxis>
+                <yAxis><NumberAxis label="Prix (DT)"/></yAxis>
+            </BarChart>
+        </VBox>
+
+        <!-- PieChart -->
+        <VBox spacing="10" style="-fx-background-color:white; -fx-padding:15; -fx-background-radius:12; -fx-effect:dropshadow(gaussian, rgba(0,0,0,0.08), 10,0,0,4);" VBox.vgrow="ALWAYS">
+            <Label text="Répartition des Activités par Lieu" style="-fx-font-weight:bold; -fx-text-fill:#0f172a;"/>
+            <PieChart fx:id="pieChartLieu" prefHeight="350" prefWidth="450"/>
+        </VBox>
+    </HBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button fx:id="btnReset" text="Réinitialiser" style="-fx-background-color:#0DA2E7; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:8; -fx-padding:6 20;"/>
+    </HBox>
+
+</VBox>
