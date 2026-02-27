@@ -7,9 +7,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 public class StripeService {
 
         public StripeService() {
-                // This is a placeholder test key. You should replace this with your own
-                // sk_test_... from the Stripe Dashboard in the future.
-                Stripe.apiKey = "";
+                Stripe.apiKey = "API_KEY";
         }
 
         public String createCheckoutSession(String destinationName, double amount) throws Exception {
@@ -26,9 +24,7 @@ public class StripeService {
                                                                                                 .builder()
                                                                                                 .setCurrency("eur")
                                                                                                 .setUnitAmount((long) (amount
-                                                                                                                * 100)) // Stripe
-                                                                                                                        // expects
-                                                                                                                        // cents
+                                                                                                                * 100))
                                                                                                 .setProductData(
                                                                                                                 SessionCreateParams.LineItem.PriceData.ProductData
                                                                                                                                 .builder()

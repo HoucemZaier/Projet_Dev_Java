@@ -33,8 +33,8 @@ public class HotelService {
                     h.setAdresse(rs.getString("adresse"));
                     h.setVille(rs.getString("ville"));
                     h.setNombreEtoile(rs.getInt("nombre_etoile"));
-                    h.setDescription(rs.getString("descescription")); // note: from user's image it spelled
-                                                                      // descescription
+                    h.setDescription(rs.getString("descescription"));
+                                                                      
                     h.setImage(rs.getString("image"));
                     h.setIdDestination(rs.getInt("id_destination"));
 

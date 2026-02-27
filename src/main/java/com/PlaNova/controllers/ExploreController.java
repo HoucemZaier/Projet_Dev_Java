@@ -8,7 +8,12 @@ import com.PlaNova.services.DestinationService;
 import com.PlaNova.services.HotelService;
 import com.PlaNova.services.ReservationService;
 import com.PlaNova.services.StripeService;
+import com.PlaNova.services.AiService;
+import com.PlaNova.services.VoiceService;
+import com.PlaNova.services.PdfExportService;
+import com.PlaNova.services.WeatherService;
 import com.PlaNova.utils.SessionManager;
+import javafx.stage.FileChooser;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -37,6 +42,7 @@ import java.util.List;
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 import java.io.OutputStream;
+import java.io.File;
 
 public class ExploreController {
 
@@ -65,7 +71,19 @@ public class ExploreController {
     @FXML
     private ComboBox<String> roomTypeComboBox;
 
-    // Overlay components
+    @FXML
+    private TextField aiMoodField;
+    @FXML
+    private Button voiceBtn;
+    @FXML
+    private Label weatherLabel;
+
+    private AiService aiService;
+    private VoiceService voiceService;
+    private WeatherService weatherService;
+    private PdfExportService pdfExportService;
+    private boolean isRecording = false;
+
     @FXML
     private StackPane overlayContainer;
     @FXML
@@ -76,6 +94,8 @@ public class ExploreController {
     private Button overlayConfirmBtn;
     @FXML
     private Button overlayCancelBtn;
+    @FXML
+    private Button exportPdfBtn;
     @FXML
     private javafx.scene.control.ScrollPane overlayScrollPane;
     @FXML
@@ -95,13 +115,14 @@ public class ExploreController {
         destinationService = new DestinationService();
         reservationService = new ReservationService();
         hotelService = new HotelService();
-
-        // Hide inspector drawer initially
+        aiService = new AiService();
+        voiceService = new VoiceService();
+        weatherService = new WeatherService();
+        pdfExportService = new PdfExportService();
         mainSplitPane.getItems().remove(inspectorDrawer);
 
         roomTypeComboBox.getItems().addAll("simple", "delux", "suite", "triple");
 
-        // Setup filter dropdowns
         countryFilterComboBox.getItems().add("All Countries");
 
         countryFilterComboBox.getSelectionModel().selectFirst();
@@ -114,7 +135,6 @@ public class ExploreController {
             System.err.println("Error loading countries for filter: " + e.getMessage());
         }
 
-        // Add listeners for dynamic filtering
         searchField.textProperty().addListener((observable, oldValue, newValue) -> filterDestinations());
         countryFilterComboBox.valueProperty().addListener((observable, oldValue, newValue) -> filterDestinations());
 
@@ -126,16 +146,14 @@ public class ExploreController {
         ReservationDTO panier = SessionManager.getCurrentReservation();
         if (panier.getDestinationId() != null && panier.getDestinationId() != 0) {
             try {
-                // Find the destination object
                 List<Destination> list = destinationService.show();
                 Destination d = list.stream()
                         .filter(dest -> dest.getIdDestination() == panier.getDestinationId())
                         .findFirst().orElse(null);
 
                 if (d != null) {
-                    updateDetails(d, null); // This will populate hotels etc
+                    updateDetails(d, null); 
 
-                    // Restore UI fields
                     checkinDatePicker.setValue(panier.getStartDate());
                     checkoutDatePicker.setValue(panier.getEndDate());
 
@@ -193,7 +211,6 @@ public class ExploreController {
         imageView.setFitWidth(300);
         imageView.getStyleClass().add("card-image");
 
-        // Use placeholder if picture doesn't exist
         String imagePath = d.getImage();
         if (imagePath == null || imagePath.isEmpty()) {
             imagePath = "/images/pexels-maksim-smirnov-27565989-32234331.jpg";
@@ -211,7 +228,6 @@ public class ExploreController {
             imageView.setImage(image);
         } catch (Exception e) {
             try {
-                // Generic placeholder fallback
                 Image placeholder = new Image(getClass().getResource("/images/logo.PNG").toExternalForm());
                 imageView.setImage(placeholder);
             } catch (Exception ignored) {
@@ -275,8 +291,6 @@ public class ExploreController {
             } catch (Exception ignored) {
             }
         }
-
-        // Clear previously selected dates & combo boxes
         checkinDatePicker.setValue(null);
         checkoutDatePicker.setValue(null);
         roomTypeComboBox.getSelectionModel().clearSelection();
@@ -303,6 +317,32 @@ public class ExploreController {
                 + "Select your preferred travel dates below to get started!";
 
         detailDescLabel.setText(desc);
+
+        weatherLabel.setText("Fetching weather...");
+        weatherService.getWeather(d.getNomDestination()).thenAccept(weather -> {
+            Platform.runLater(() -> weatherLabel.setText("⛅ " + weather));
+        });
+    }
+
+    @FXML
+    public void onExportPdfClick() {
+        String title = overlayTitle.getText();
+        String content = overlayContent.getText();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Itinerary as PDF");
+        fileChooser.setInitialFileName(title.replaceAll("\\s+", "_") + ".pdf");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+
+        File file = fileChooser.showSaveDialog(overlayContainer.getScene().getWindow());
+        if (file != null) {
+            try {
+                pdfExportService.exportItinerary(title, content, file);
+                showOverlay("Success", "Itinerary successfully exported to:\n" + file.getAbsolutePath(), false, null);
+            } catch (Exception e) {
+                showOverlay("Export Error", "Failed to create PDF: " + e.getMessage(), false, null);
+            }
+        }
     }
 
     @FXML
@@ -333,17 +373,15 @@ public class ExploreController {
             return;
         }
 
-        // Gather all info into out Application-level DTO Selection Model
         ReservationDTO panier = new ReservationDTO();
         panier.setDestinationId(currentSelectedDestination.getIdDestination());
         panier.setDestinationName(currentSelectedDestination.getNomDestination());
         panier.setStartDate(checkinDatePicker.getValue());
         panier.setEndDate(checkoutDatePicker.getValue());
 
-        // Map Hotel selection
         panier.setHotelId(selectedHotel.getIdHotel());
-        panier.setHotelPricePerNight(Math.max(50.0, 50.0 * selectedHotel.getNombreEtoile())); // Adjust price based on
-                                                                                              // hotel stars
+        panier.setHotelPricePerNight(Math.max(50.0, 50.0 * selectedHotel.getNombreEtoile())); 
+                                                                                              
 
         String selectedRoom = roomTypeComboBox.getValue();
         if (selectedRoom != null) {
@@ -365,10 +403,8 @@ public class ExploreController {
         panier.setTransportCost(SessionManager.getCurrentReservation().getTransportCost());
         panier.setTransportId(SessionManager.getCurrentReservation().getTransportId());
 
-        // Calculate total via Panier DTO
         double total = panier.calculateTotal();
 
-        // Show the summary Panier basket and Ask for confirmation
         String basketDetails = "Here are your reservation details (Panier):\n\n" +
                 "Destination: " + panier.getDestinationName() + "\n" +
                 "Dates: " + panier.getStartDate() + " to " + panier.getEndDate() + "\n" +
@@ -380,12 +416,11 @@ public class ExploreController {
                 "Do you wish to confirm this reservation?";
 
         showOverlay("Reservation Basket (Panier)", basketDetails, true, () -> {
-            // Start background thread to avoid freezing the UI
             new Thread(() -> {
                 try {
                     System.out.println("[DEBUG] Starting Reservation Thread...");
                     Reservation res = new Reservation();
-                    res.setIdUtilisateur(1); // Hardcoded
+                    res.setIdUtilisateur(1);
                     res.setIdDestination(panier.getDestinationId());
                     res.setIdHotel(panier.getHotelId());
                     res.setIdChambre(panier.getRoomId());
@@ -403,17 +438,12 @@ public class ExploreController {
                     StripeService stripeService = new StripeService();
                     String sessionUrl = stripeService.createCheckoutSession(panier.getDestinationName(), total);
                     System.out.println("[DEBUG] Stripe Session URL received: " + sessionUrl);
-
-                    // --- START LOCAL PAYMENT LISTENER ---
-                    // This server waits for your browser to come back after the Pay button is
-                    // clicked
                     try {
                         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 9090), 0);
                         server.createContext("/success", exchange -> {
                             System.out.println("[DEBUG] >> PAYMENT SUCCESS SIGNAL RECEIVED FROM BROWSER <<");
 
                             try {
-                                // 1. SAVE TO DATABASE ONLY NOW
                                 reservationService.add(res);
                                 int finalId = res.getIdReservation();
                                 System.out.println("[DEBUG] Database save successful. Generated ID: " + finalId);
@@ -430,13 +460,11 @@ public class ExploreController {
                                     os.write(response.getBytes());
                                 }
 
-                                // 2. Update UI
                                 Platform.runLater(() -> {
                                     showOverlay("Booking Confirmed!",
                                             "Payment received! Your reservation has been successfully booked.",
                                             false, null);
 
-                                    // Reset UI as the session is complete
                                     roomTypeComboBox.getSelectionModel().clearSelection();
                                     hotelComboBox.getSelectionModel().clearSelection();
                                     SessionManager.clearSession();
@@ -453,7 +481,7 @@ public class ExploreController {
                                 });
                             } finally {
                                 exchange.close();
-                                server.stop(1); // Stop the listener
+                                server.stop(1);
                             }
                         });
 
@@ -483,7 +511,6 @@ public class ExploreController {
                         hideLoading();
                         hideOverlay();
                         try {
-                            // Robust Linux browser opening
                             String os = System.getProperty("os.name").toLowerCase();
                             if (os.contains("linux")) {
                                 try {
@@ -495,7 +522,6 @@ public class ExploreController {
                                 java.awt.Desktop.getDesktop().browse(new java.net.URI(sessionUrl));
                             }
 
-                            // Show waiting overlay with a MANUAL FALLBACK button
                             showOverlay("Waiting for Payment",
                                     "Stripe checkout has opened. Once you finish the payment, this app will update automatically.\n\n"
                                             +
@@ -550,10 +576,9 @@ public class ExploreController {
         overlayTitle.setText(title);
         overlayContent.setText(content);
         overlayCancelBtn.setVisible(showCancel);
+        exportPdfBtn.setVisible(false);
         overlayConfirmBtn.setText(showCancel ? "Confirm" : "OK");
         currentOverlayAction = onConfirm;
-
-        // Ensure content is visible, loading is hidden
         overlayScrollPane.setVisible(true);
         overlayButtonBox.setVisible(true);
         loadingContainer.setVisible(false);
@@ -580,9 +605,104 @@ public class ExploreController {
     }
 
     @FXML
+    private void onAiPlanClick() {
+        String mood = aiMoodField.getText();
+        if (mood == null || mood.trim().isEmpty()) {
+            showOverlay("AI Assistant", "Please describe your mood or vibe first!", false, null);
+            return;
+        }
+
+        showLoading("PlaNova AI is thinking...");
+
+        try {
+            List<Destination> list = destinationService.show();
+            String finalContext = list.stream()
+                    .map((Destination d) -> d.getNomDestination() + " (Country: " + d.getPays() + ")")
+                    .collect(Collectors.joining(", "));
+
+            String detectedCity = list.stream()
+                    .map(Destination::getNomDestination)
+                    .filter(name -> mood.toLowerCase().contains(name.toLowerCase()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (detectedCity != null) {
+                weatherService.getWeather(detectedCity).thenAccept(weather -> {
+                    aiService.getTravelPlan(mood, finalContext, weather).thenAccept(plan -> {
+                        Platform.runLater(() -> {
+                            hideLoading();
+                            showOverlay("Your Personalized Itinerary", plan, false, null);
+                            exportPdfBtn.setVisible(true);
+                        });
+                    }).exceptionally(ex -> handleAiError(ex));
+                });
+            } else {
+                aiService.getTravelPlan(mood, finalContext, "No specific destination weather available.")
+                        .thenAccept(plan -> {
+                            Platform.runLater(() -> {
+                                hideLoading();
+                                showOverlay("Your Personalized Itinerary", plan, false, null);
+                                exportPdfBtn.setVisible(true);
+                            });
+                        }).exceptionally(ex -> handleAiError(ex));
+            }
+
+        } catch (Exception e) {
+            hideLoading();
+            showOverlay("Error", "Could not fetch destinations: " + e.getMessage(), false, null);
+        }
+    }
+
+    private Void handleAiError(Throwable ex) {
+        Platform.runLater(() -> {
+            hideLoading();
+            showOverlay("AI Error", "Failed to reach the travel assistant: " + ex.getMessage(), false, null);
+        });
+        return null;
+    }
+
+    @FXML
+    private void onVoiceSearchClick() {
+        if (!isRecording) {
+            try {
+                voiceService.startRecording("mood_recording.wav");
+                isRecording = true;
+                voiceBtn.setText("🔴");
+                voiceBtn.setStyle("-fx-background-color: rgba(255,0,0,0.2); -fx-background-radius: 50;");
+            } catch (Exception e) {
+                showOverlay("Microphone Error", "Could not access microphone: " + e.getMessage(), false, null);
+            }
+        } else {
+            voiceService.stopRecording();
+            isRecording = false;
+            voiceBtn.setText("🎙️");
+            voiceBtn.setStyle("-fx-background-color: transparent;");
+
+            showLoading("Transcribing your voice...");
+
+            aiService.transcribeAudio(voiceService.getAudioFile()).thenAccept(text -> {
+                Platform.runLater(() -> {
+                    hideLoading();
+                    if (!text.startsWith("Error")) {
+                        aiMoodField.setText(text);
+                        onAiPlanClick();
+                    } else {
+                        showOverlay("Voice Error", "Could not understand your voice: " + text, false, null);
+                    }
+                });
+            }).exceptionally(ex -> {
+                Platform.runLater(() -> {
+                    hideLoading();
+                    showOverlay("Voice Error", "Failed to process audio: " + ex.getMessage(), false, null);
+                });
+                return null;
+            });
+        }
+    }
+
+    @FXML
     private void handleOverlayConfirm() {
         if (currentOverlayAction != null) {
-            // Switch to loading state instead of hiding immediately
             showLoading("Processing Reservation...");
             currentOverlayAction.run();
             currentOverlayAction = null;
@@ -592,7 +712,6 @@ public class ExploreController {
     }
 
     private void showAlert(AlertType type, String title, String content) {
-        // Fallback or legacy alerts now redirected to overlay
         showOverlay(title, content, false, null);
     }
 
@@ -603,7 +722,6 @@ public class ExploreController {
             return;
         }
 
-        // Save current partial progress to session
         ReservationDTO panier = SessionManager.getCurrentReservation();
         panier.setDestinationId(currentSelectedDestination.getIdDestination());
         panier.setDestinationName(currentSelectedDestination.getNomDestination());
@@ -618,7 +736,6 @@ public class ExploreController {
 
         panier.setRoomType(roomTypeComboBox.getValue());
 
-        // Switch to transportation view
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                     getClass().getResource("/ui/Transportation.fxml"));
