@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.LocationDialogController"
+            prefHeight="300.0" prefWidth="450.0"
+            style="-fx-background-color: #667eea;">
+
+    <children>
+        <!-- Conteneur principal -->
+        <VBox spacing="20"
+              AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20"
+              AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20"
+              style="-fx-background-color: white;
+                     -fx-background-radius: 15;
+                     -fx-padding: 25;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0.3, 0, 5);">
+
+            <!-- En-tête -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Label text="🚗"
+                       style="-fx-font-size: 28; -fx-text-fill: #667eea;" />
+                <VBox>
+                    <Label text="Confirmation de Location"
+                           style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2d3748;" />
+                    <Label text="Veuillez confirmer votre email pour finaliser la réservation"
+                           style="-fx-font-size: 12; -fx-text-fill: #718096;" />
+                </VBox>
+            </HBox>
+
+            <!-- Informations du véhicule -->
+            <VBox spacing="8" style="-fx-background-color: #f7fafc; -fx-padding: 15; -fx-background-radius: 8;">
+                <Label fx:id="lblInfoVehicule"
+                       text="Informations du véhicule"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3748;" />
+                <Label fx:id="lblDetailsVehicule"
+                       text=""
+                       style="-fx-font-size: 12; -fx-text-fill: #4a5568;" />
+            </VBox>
+
+            <!-- Champ email -->
+            <VBox spacing="8">
+                <Label text="Email de confirmation"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3748;" />
+                <TextField fx:id="txtEmail"
+                           promptText="exemple@domaine.com"
+                           style="-fx-background-radius: 8;
+                                  -fx-border-color: #cbd5e0;
+                                  -fx-border-width: 1.5;
+                                  -fx-padding: 10;
+                                  -fx-font-size: 14;" />
+                <Label fx:id="lblEmailError"
+                       text=""
+                       style="-fx-text-fill: #e53e3e; -fx-font-size: 11;" />
+            </VBox>
+
+            <!-- Message de confirmation -->
+            <Label fx:id="lblConfirmationMessage"
+                   text=""
+                   style="-fx-text-fill: #38a169;
+                          -fx-font-size: 13;
+                          -fx-font-weight: bold;
+                          -fx-background-color: #f0fff4;
+                          -fx-padding: 10;
+                          -fx-background-radius: 6;
+                          -fx-wrap-text: true;" />
+
+            <!-- Boutons -->
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button fx:id="btnAnnuler"
+                        text="Annuler"
+                        prefWidth="100"
+                        style="-fx-background-color: #e2e8f0;
+                               -fx-text-fill: #4a5568;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 8;
+                               -fx-padding: 10;
+                               -fx-cursor: hand;" />
+
+                <Button fx:id="btnValider"
+                        text="Valider"
+                        prefWidth="120"
+                        style="-fx-background-color: #3182ce;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 8;
+                               -fx-padding: 10;
+                               -fx-cursor: hand;" />
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

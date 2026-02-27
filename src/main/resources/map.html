@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte des Transports</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            overflow: hidden;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            background: #ffffff;
+            z-index: 1;
+        }
+        
+        .leaflet-container {
+            height: 100%;
+            width: 100%;
+            background: #ffffff;
+        }
+        
+        .custom-popup {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .popup-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #111827;
+            margin-bottom: 5px;
+        }
+        
+        .popup-info {
+            font-size: 12px;
+            color: #6b7280;
+            margin: 2px 0;
+        }
+        
+        .route-info {
+            background: #f3f4f6;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        
+        .route-distance {
+            font-weight: bold;
+            color: #1976D2;
+        }
+        
+        .route-duration {
+            font-weight: bold;
+            color: #059669;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1976D2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="loading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        <div>Calcul de l'itinéraire...</div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    
+    <script>
+        let map;
+        let startMarker = null;
+        let endMarker = null;
+        let routeLayer = null;
+        let transportInfo = null;
+        let transportMarkers = [];
+
+        // Coordonnées par défaut (centre de la Tunisie)
+        const DEFAULT_LAT = 33.8869;
+        const DEFAULT_LON = 9.5375;
+
+        // Icônes personnalisées
+        const icons = {
+            start: L.divIcon({
+                html: '<div style="background: #1976D2; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">D</div>',
+                iconSize: [30, 30],
+                className: 'custom-marker'
+            }),
+            end: L.divIcon({
+                html: '<div style="background: #DC2626; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">A</div>',
+                iconSize: [30, 30],
+                className: 'custom-marker'
+            }),
+            bus: L.divIcon({
+                html: '<div style="background: #059669; color: white; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🚌</div>',
+                iconSize: [35, 35],
+                className: 'custom-marker'
+            }),
+            taxi: L.divIcon({
+                html: '<div style="background: #F59E0B; color: white; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🚕</div>',
+                iconSize: [35, 35],
+                className: 'custom-marker'
+            }),
+            metro: L.divIcon({
+                html: '<div style="background: #7C3AED; color: white; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🚇</div>',
+                iconSize: [35, 35],
+                className: 'custom-marker'
+            })
+        };
+
+        function initMap() {
+            map = L.map('map', {
+                center: [DEFAULT_LAT, DEFAULT_LON],
+                zoom: 7,
+                zoomControl: true,
+                attributionControl: true
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18,
+                minZoom: 3
+            }).addTo(map);
+
+            // Forcer le redimensionnement après initialisation
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100);
+
+            // Forcer le redimensionnement après chaque zoom
+            map.on('zoomend', function() {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 50);
+            });
+
+            // Gestionnaire de clic pour placer des marqueurs de départ/arrivée
+            map.on('click', function(e) {
+                if (!startMarker) {
+                    setStartPoint(e.latlng.lat, e.latlng.lng);
+                } else if (!endMarker) {
+                    setEndPoint(e.latlng.lat, e.latlng.lng);
+                } else {
+                    // Si les deux sont déjà définis, effacer et redéfinir le départ
+                    clearMarkers();
+                    setStartPoint(e.latlng.lat, e.latlng.lng);
+                }
+            });
+        }
+
+        function addTransportMarker(lat, lon, type, tarif) {
+            let icon;
+            if (type.toLowerCase().includes('bus')) {
+                icon = icons.bus;
+            } else if (type.toLowerCase().includes('taxi')) {
+                icon = icons.taxi;
+            } else if (type.toLowerCase().includes('metro')) {
+                icon = icons.metro;
+            } else {
+                icon = icons.bus;
+            }
+            
+            const marker = L.marker([lat, lon], {icon: icon}).addTo(map);
+            transportMarkers.push(marker);
+            
+            const popupContent = `
+                <div class="custom-popup">
+                    <div class="popup-title">${type}</div>
+                    <div class="popup-info">💰 Tarif: ${tarif} DT</div>
+                    <div class="popup-info">📍 Position: ${lat.toFixed(4)}, ${lon.toFixed(4)}</div>
+                </div>
+            `;
+            
+            marker.bindPopup(popupContent);
+        }
+
+        function clearMarkers() {
+            // Nettoyer tous les marqueurs
+            if (startMarker) {
+                map.removeLayer(startMarker);
+                startMarker = null;
+            }
+            if (endMarker) {
+                map.removeLayer(endMarker);
+                endMarker = null;
+            }
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+                routeLayer = null;
+            }
+            
+            // Nettoyer les marqueurs de transport
+            transportMarkers.forEach(marker => {
+                map.removeLayer(marker);
+            });
+            transportMarkers = [];
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function calculateRouteFromJava(startLat, startLon, endLat, endLon, transportType, tarif) {
+            clearMarkers();
+            setStartPoint(startLat, startLon);
+            setEndPoint(endLat, endLon);
+            setTransportInfo(transportType, tarif);
+        }
+
+        function setStartPoint(lat, lon) {
+            if (startMarker) {
+                map.removeLayer(startMarker);
+            }
+            
+            startMarker = L.marker([lat, lon], {icon: icons.start}).addTo(map);
+            startMarker.bindPopup('<b>🚩 Point de départ</b><br>Cliquez pour définir le point d\'arrivée').openPopup();
+            
+            // Forcer le redimensionnement après ajout du marqueur
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 50);
+            
+            if (endMarker) {
+                calculateRoute();
+            }
+        }
+
+        function setEndPoint(lat, lon) {
+            if (endMarker) {
+                map.removeLayer(endMarker);
+            }
+            
+            endMarker = L.marker([lat, lon], {icon: icons.end}).addTo(map);
+            endMarker.bindPopup('<b>🏁 Point d\'arrivée</b><br>Itinéraire calculé!').openPopup();
+            
+            // Forcer le redimensionnement après ajout du marqueur
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 50);
+            
+            if (startMarker) {
+                calculateRoute();
+            }
+        }
+
+        function setTransportInfo(type, tarif) {
+            transportInfo = {
+                mode: type.toLowerCase(),
+                tarif: tarif,
+                type: type
+            };
+        }
+
+        function calculateRoute() {
+            if (!startMarker || !endMarker) return;
+            
+            showLoading();
+            
+            setTimeout(() => {
+                const startLat = startMarker.getLatLng().lat;
+                const startLon = startMarker.getLatLng().lng;
+                const endLat = endMarker.getLatLng().lat;
+                const endLon = endMarker.getLatLng().lng;
+                
+                const routeCoordinates = [
+                    [startLat, startLon],
+                    [startLat + (endLat - startLat) * 0.3, startLon + (endLon - startLon) * 0.3],
+                    [startLat + (endLat - startLat) * 0.7, startLon + (endLon - startLon) * 0.7],
+                    [endLat, endLon]
+                ];
+                
+                const distance = calculateDistance(startLat, startLon, endLat, endLon);
+                const duration = estimateDuration(distance, transportInfo ? transportInfo.mode : 'driving');
+                
+                displayRoute(routeCoordinates, distance, duration, transportInfo ? transportInfo.type : 'Transport');
+                hideLoading();
+            }, 1000);
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c * 1000;
+        }
+
+        function estimateDuration(distance, transportMode) {
+            const speed = transportMode.includes('bus') ? 15 : transportMode.includes('taxi') ? 40 : 50;
+            return (distance / 1000 / speed) * 3600;
+        }
+
+        function displayRoute(coordinates, distance, duration, transportMode) {
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+            }
+            
+            const color = transportMode.toLowerCase().includes('bus') ? '#059669' : 
+                         transportMode.toLowerCase().includes('taxi') ? '#F59E0B' : 
+                         transportMode.toLowerCase().includes('metro') ? '#7C3AED' : '#1976D2';
+            
+            routeLayer = L.polyline(coordinates, {
+                color: color,
+                weight: 4,
+                opacity: 0.8
+            }).addTo(map);
+            
+            const bounds = L.latLngBounds(coordinates);
+            map.fitBounds(bounds, {padding: [50, 50]});
+            
+            // Forcer le redimensionnement après affichage de l'itinéraire
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100);
+            
+            // Popup avec informations sur l'itinéraire
+            const popupContent = `
+                <div class="custom-popup">
+                    <div class="popup-title">🛣️ Itinéraire ${transportMode}</div>
+                    <div class="route-info">
+                        <div class="popup-info route-distance">📏 Distance: ${formatDistance(distance)}</div>
+                        <div class="popup-info route-duration">⏱️ Durée: ${formatDuration(duration)}</div>
+                        ${transportInfo ? `<div class="popup-info">💰 Tarif: ${transportInfo.tarif} DT</div>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            L.popup()
+                .setLatLng(coordinates[Math.floor(coordinates.length / 2)])
+                .setContent(popupContent)
+                .openOn(map);
+        }
+
+        function formatDistance(meters) {
+            if (meters < 1000) {
+                return Math.round(meters) + ' m';
+            } else {
+                return (meters / 1000).toFixed(2) + ' km';
+            }
+        }
+
+        function formatDuration(seconds) {
+            const minutes = Math.round(seconds / 60);
+            if (minutes < 60) {
+                return minutes + ' min';
+            } else {
+                const hours = Math.floor(minutes / 60);
+                const remainingMinutes = minutes % 60;
+                return hours + 'h ' + remainingMinutes + 'min';
+            }
+        }
+
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', initMap);
+
+        // Fonctions pour communiquer avec JavaFX
+        window.calculateRouteFromJava = calculateRouteFromJava;
+        window.clearMarkers = clearMarkers;
+        window.addTransportMarker = addTransportMarker;
+        window.setTransportInfo = setTransportInfo;
+    </script>
+</body>
+</html>
