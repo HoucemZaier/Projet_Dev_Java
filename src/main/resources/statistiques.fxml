@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="780.0" prefWidth="1040.0"
+      style="-fx-background-color: #f0f4f8;"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.StatistiquesController">
+
+    <!-- ===== HEADER ===== -->
+    <HBox alignment="CENTER_LEFT" spacing="20"
+          style="-fx-background-color: white; -fx-padding: 18 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+        <VBox>
+            <Label text="📊 Statistiques" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Label text="Vue d'ensemble des hôtels et chambres" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshBtn" text=" Actualiser"
+                style="-fx-background-color: #2A3B4C; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 10 18; -fx-font-size: 11px;"
+                onAction="#handleRefresh"/>
+        <Button fx:id="exportPdfBtn" text=" Exporter PDF"
+                style="-fx-background-color: linear-gradient(to right, #ef4444, #dc2626); -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 10 18; -fx-font-size: 11px;"
+                onAction="#handleExportPdf"/>
+    </HBox>
+
+    <!-- ===== CONTENU SCROLLABLE ===== -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-border-width: 0; -fx-background: #f0f4f8;">
+
+        <VBox spacing="15" style="-fx-padding: 20;">
+
+            <!-- ===== KPI CARDS ROW 1 ===== -->
+            <HBox spacing="12">
+                <!-- Hôtels -->
+                <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🏨" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="Hôtels" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                            <Label fx:id="totalHotelsLabel" text="—"
+                                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2A3B4C;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Chambres -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🛏" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="Chambres Total" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                            <Label fx:id="totalChambresLabel" text="—"
+                                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #0DA2E7;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Disponibles -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="✅" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="Disponibles" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                            <Label fx:id="disponiblesLabel" text="—"
+                                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Occupées -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="🔴" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="Occupées" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                            <Label fx:id="occupeesLabel" text="—"
+                                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ef4444;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <!-- ===== KPI ROW 2 : Taux + Prix Moyen + Revenus ===== -->
+            <HBox spacing="12">
+                <!-- Taux d'occupation -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <Label text="📈 Taux d'Occupation" style="-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-weight: bold;"/>
+                    <Label fx:id="tauxOccupationLabel" text="—%"
+                           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+                    <ProgressBar fx:id="occupationBar" progress="0" prefWidth="150" prefHeight="8"
+                                 style="-fx-accent: #f59e0b;"/>
+                    <Label fx:id="occupationPctLabel" text="—" style="-fx-font-size: 10px; -fx-text-fill: #94a3b8;"/>
+                </VBox>
+
+                <!-- Prix Moyen -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="💰" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="Prix Moyen / Nuit" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+                            <Label fx:id="prixMoyenLabel" text="—"
+                                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #8b5cf6;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Revenus estimés -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: linear-gradient(to bottom right, #2A3B4C, #1a2935); -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(42,59,76,0.3), 8, 0, 0, 3);">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="💼" style="-fx-font-size: 24px;"/>
+                        <VBox>
+                            <Label text="Revenus Estimés (nuit)" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+                            <Label fx:id="revenusEstimesLabel" text="—"
+                                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                            <Label text="Chambres occupées × prix" style="-fx-font-size: 9px; -fx-text-fill: #64748b;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <!-- ===== CHARTS ROW 1 : Chambres/Hôtel + Pie Statuts ===== -->
+            <HBox spacing="12">
+                <!-- Bar Chart Chambres par Hôtel -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <Label text="🏨 Chambres par Hôtel"
+                           style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1e293b;"/>
+                    <Label text="Nombre de chambres par établissement"
+                           style="-fx-font-size: 10px; -fx-text-fill: #64748b; -fx-padding: 0 0 8 0;"/>
+                    <BarChart fx:id="chambresParHotelChart" prefHeight="220" legendVisible="false" animated="true"
+                              style="-fx-background-color: transparent;">
+                        <xAxis><CategoryAxis label="Hôtels"/></xAxis>
+                        <yAxis><NumberAxis label="Chambres" minorTickCount="1"/></yAxis>
+                    </BarChart>
+                </VBox>
+
+                <!-- Pie Chart Statuts -->
+                <VBox prefWidth="300"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <Label text="📊 Statuts des Chambres"
+                           style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1e293b;"/>
+                    <Label text="Répartition par statut d'occupation"
+                           style="-fx-font-size: 10px; -fx-text-fill: #64748b; -fx-padding: 0 0 8 0;"/>
+                    <PieChart fx:id="statutChart" prefHeight="220" labelsVisible="true" animated="true"
+                              style="-fx-background-color: transparent;"/>
+                </VBox>
+            </HBox>
+
+            <!-- ===== CHARTS ROW 2 : Prix + Types ===== -->
+            <HBox spacing="12">
+                <!-- Bar Chart Prix par Hôtel -->
+                <VBox HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <Label text="💰 Analyse des Prix par Hôtel"
+                           style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1e293b;"/>
+                    <Label text="Min / Moyen / Max des tarifs"
+                           style="-fx-font-size: 10px; -fx-text-fill: #64748b; -fx-padding: 0 0 8 0;"/>
+                    <BarChart fx:id="prixParHotelChart" prefHeight="210" animated="true"
+                              style="-fx-background-color: transparent;">
+                        <xAxis><CategoryAxis label="Hôtels"/></xAxis>
+                        <yAxis><NumberAxis label="Prix (TND)"/></yAxis>
+                    </BarChart>
+                </VBox>
+
+                <!-- Bar Chart Types de Chambres -->
+                <VBox prefWidth="280"
+                      style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                    <Label text="🛏 Types de Chambres"
+                           style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1e293b;"/>
+                    <Label text="Distribution par type"
+                           style="-fx-font-size: 10px; -fx-text-fill: #64748b; -fx-padding: 0 0 8 0;"/>
+                    <BarChart fx:id="typeChambresChart" prefHeight="210" legendVisible="false" animated="true"
+                              style="-fx-background-color: transparent;">
+                        <xAxis><CategoryAxis/></xAxis>
+                        <yAxis><NumberAxis minorTickCount="1"/></yAxis>
+                    </BarChart>
+                </VBox>
+            </HBox>
+
+            <!-- ===== TABLE DETAIL HOTELS ===== -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 12 0;">
+                    <Label text="📋 Tableau de Bord par Hôtel"
+                           style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #1e293b;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Cliquez sur un hôtel pour voir les détails"
+                           style="-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-style: italic;"/>
+                </HBox>
+                <VBox fx:id="tableContainer" spacing="0"
+                      style="-fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 1;"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>
