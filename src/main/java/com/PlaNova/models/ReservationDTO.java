@@ -4,10 +4,10 @@ import java.time.LocalDate;
 
 public class ReservationDTO {
     // Data from Database
-    private int destinationId;
+    private Integer destinationId;
     private String destinationName;
-    private int hotelId;
-    private double hotelPricePerNight;
+    private Integer hotelId;
+    private Double hotelPricePerNight;
     private Integer roomId;
     private String roomType;
 
@@ -34,14 +34,15 @@ public class ReservationDTO {
         if (startDate == null || endDate == null)
             return 0.0;
         long days = Math.max(1, java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate));
-        return (hotelPricePerNight * days) + transportCost;
+        double hotelPart = (hotelPricePerNight != null) ? (hotelPricePerNight * days) : 0.0;
+        return hotelPart + transportCost;
     }
 
-    public int getDestinationId() {
+    public Integer getDestinationId() {
         return destinationId;
     }
 
-    public void setDestinationId(int destinationId) {
+    public void setDestinationId(Integer destinationId) {
         this.destinationId = destinationId;
     }
 
@@ -53,19 +54,19 @@ public class ReservationDTO {
         this.destinationName = destinationName;
     }
 
-    public int getHotelId() {
+    public Integer getHotelId() {
         return hotelId;
     }
 
-    public void setHotelId(int hotelId) {
+    public void setHotelId(Integer hotelId) {
         this.hotelId = hotelId;
     }
 
-    public double getHotelPricePerNight() {
+    public Double getHotelPricePerNight() {
         return hotelPricePerNight;
     }
 
-    public void setHotelPricePerNight(double hotelPricePerNight) {
+    public void setHotelPricePerNight(Double hotelPricePerNight) {
         this.hotelPricePerNight = hotelPricePerNight;
     }
 

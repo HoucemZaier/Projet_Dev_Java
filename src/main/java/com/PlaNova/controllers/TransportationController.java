@@ -79,12 +79,13 @@ public class TransportationController {
         String search = searchField.getText().toLowerCase();
 
         ReservationDTO sessionPanier = SessionManager.getCurrentReservation();
-        int targetDestId = sessionPanier.getDestinationId();
+        Integer targetDestId = sessionPanier.getDestinationId();
 
         if (showPrivate) {
             List<TransportPrive> filtered = privateList.stream()
                     .filter(tp -> tp.getMarque().toLowerCase().contains(search))
-                    .filter(tp -> targetDestId == 0 || tp.getId_destination() == targetDestId)
+                    .filter(tp -> targetDestId == null || targetDestId == 0
+                            || tp.getId_destination() == targetDestId.intValue())
                     .sorted(getPrivateComparator())
                     .collect(Collectors.toList());
 
@@ -96,7 +97,8 @@ public class TransportationController {
             List<TransportPublique> filtered = publicList.stream()
                     .filter(tp -> tp.getType().toLowerCase().contains(search))
                     .filter(tp -> typeFilter.equals("All") || tp.getType().equalsIgnoreCase(typeFilter))
-                    .filter(tp -> targetDestId == 0 || tp.getId_destination() == targetDestId)
+                    .filter(tp -> targetDestId == null || targetDestId == 0
+                            || tp.getId_destination() == targetDestId.intValue())
                     .sorted(getPublicComparator())
                     .collect(Collectors.toList());
 

@@ -7,6 +7,7 @@ import com.PlaNova.models.ReservationDTO;
 import com.PlaNova.services.DestinationService;
 import com.PlaNova.services.HotelService;
 import com.PlaNova.services.ReservationService;
+import com.PlaNova.services.StripeService;
 import com.PlaNova.utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -14,7 +15,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Alert;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.scene.control.Alert.AlertType;
@@ -31,9 +31,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.control.Button;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
+import javafx.application.Platform;
 import java.sql.SQLDataException;
 import java.util.List;
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.io.OutputStream;
 
 public class ExploreController {
 
@@ -61,6 +64,26 @@ public class ExploreController {
     private ComboBox<Hotel> hotelComboBox;
     @FXML
     private ComboBox<String> roomTypeComboBox;
+
+    // Overlay components
+    @FXML
+    private StackPane overlayContainer;
+    @FXML
+    private Label overlayTitle;
+    @FXML
+    private Label overlayContent;
+    @FXML
+    private Button overlayConfirmBtn;
+    @FXML
+    private Button overlayCancelBtn;
+    @FXML
+    private javafx.scene.control.ScrollPane overlayScrollPane;
+    @FXML
+    private VBox loadingContainer;
+    @FXML
+    private HBox overlayButtonBox;
+
+    private Runnable currentOverlayAction = null;
 
     private DestinationService destinationService;
     private ReservationService reservationService;
@@ -101,7 +124,7 @@ public class ExploreController {
 
     private void restoreSession() {
         ReservationDTO panier = SessionManager.getCurrentReservation();
-        if (panier.getDestinationId() != 0) {
+        if (panier.getDestinationId() != null && panier.getDestinationId() != 0) {
             try {
                 // Find the destination object
                 List<Destination> list = destinationService.show();
@@ -116,7 +139,7 @@ public class ExploreController {
                     checkinDatePicker.setValue(panier.getStartDate());
                     checkoutDatePicker.setValue(panier.getEndDate());
 
-                    if (panier.getHotelId() != 0) {
+                    if (panier.getHotelId() != null && panier.getHotelId() != 0) {
                         Hotel h = hotelComboBox.getItems().stream()
                                 .filter(hotel -> hotel.getIdHotel() == panier.getHotelId())
                                 .findFirst().orElse(null);
@@ -356,73 +379,221 @@ public class ExploreController {
                 "Total Amount: €" + total + "\n\n" +
                 "Do you wish to confirm this reservation?";
 
-        Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Reservation Basket (Panier)");
-        confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText(basketDetails);
+        showOverlay("Reservation Basket (Panier)", basketDetails, true, () -> {
+            // Start background thread to avoid freezing the UI
+            new Thread(() -> {
+                try {
+                    System.out.println("[DEBUG] Starting Reservation Thread...");
+                    Reservation res = new Reservation();
+                    res.setIdUtilisateur(1); // Hardcoded
+                    res.setIdDestination(panier.getDestinationId());
+                    res.setIdHotel(panier.getHotelId());
+                    res.setIdChambre(panier.getRoomId());
 
-        try {
-            confirmAlert.getDialogPane().getStylesheets()
-                    .add(getClass().getResource("/css/explore.css").toExternalForm());
-            confirmAlert.getDialogPane().getStyleClass().add("glass-dialog");
-        } catch (Exception ignored) {
-        }
+                    String transport = panier.getTransportType();
+                    res.setTransportType(transport != null && transport.equals("Not selected") ? null : transport);
+                    res.setIdTransport(panier.getTransportId());
 
-        javafx.scene.control.ButtonType confirmBtn = new javafx.scene.control.ButtonType("Confirm",
-                javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
-        javafx.scene.control.ButtonType cancelBtn = new javafx.scene.control.ButtonType("Cancel",
-                javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
-        confirmAlert.getButtonTypes().setAll(confirmBtn, cancelBtn);
+                    res.setDateDebut(panier.getStartDate());
+                    res.setDateFin(panier.getEndDate());
+                    res.setPrixTotal(total);
+                    res.setStatus("Payé");
 
-        java.util.Optional<javafx.scene.control.ButtonType> result = confirmAlert.showAndWait();
-        if (result.isPresent() && result.get() == confirmBtn) {
-            // Save to database
-            try {
-                Reservation res = new Reservation();
-                res.setIdUtilisateur(1); // Hardcoded for now (assuming an ID of 1 exists in utilisateur table)
-                res.setIdDestination(panier.getDestinationId());
-                res.setIdHotel(panier.getHotelId());
-                res.setIdChambre(panier.getRoomId());
+                    System.out.println("[DEBUG] Requesting Stripe Checkout Session...");
+                    StripeService stripeService = new StripeService();
+                    String sessionUrl = stripeService.createCheckoutSession(panier.getDestinationName(), total);
+                    System.out.println("[DEBUG] Stripe Session URL received: " + sessionUrl);
 
-                // Map transport type string avoiding "Not selected"
-                String transport = panier.getTransportType();
-                res.setTransportType(transport != null && transport.equals("Not selected") ? null : transport);
-                res.setIdTransport(panier.getTransportId());
+                    // --- START LOCAL PAYMENT LISTENER ---
+                    // This server waits for your browser to come back after the Pay button is
+                    // clicked
+                    try {
+                        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 9090), 0);
+                        server.createContext("/success", exchange -> {
+                            System.out.println("[DEBUG] >> PAYMENT SUCCESS SIGNAL RECEIVED FROM BROWSER <<");
 
-                res.setDateDebut(panier.getStartDate());
-                res.setDateFin(panier.getEndDate());
-                res.setPrixTotal(total);
-                res.setStatus("en_attente");
+                            try {
+                                // 1. SAVE TO DATABASE ONLY NOW
+                                reservationService.add(res);
+                                int finalId = res.getIdReservation();
+                                System.out.println("[DEBUG] Database save successful. Generated ID: " + finalId);
 
-                reservationService.add(res);
+                                String response = "<html><body style='font-family:sans-serif; text-align:center; padding-top:50px;'>"
+                                        +
+                                        "<h1 style='color:#1E91D6;'>Payment Success!</h1>" +
+                                        "<p>Your reservation has been saved to the database.</p>" +
+                                        "<p>You can close this window now.</p>" +
+                                        "</body></html>";
+                                exchange.getResponseHeaders().set("Content-Type", "text/html");
+                                exchange.sendResponseHeaders(200, response.length());
+                                try (OutputStream os = exchange.getResponseBody()) {
+                                    os.write(response.getBytes());
+                                }
 
-                showAlert(AlertType.INFORMATION, "Success",
-                        "Reservation successfully confirmed and added to the database!");
+                                // 2. Update UI
+                                Platform.runLater(() -> {
+                                    showOverlay("Booking Confirmed!",
+                                            "Payment received! Your reservation has been successfully booked.",
+                                            false, null);
 
-                // Reset selection form & close popup after successful booking
-                roomTypeComboBox.getSelectionModel().clearSelection();
-                hotelComboBox.getSelectionModel().clearSelection();
-                SessionManager.clearSession();
-                closeInspectorDrawer();
+                                    // Reset UI as the session is complete
+                                    roomTypeComboBox.getSelectionModel().clearSelection();
+                                    hotelComboBox.getSelectionModel().clearSelection();
+                                    SessionManager.clearSession();
+                                    closeInspectorDrawer();
+                                });
 
-            } catch (SQLDataException e) {
-                showAlert(AlertType.ERROR, "Database Error",
-                        "Failed to save reservation to database:\n" + e.getMessage());
-            }
+                            } catch (Exception e) {
+                                System.err.println("[ERROR] Database save failed after payment: " + e.getMessage());
+                                Platform.runLater(() -> {
+                                    showOverlay("Database Error",
+                                            "Payment received, but we failed to save to the database: "
+                                                    + e.getMessage(),
+                                            false, null);
+                                });
+                            } finally {
+                                exchange.close();
+                                server.stop(1); // Stop the listener
+                            }
+                        });
+
+                        server.createContext("/cancel", exchange -> {
+                            System.out.println("[DEBUG] User cancelled payment.");
+                            String response = "Payment Cancelled. You can close this window.";
+                            exchange.sendResponseHeaders(200, response.length());
+                            exchange.getResponseBody().write(response.getBytes());
+                            exchange.close();
+                            server.stop(1);
+                        });
+
+                        server.start();
+                        System.out.println("[DEBUG] Success listener started on port 9090.");
+
+                    } catch (Exception e) {
+                        System.err.println("[ERROR] Could not start payment listener: " + e.getMessage());
+                        Platform.runLater(() -> {
+                            showOverlay("Listener Error", "Could not start the secure payment tracker: "
+                                    + e.getMessage() + ". Please check if port 9090 is being used by another app.",
+                                    false, null);
+                        });
+                    }
+
+                    Platform.runLater(() -> {
+                        System.out.println("[DEBUG] Directing user to Stripe...");
+                        hideLoading();
+                        hideOverlay();
+                        try {
+                            // Robust Linux browser opening
+                            String os = System.getProperty("os.name").toLowerCase();
+                            if (os.contains("linux")) {
+                                try {
+                                    new ProcessBuilder("xdg-open", sessionUrl).start();
+                                } catch (Exception e) {
+                                    java.awt.Desktop.getDesktop().browse(new java.net.URI(sessionUrl));
+                                }
+                            } else if (java.awt.Desktop.isDesktopSupported()) {
+                                java.awt.Desktop.getDesktop().browse(new java.net.URI(sessionUrl));
+                            }
+
+                            // Show waiting overlay with a MANUAL FALLBACK button
+                            showOverlay("Waiting for Payment",
+                                    "Stripe checkout has opened. Once you finish the payment, this app will update automatically.\n\n"
+                                            +
+                                            "If the app doesn't detect it after you pay, click the button below:",
+                                    true, () -> {
+                                        System.out.println("[DEBUG] Fallback Manual Save triggered by user.");
+                                        new Thread(() -> {
+                                            try {
+                                                reservationService.add(res);
+                                                Platform.runLater(() -> {
+                                                    showOverlay("Booking Confirmed!",
+                                                            "Your reservation has been saved manually.", false, null);
+                                                    roomTypeComboBox.getSelectionModel().clearSelection();
+                                                    hotelComboBox.getSelectionModel().clearSelection();
+                                                    SessionManager.clearSession();
+                                                    closeInspectorDrawer();
+                                                });
+                                            } catch (Exception ex) {
+                                                Platform.runLater(() -> showOverlay("Error",
+                                                        "Manual save failed: " + ex.getMessage(), false, null));
+                                            }
+                                        }).start();
+                                    });
+
+                        } catch (Exception e) {
+                            System.err.println("[ERROR] Failed to open browser: " + e.getMessage());
+                            showOverlay("Action Required",
+                                    "Please visit this link to pay and finish the reservation: " + sessionUrl,
+                                    false, null);
+                        }
+                    });
+
+                } catch (SQLDataException e) {
+                    System.err.println("[ERROR] Database Error: " + e.getMessage());
+                    Platform.runLater(() -> {
+                        hideLoading();
+                        showOverlay("Database Error", "Failed to save: " + e.getMessage(), false, null);
+                    });
+                } catch (Exception e) {
+                    System.err.println("[ERROR] General Error: " + e.getMessage());
+                    e.printStackTrace();
+                    Platform.runLater(() -> {
+                        hideLoading();
+                        showOverlay("Payment Error", "Failed to start session: " + e.getMessage(), false, null);
+                    });
+                }
+            }).start();
+        });
+    }
+
+    private void showOverlay(String title, String content, boolean showCancel, Runnable onConfirm) {
+        overlayTitle.setText(title);
+        overlayContent.setText(content);
+        overlayCancelBtn.setVisible(showCancel);
+        overlayConfirmBtn.setText(showCancel ? "Confirm" : "OK");
+        currentOverlayAction = onConfirm;
+
+        // Ensure content is visible, loading is hidden
+        overlayScrollPane.setVisible(true);
+        overlayButtonBox.setVisible(true);
+        loadingContainer.setVisible(false);
+        overlayContainer.setVisible(true);
+    }
+
+    private void showLoading(String title) {
+        overlayTitle.setText(title);
+        overlayScrollPane.setVisible(false);
+        overlayButtonBox.setVisible(false);
+        loadingContainer.setVisible(true);
+        overlayContainer.setVisible(true);
+    }
+
+    private void hideLoading() {
+        loadingContainer.setVisible(false);
+        overlayScrollPane.setVisible(true);
+        overlayButtonBox.setVisible(true);
+    }
+
+    @FXML
+    private void hideOverlay() {
+        overlayContainer.setVisible(false);
+    }
+
+    @FXML
+    private void handleOverlayConfirm() {
+        if (currentOverlayAction != null) {
+            // Switch to loading state instead of hiding immediately
+            showLoading("Processing Reservation...");
+            currentOverlayAction.run();
+            currentOverlayAction = null;
+        } else {
+            hideOverlay();
         }
     }
 
     private void showAlert(AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        try {
-            alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/explore.css").toExternalForm());
-            alert.getDialogPane().getStyleClass().add("glass-dialog");
-        } catch (Exception ignored) {
-        }
-        alert.showAndWait();
+        // Fallback or legacy alerts now redirected to overlay
+        showOverlay(title, content, false, null);
     }
 
     @FXML
