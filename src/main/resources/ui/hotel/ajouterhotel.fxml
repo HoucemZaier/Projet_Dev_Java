@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="600.0" prefWidth="900.0" spacing="0"
+      style="-fx-background-color: #f8fafd;"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.PlaNova.controllers.ajouterHotelController">
+
+    <!-- Header avec titre - Design premium -->
+    <BorderPane style="-fx-background-color: white; -fx-padding: 25 30; -fx-border-color: transparent; -fx-border-width: 0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+        <left>
+            <VBox spacing="8">
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Rectangle arcHeight="8.0" arcWidth="8.0" fill="linear-gradient(from 0% 0% to 100% 100%, #2A3B4C, #1a2935)" height="32.0" width="6.0" />
+                    <Label style="-fx-text-fill: #1e293b;" text="Ajouter un hôtel">
+                        <font>
+                            <Font name="System Bold" size="24.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                <Label style="-fx-text-fill: #64748b;" text="Remplissez les informations du nouvel hôtel ci-dessous">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </VBox>
+        </left>
+        <right>
+            <HBox alignment="CENTER_RIGHT" spacing="15">
+                <Label style="-fx-text-fill: #64748b; -fx-font-style: italic; -fx-padding: 0 10 0 0;" text="* Champs obligatoires">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
+            </HBox>
+        </right>
+    </BorderPane>
+
+    <!-- Contenu principal avec scroll -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-padding: 0; -fx-border-width: 0;">
+        <VBox spacing="25" style="-fx-padding: 30 30 20 30;">
+
+            <!-- Formulaire en deux colonnes - Design moderne -->
+            <GridPane hgap="30" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints halignment="LEFT" prefWidth="400" />
+                    <ColumnConstraints halignment="LEFT" prefWidth="400" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints />
+                    <RowConstraints />
+                    <RowConstraints />
+                    <RowConstraints />
+                </rowConstraints>
+
+                <!-- Première colonne : Nom de l'hôtel -->
+                <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 600;" text="Nom de l'hôtel *">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="nomHotelField" prefHeight="45.0" prefWidth="400.0"
+                               promptText="Ex: Grand Hôtel Royal"
+                               style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10; -fx-prompt-text-fill: #94a3b8; -fx-padding: 0 15;">
+                        <effect>
+                            <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                        </effect>
+                    </TextField>
+                    <Label fx:id="nomHotelError" style="-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-wrap-text: true;" managed="false" visible="false" />
+                </VBox>
+
+                <!-- Deuxième colonne : Ville -->
+                <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 600;" text="Ville *">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="villeField" prefHeight="45.0" prefWidth="400.0"
+                               promptText="Ex: Paris"
+                               style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10; -fx-prompt-text-fill: #94a3b8; -fx-padding: 0 15;">
+                        <effect>
+                            <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                        </effect>
+                    </TextField>
+                    <Label fx:id="villeError" style="-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-wrap-text: true;" managed="false" visible="false" />
+                </VBox>
+
+                <!-- Première colonne, ligne 2 : Adresse -->
+                <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 600;" text="Adresse *">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="adresseField" prefHeight="45.0" prefWidth="400.0"
+                               promptText="Ex: 123 Avenue des Champs-Élysées"
+                               style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10; -fx-prompt-text-fill: #94a3b8; -fx-padding: 0 15;">
+                        <effect>
+                            <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                        </effect>
+                    </TextField>
+                    <Label fx:id="adresseError" style="-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-wrap-text: true;" managed="false" visible="false" />
+                </VBox>
+
+                <!-- Deuxième colonne, ligne 2 : Nombre d'étoiles -->
+                <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 600;" text="Nombre d'étoiles *">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                    <ComboBox fx:id="etoilesComboBox" prefHeight="45.0" prefWidth="400.0"
+                              promptText="Sélectionner le nombre d'étoiles"
+                              style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10;">
+                        <effect>
+                            <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                        </effect>
+                    </ComboBox>
+                    <Label fx:id="etoilesError" style="-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-wrap-text: true;" managed="false" visible="false" />
+                </VBox>
+
+                <!-- Première colonne, ligne 3 : Image -->
+                <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 600;" text="Image">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <TextField fx:id="imagePathField" prefHeight="45.0" prefWidth="260.0"
+                                   editable="false" promptText="Aucune image sélectionnée"
+                                   style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10; -fx-prompt-text-fill: #94a3b8; -fx-padding: 0 15;">
+                            <effect>
+                                <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                            </effect>
+                        </TextField>
+                        <Button onAction="#handleParcourirImage" prefHeight="45.0" prefWidth="120.0"
+                                style="-fx-background-color: #ffffff; -fx-text-fill: #1e293b; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-border-width: 1.5; -fx-font-weight: 600; -fx-cursor: hand; -fx-background-radius: 10;"
+                                text="Parcourir">
+                            <effect>
+                                <DropShadow color="#E2E8F0" height="4" radius="3" width="4" />
+                            </effect>
+                        </Button>
+                    </HBox>
+                    <Label fx:id="imageError" style="-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-wrap-text: true;" managed="false" visible="false" />
+                </VBox>
+
+                <!-- Deuxième colonne, ligne 3 : Destination -->
+                <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 600;" text="Destination *">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                    <ComboBox fx:id="destinationCombo" prefHeight="45.0" prefWidth="400.0"
+                              promptText="Sélectionner une destination"
+                              style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10;">
+                        <effect>
+                            <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                        </effect>
+                    </ComboBox>
+                    <Label fx:id="destinationError" style="-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-wrap-text: true;" managed="false" visible="false" />
+                </VBox>
+
+            </GridPane>
+
+            <!-- Description - Section avec design amélioré -->
+            <VBox spacing="8" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #eef2f6; -fx-border-width: 1;">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Circle fill="#2A3B4C" radius="5" />
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 600;" text="Description *">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <!-- BOUTON GROQ IA -->
+                    <Button fx:id="groqBtn" onAction="#handleGenererDescriptionIA"
+                            text="✨ Générer avec IA"
+                            style="-fx-background-color: linear-gradient(to right, #7c3aed, #6d28d9); -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 7 15; -fx-effect: dropshadow(gaussian, rgba(109,40,217,0.3), 8, 0, 0, 3);">
+                    </Button>
+                </HBox>
+                <Label style="-fx-text-fill: #94a3b8; -fx-font-size: 10px; -fx-font-style: italic;"
+                       text="💡 Astuce : Remplissez le nom, la ville et les étoiles, puis cliquez 'Générer avec IA' pour une description automatique."/>
+                <TextArea fx:id="descriptionArea" prefHeight="140.0" prefWidth="780.0"
+                          promptText="Décrivez l'hôtel, ses services, ses équipements..."
+                          style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10; -fx-padding: 15; -fx-prompt-text-fill: #94a3b8;"
+                          wrapText="true">
+                    <effect>
+                        <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                    </effect>
+                </TextArea>
+                <Label fx:id="descriptionError" style="-fx-text-fill: #dc2626; -fx-font-size: 11px; -fx-wrap-text: true;" managed="false" visible="false" />
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- Barre d'actions - Design élégant -->
+    <BorderPane style="-fx-background-color: white; -fx-padding: 20 30; -fx-border-color: #eef2f6; -fx-border-width: 1 0 0 0;">
+        <right>
+            <HBox alignment="CENTER_RIGHT" spacing="15">
+                <Button fx:id="annulerBtn" mnemonicParsing="false" onAction="#handleAnnuler"
+                        prefHeight="44.0" prefWidth="120.0"
+                        style="-fx-background-color: #ffffff; -fx-text-fill: #1e293b; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-border-width: 1.5; -fx-cursor: hand; -fx-font-weight: 600; -fx-background-radius: 10;"
+                        text="Annuler">
+                    <effect>
+                        <DropShadow color="#E2E8F0" height="4" radius="3" width="4" />
+                    </effect>
+                    <padding>
+                        <Insets bottom="10" left="25" right="25" top="10" />
+                    </padding>
+                </Button>
+                <Button fx:id="ajouterBtn" mnemonicParsing="false" onAction="#handleAjouterHotel"
+                        prefHeight="44.0" prefWidth="140.0"
+                        style="-fx-background-color: linear-gradient(to right, #2A3B4C, #1e2c3a); -fx-text-fill: white; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-weight: 600; -fx-effect: dropshadow(gaussian, rgba(42,59,76,0.3), 8, 0, 0, 4);"
+                        text="Ajouter">
+                    <padding>
+                        <Insets bottom="10" left="25" right="25" top="10" />
+                    </padding>
+                </Button>
+            </HBox>
+        </right>
+    </BorderPane>
+
+</VBox>

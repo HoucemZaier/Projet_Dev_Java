@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.PlaNova.controllers.ajouterChambreController"
+            style="-fx-background-color: transparent; -fx-border-width: 0;">
+
+   <VBox spacing="25" style="-fx-background-color: #f8fafd; -fx-padding: 30;">
+
+      <!-- En-tête avec titre -->
+      <BorderPane>
+         <left>
+            <VBox spacing="8">
+               <HBox spacing="15" alignment="CENTER_LEFT">
+                  <Rectangle arcHeight="8.0" arcWidth="8.0"
+                             fill="linear-gradient(from 0% 0% to 100% 100%, #3A4C5D, #2A3B4C)"
+                             height="32.0" width="6.0" />
+                  <Label fx:id="titleLabel" text="Ajouter une nouvelle chambre">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+               </HBox>
+               <Label text="Créez une nouvelle chambre dans votre hôtel"
+                      style="-fx-text-fill: #64748b;">
+                  <font>
+                     <Font size="14.0" />
+                  </font>
+               </Label>
+            </VBox>
+         </left>
+         <right>
+            <HBox spacing="10">
+               <Label text="Nouvelle chambre"
+                      style="-fx-text-fill: white; -fx-background-color: #10b981; -fx-padding: 8 20; -fx-background-radius: 20; -fx-font-weight: 600;">
+                  <font>
+                     <Font size="13.0" />
+                  </font>
+               </Label>
+            </HBox>
+         </right>
+      </BorderPane>
+
+      <!-- Formulaire principal -->
+      <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+
+         <!-- Section: Informations de base -->
+         <Label text="INFORMATIONS GÉNÉRALES"
+                style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D; -fx-font-size: 14px; -fx-underline: true;" />
+
+         <!-- Ligne 1: Hôtel -->
+         <GridPane hgap="20" vgap="15">
+            <columnConstraints>
+               <ColumnConstraints percentWidth="100" />
+            </columnConstraints>
+
+            <!-- Hôtel -->
+            <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+               <Label text="Hôtel *" style="-fx-font-weight: 600; -fx-text-fill: #334155;">
+                  <font>
+                     <Font size="13.0" />
+                  </font>
+               </Label>
+               <ComboBox fx:id="hotelComboBox" promptText="Sélectionner un hôtel"
+                         style="-fx-background-radius: 8; -fx-pref-height: 42;"
+                         maxWidth="Infinity" />
+            </VBox>
+         </GridPane>
+
+         <!-- Ligne 2: Type et Capacité -->
+         <GridPane hgap="20" vgap="15">
+            <columnConstraints>
+               <ColumnConstraints percentWidth="50" />
+               <ColumnConstraints percentWidth="50" />
+            </columnConstraints>
+
+            <!-- Type -->
+            <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+               <Label text="Type de chambre *" style="-fx-font-weight: 600; -fx-text-fill: #334155;">
+                  <font>
+                     <Font size="13.0" />
+                  </font>
+               </Label>
+               <ComboBox fx:id="typeComboBox" promptText="Sélectionner un type"
+                         style="-fx-background-radius: 8; -fx-pref-height: 42;"
+                         maxWidth="Infinity" />
+            </VBox>
+
+            <!-- Capacité -->
+            <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+               <Label text="Capacité (personnes) *" style="-fx-font-weight: 600; -fx-text-fill: #334155;">
+                  <font>
+                     <Font size="13.0" />
+                  </font>
+               </Label>
+               <Spinner fx:id="capaciteSpinner" style="-fx-background-radius: 8; -fx-pref-height: 42;"
+                        maxWidth="Infinity" />
+            </VBox>
+         </GridPane>
+
+         <!-- Ligne 3: Prix et Statut -->
+         <GridPane hgap="20" vgap="15">
+            <columnConstraints>
+               <ColumnConstraints percentWidth="50" />
+               <ColumnConstraints percentWidth="50" />
+            </columnConstraints>
+
+            <!-- Prix avec suggestions rapides -->
+            <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+               <Label text="Prix par nuit (€) *" style="-fx-font-weight: 600; -fx-text-fill: #334155;">
+                  <font>
+                     <Font size="13.0" />
+                  </font>
+               </Label>
+               <TextField fx:id="prixField" promptText="Ex: 120.50"
+                          style="-fx-background-radius: 8; -fx-pref-height: 42;"
+                          maxWidth="Infinity" />
+               <HBox spacing="5" alignment="CENTER_LEFT">
+                  <Button text="Standard" onAction="#handleQuickPrice"
+                          style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 10; -fx-padding: 3 8;" />
+                  <Button text="Confort" onAction="#handleQuickPrice"
+                          style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 10; -fx-padding: 3 8;" />
+                  <Button text="Luxe" onAction="#handleQuickPrice"
+                          style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 10; -fx-padding: 3 8;" />
+                  <Button text="Suite" onAction="#handleQuickPrice"
+                          style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 10; -fx-padding: 3 8;" />
+               </HBox>
+            </VBox>
+
+            <!-- Statut -->
+            <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+               <Label text="Statut *" style="-fx-font-weight: 600; -fx-text-fill: #334155;">
+                  <font>
+                     <Font size="13.0" />
+                  </font>
+               </Label>
+               <ComboBox fx:id="statutComboBox" promptText="Sélectionner un statut"
+                         style="-fx-background-radius: 8; -fx-pref-height: 42;"
+                         maxWidth="Infinity" />
+            </VBox>
+         </GridPane>
+
+         <!-- Numéro de chambre (info seulement) -->
+         <VBox spacing="8">
+            <Label text="Numéro de chambre" style="-fx-font-weight: 600; -fx-text-fill: #334155;">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <TextField fx:id="numeroChambreField"
+                       style="-fx-background-radius: 8; -fx-pref-height: 42; -fx-background-color: #f1f5f9;"
+                       editable="false" />
+         </VBox>
+
+         <!-- Séparateur -->
+         <Separator style="-fx-padding: 10 0;">
+            <padding>
+               <Insets top="10" bottom="10" />
+            </padding>
+         </Separator>
+
+         <!-- Section: Description -->
+         <Label text="DESCRIPTION"
+                style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D; -fx-font-size: 14px; -fx-underline: true;" />
+
+         <VBox spacing="8">
+            <Label text="Description de la chambre" style="-fx-font-weight: 600; -fx-text-fill: #334155;">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="descriptionArea" promptText="Décrivez la chambre, ses particularités, la vue, etc..."
+                      prefRowCount="4"
+                      style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0; -fx-border-width: 1;"
+                      wrapText="true" />
+         </VBox>
+
+         <!-- Séparateur -->
+         <Separator style="-fx-padding: 10 0;">
+            <padding>
+               <Insets top="10" bottom="10" />
+            </padding>
+         </Separator>
+
+         <!-- Section: Équipements -->
+         <BorderPane>
+            <left>
+               <Label text="ÉQUIPEMENTS"
+                      style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D; -fx-font-size: 14px; -fx-underline: true;" />
+            </left>
+            <right>
+               <HBox spacing="10">
+                  <Button text="Tout sélectionner" onAction="#handleSelectAllEquipements"
+                          style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 11;" />
+                  <Button text="Tout désélectionner" onAction="#handleClearAllEquipements"
+                          style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155; -fx-background-radius: 5; -fx-cursor: hand; -fx-font-size: 11;" />
+               </HBox>
+            </right>
+         </BorderPane>
+
+         <GridPane hgap="30" vgap="15" style="-fx-padding: 10 0;">
+            <columnConstraints>
+               <ColumnConstraints percentWidth="25" />
+               <ColumnConstraints percentWidth="25" />
+               <ColumnConstraints percentWidth="25" />
+               <ColumnConstraints percentWidth="25" />
+            </columnConstraints>
+
+            <!-- Ligne 1 d'équipements -->
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="0">
+               <CheckBox fx:id="wifiCheckBox" />
+               <Label text="Wi-Fi" style="-fx-font-size: 13px;" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="0">
+               <CheckBox fx:id="tvCheckBox" />
+               <Label text="Télévision" style="-fx-font-size: 13px;" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="0">
+               <CheckBox fx:id="climatisationCheckBox" />
+               <Label text="Climatisation" style="-fx-font-size: 13px;" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="3" GridPane.rowIndex="0">
+               <CheckBox fx:id="miniBarCheckBox" />
+               <Label text="Mini-bar" style="-fx-font-size: 13px;" />
+            </HBox>
+
+            <!-- Ligne 2 d'équipements -->
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
+               <CheckBox fx:id="balconCheckBox" />
+               <Label text="Balcon" style="-fx-font-size: 13px;" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <CheckBox fx:id="coffreCheckBox" />
+               <Label text="Coffre-fort" style="-fx-font-size: 13px;" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <CheckBox fx:id="telephoneCheckBox" />
+               <Label text="Téléphone" style="-fx-font-size: 13px;" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.columnIndex="3" GridPane.rowIndex="1">
+               <CheckBox fx:id="chauffageCheckBox" />
+               <Label text="Chauffage" style="-fx-font-size: 13px;" />
+            </HBox>
+         </GridPane>
+
+         <!-- Message d'erreur/succès -->
+         <Label fx:id="errorLabel" visible="false" managed="false"
+                style="-fx-padding: 15 0 0 0; -fx-font-size: 13px; -fx-font-weight: 600;">
+            <font>
+               <Font size="13.0" />
+            </font>
+         </Label>
+      </VBox>
+
+      <!-- Boutons d'action -->
+      <HBox spacing="15" alignment="CENTER_RIGHT">
+         <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancel"
+                 style="-fx-background-color: #f1f5f9; -fx-text-fill: #334155; -fx-background-radius: 8; -fx-padding: 12 25; -fx-font-weight: 500; -fx-cursor: hand; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-border-width: 1;">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
+
+         <Button fx:id="clearButton" text="Effacer" onAction="#handleClear"
+                 style="-fx-background-color: #ffffff; -fx-text-fill: #334155; -fx-background-radius: 8; -fx-padding: 12 25; -fx-font-weight: 500; -fx-cursor: hand; -fx-border-color: #3A4C5D; -fx-border-radius: 8; -fx-border-width: 1;">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
+
+         <Button fx:id="saveButton" text="Ajouter la chambre" onAction="#handleSave"
+                 style="-fx-background-color: linear-gradient(to right, #10b981, #059669); -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 12 35; -fx-font-weight: 600; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.3), 8, 0, 0, 4);">
+            <font>
+               <Font size="14.0" />
+            </font>
+         </Button>
+      </HBox>
+
+      <!-- Indication des champs obligatoires -->
+      <HBox alignment="CENTER_RIGHT">
+         <Label text="* Champs obligatoires" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;" />
+      </HBox>
+   </VBox>
+</ScrollPane>

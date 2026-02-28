@@ -1,13 +1,53 @@
-.bundle-card {
-    -fx-background-color: white;
-    -fx-background-radius: 15;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 2);
-    -fx-cursor: hand;
+.root-pane {
+    -fx-background-color: linear-gradient(to bottom right, #1E91D6 0%, #4B1D7A 100%);
 }
 
-.bundle-card:hover {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 8);
-    -fx-translate-y: -5;
+.glass-sidebar {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 0 1 0 0;
+}
+
+.glass-navbar {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 15 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 2);
+}
+
+.glass-drawer {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 0 0 0 1;
+}
+
+.glass-search {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.glass-search:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-border-color: #1E91D6;
+}
+
+.nature-card {
+    -fx-background-color: rgba(255, 255, 255, 0.85);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 10, 0, 0, 4);
+}
+
+.nature-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 20, 0, 0, 8);
+    -fx-translate-y: -8;
 }
 
 .card-image {
@@ -17,66 +57,188 @@
 .card-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1a1a1a;
+    -fx-text-fill: #4B1D7A;
 }
 
 .card-info {
     -fx-font-size: 14px;
-    -fx-text-fill: #666666;
+    -fx-text-fill: #1E91D6;
+    -fx-font-weight: bold;
 }
 
 .card-price {
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-text-fill: #1a1a1a;
 }
 
-.text-field {
-    -fx-background-color: white;
-    -fx-background-radius: 20;
-    -fx-border-radius: 20;
-    -fx-padding: 10 20;
+.glass-button {
+    -fx-background-color: rgba(75, 29, 122, 0.8);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
     -fx-font-size: 14px;
 }
 
-.text-field:focused {
-    -fx-background-color: white;
-    -fx-border-color: #4a90e2;
-    -fx-border-width: 2;
-    -fx-border-radius: 20;
+.glass-button:hover {
+    -fx-background-color: rgba(30, 145, 214, 0.9);
 }
 
-/* Profile section styling */
-.profile-image-container {
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-background-radius: 15;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
 }
 
-.profile-image-container:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 4);
-    -fx-translate-y: -2;
+.sidebar-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Logout button styling */
-#exploreLogoutBtn {
-    -fx-background-color: rgba(255,255,255,0.1);
+.profile-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 25;
+    -fx-border-color: white;
+    -fx-border-radius: 25;
+    -fx-border-width: 2;
+    -fx-padding: 2;
+    -fx-cursor: hand;
+}
+
+.profile-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.4), 10, 0, 0, 0);
+}
+
+.glass-split-pane {
+    -fx-background-color: transparent;
+}
+
+.glass-split-pane .split-pane-divider {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-pref-width: 3px;
+}
+
+/* Glass DatePicker */
+.glass-datepicker {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.glass-datepicker .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.glass-datepicker .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.glass-datepicker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+.glass-datepicker:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-border-color: #1E91D6;
+}
+
+/* DatePicker Popup styling */
+.date-picker-popup {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: rgba(0, 0, 0, 0.1);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 15, 0, 0, 5);
+}
+
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #1E91D6;
+    -fx-background-radius: 8 8 0 0;
+}
+
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.date-picker-popup .day-cell {
+    -fx-text-fill: #333333;
+    -fx-background-color: transparent;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: rgba(30, 145, 214, 0.3);
+    -fx-background-radius: 20;
+}
+
+.date-picker-popup .selected {
+    -fx-background-color: #4B1D7A;
     -fx-text-fill: white;
     -fx-background-radius: 20;
-    -fx-border-color: rgba(255,255,255,0.3);
-    -fx-border-radius: 20;
+}
+
+.date-picker-popup .today {
+    -fx-background-color: rgba(75, 29, 122, 0.2);
+    -fx-text-fill: #4B1D7A;
+    -fx-background-radius: 20;
+}
+
+/* Enhanced drawer style */
+.glass-drawer-enhanced {
+    -fx-background-color: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 0 0 0 1;
+}
+
+
+/* Glass ComboBox */
+.glass-combo-box {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+    -fx-border-radius: 10;
     -fx-border-width: 1;
-    -fx-cursor: hand;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-text-fill: white;
 }
 
-#exploreLogoutBtn:hover {
-    -fx-background-color: rgba(220,53,69,0.8);
-    -fx-border-color: rgba(255,255,255,0.8);
-    -fx-effect: dropshadow(gaussian, rgba(220,53,69,0.3), 10, 0, 0, 4);
+.glass-combo-box .list-cell {
+    -fx-text-fill: white;
 }
 
-#exploreLogoutBtn:pressed {
-    -fx-background-color: rgba(200,35,51,0.9);
+.glass-combo-box .arrow-button {
+    -fx-background-color: transparent;
 }
 
+.glass-combo-box .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+.glass-combo-box:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-border-color: #1E91D6;
+}
+
+.glass-combo-box .combo-box-popup .list-view {
+    -fx-background-color: #1E91D6;
+    -fx-background-radius: 5;
+}
+
+.glass-combo-box .combo-box-popup .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+.glass-combo-box .combo-box-popup .list-cell:hover {
+    -fx-background-color: #4B1D7A;
+}

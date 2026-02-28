@@ -5,6 +5,7 @@ target/
 
 ### OAuth Configuration - SENSITIVE CREDENTIALS ###
 src/main/resources/oauth.properties
+.env
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -39,3 +40,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Project specific
+*.sql
+*.log
+compile_errors*.txt
+email_config.properties
+integrate/

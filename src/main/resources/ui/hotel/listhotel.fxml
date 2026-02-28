@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="600.0" prefWidth="900.0" spacing="0"
+      style="-fx-background-color: #f8fafd;"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.PlaNova.controllers.listHotelController">
+
+    <!-- Header avec titre et bouton - Design premium -->
+    <BorderPane style="-fx-background-color: white; -fx-padding: 25 30; -fx-border-color: transparent; -fx-border-width: 0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+        <left>
+            <VBox spacing="8">
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Rectangle arcHeight="8.0" arcWidth="8.0" fill="linear-gradient(from 0% 0% to 100% 100%, #2A3B4C, #1a2935)" height="32.0" width="6.0" />
+                    <Label style="-fx-text-fill: #1e293b;" text="Gestion des hôtels">
+                        <font>
+                            <Font name="System Bold" size="24.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                <Label style="-fx-text-fill: #64748b;" text="Ajoutez, modifiez ou supprimez des hôtels de votre catalogue.">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </VBox>
+        </left>
+        <right>
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <!-- Label de dernière mise à jour AJOUTÉ -->
+                <Label fx:id="lastUpdateLabel" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-background-color: #f1f5f9; -fx-padding: 5 10; -fx-background-radius: 15;" text="Dernière mise à jour: --:--:--" />
+
+                <Button fx:id="ajouterBtn" mnemonicParsing="false" onAction="#handleAjouterHotel"
+                        prefHeight="44.0" prefWidth="180.0"
+                        style="-fx-background-color: linear-gradient(to right, #2A3B4C, #1e2c3a); -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: 600; -fx-effect: dropshadow(gaussian, rgba(42,59,76,0.3), 8, 0, 0, 4);"
+                        text="+ Nouvel hôtel">
+                    <padding>
+                        <Insets bottom="10" left="20" right="20" top="10" />
+                    </padding>
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+            </HBox>
+        </right>
+    </BorderPane>
+
+    <!-- Barre de recherche et filtres - Design moderne -->
+    <BorderPane style="-fx-background-color: white; -fx-padding: 20 30; -fx-border-color: transparent; -fx-border-width: 0;">
+        <left>
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" prefHeight="42.0" prefWidth="300.0"
+                           promptText="Rechercher un hôtel..."
+                           style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10; -fx-prompt-text-fill: #94a3b8; -fx-padding: 0 15;">
+                    <effect>
+                        <DropShadow color="#CBD5E1" height="3" radius="2" width="3" />
+                    </effect>
+                </TextField>
+                <Button mnemonicParsing="false" onAction="#handleRechercher"
+                        prefHeight="42.0" prefWidth="100.0"
+                        style="-fx-background-color: #ffffff; -fx-text-fill: #1e293b; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-border-width: 1.5; -fx-font-weight: 500; -fx-cursor: hand; -fx-background-radius: 10;"
+                        text="Rechercher">
+                    <effect>
+                        <DropShadow color="#E2E8F0" height="4" radius="3" width="4" />
+                    </effect>
+                </Button>
+            </HBox>
+        </left>
+        <right>
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Label style="-fx-text-fill: #475569;" text="Filtrer par:">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <ComboBox fx:id="villeFilter" prefHeight="42.0" prefWidth="140.0"
+                          promptText="Ville"
+                          style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10;">
+                </ComboBox>
+                <ComboBox fx:id="etoilesFilter" prefHeight="42.0" prefWidth="120.0"
+                          promptText="Étoiles"
+                          style="-fx-background-radius: 10; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-border-radius: 10;">
+                </ComboBox>
+            </HBox>
+        </right>
+    </BorderPane>
+
+    <!-- Statistiques rapides - Design épuré avec icônes -->
+    <HBox spacing="25" style="-fx-background-color: white; -fx-padding: 16 30; -fx-border-color: #eef2f6; -fx-border-width: 1 0 0 0;">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Circle fill="#2A3B4C" radius="4.0" />
+            <Label style="-fx-text-fill: #475569;" text="Total hôtels:">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+            <!-- CORRECTION: Renommé de totalHotelsLabel à statsLabel pour correspondre au contrôleur -->
+            <Label fx:id="statsLabel" style="-fx-text-fill: #0f172a; -fx-font-weight: 700;" text="0">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+        </HBox>
+        <Rectangle height="24" width="1.5" fill="#e2e8f0" />
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Circle fill="#10b981" radius="4.0" />
+            <Label style="-fx-text-fill: #475569;" text="Actifs:">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+            <Label fx:id="actifsLabel" style="-fx-text-fill: #0f172a; -fx-font-weight: 700;" text="0">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+        </HBox>
+    </HBox>
+
+    <!-- Tableau des hôtels - Design moderne et épuré -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-padding: 20 30; -fx-border-width: 0;" VBox.vgrow="ALWAYS">
+        <VBox spacing="4">
+            <!-- En-tête du tableau - Design minimaliste -->
+            <HBox style="-fx-background-color: #f8fafc; -fx-border-color: #e9eef3; -fx-border-width: 1; -fx-border-radius: 12 12 0 0; -fx-padding: 16 20;">
+                <HBox alignment="CENTER_LEFT" prefWidth="60.0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 700;" text="ID">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" prefWidth="220.0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 700;" text="Hôtel">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" prefWidth="130.0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 700;" text="Ville">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" prefWidth="100.0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 700;" text="Étoiles">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" prefWidth="130.0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 700;" text="Image">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" prefWidth="100.0">
+                    <Label style="-fx-text-fill: #334155; -fx-font-weight: 700;" text="Actions">
+                        <font>
+                            <Font size="13.0" />
+                        </font>
+                    </Label>
+                </HBox>
+            </HBox>
+
+            <!-- Liste des hôtels -->
+            <VBox fx:id="hotelsContainer" spacing="2" />
+        </VBox>
+    </ScrollPane>
+
+    <!-- Pied de page avec pagination - Design élégant -->
+    <BorderPane style="-fx-background-color: white; -fx-padding: 18 30; -fx-border-color: #eef2f6; -fx-border-width: 1 0 0 0;">
+        <left>
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <Label fx:id="resultatsLabel" style="-fx-text-fill: #64748b;" text="Affichage 0-0 de 0 résultats">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </HBox>
+        </left>
+        <right>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button mnemonicParsing="false" onAction="#handlePreviousPage"
+                        prefHeight="38.0" prefWidth="38.0"
+                        style="-fx-background-color: #ffffff; -fx-text-fill: #1e293b; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-border-width: 1.5; -fx-cursor: hand; -fx-font-weight: 600; -fx-background-radius: 10; -fx-font-size: 16px;"
+                        text="◀" />
+                <Label fx:id="pageLabel" style="-fx-text-fill: #1e293b; -fx-background-color: #f1f5f9; -fx-padding: 8 16; -fx-border-radius: 10; -fx-font-weight: 600;" text="1">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Button mnemonicParsing="false" onAction="#handleNextPage"
+                        prefHeight="38.0" prefWidth="38.0"
+                        style="-fx-background-color: #ffffff; -fx-text-fill: #1e293b; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-border-width: 1.5; -fx-cursor: hand; -fx-font-weight: 600; -fx-background-radius: 10; -fx-font-size: 16px;"
+                        text="▶" />
+            </HBox>
+        </right>
+    </BorderPane>
+</VBox>

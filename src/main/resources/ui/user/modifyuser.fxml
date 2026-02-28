@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefWidth="1100" prefHeight="700"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.PlaNova.controllers.ModifyUserController"
+      stylesheets="@../../css/login.css">
+
+    <!-- LEFT PANEL WITH SCROLL -->
+    <ScrollPane fitToWidth="true" prefWidth="420" style="-fx-border-style: none; -fx-background-color: transparent;">
+        <VBox spacing="18"
+              alignment="TOP_LEFT"
+              styleClass="left-panel"
+              prefWidth="400">
+
+            <!-- LOGO -->
+            <ImageView fitWidth="70" fitHeight="70">
+                <image>
+                    <Image url="@../../images/logo.png"/>
+                </image>
+            </ImageView>
+
+            <!-- TITLE -->
+            <Label text="Modifier l'Utilisateur" styleClass="title"/>
+
+            <!-- SUBTITLE -->
+            <Label text="Mettre à jour les informations du compte utilisateur"
+                   wrapText="true"
+                   styleClass="subtitle"/>
+
+            <!-- SPACE -->
+            <Region prefHeight="20"/>
+
+            <!-- USER TYPE (READ-ONLY) -->
+            <TextField fx:id="userTypeField" promptText="Type d'Utilisateur" styleClass="input" editable="false"/>
+
+            <!-- INPUTS -->
+            <TextField fx:id="nomField" promptText="Nom" styleClass="input"/>
+            <TextField fx:id="prenomField" promptText="Prénom" styleClass="input"/>
+            <TextField fx:id="emailField" promptText="Email" styleClass="input"/>
+
+            <!-- PASSWORD WITH TOGGLE -->
+            <HBox alignment="CENTER_LEFT" spacing="0" styleClass="input">
+                <PasswordField fx:id="passwordField" promptText="Nouveau mot de passe (laisser vide pour conserver l'actuel)"
+                              style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                              HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="passwordTextField" promptText="Nouveau mot de passe (laisser vide pour conserver l'actuel)"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;"
+                          visible="false" managed="false"
+                          HBox.hgrow="ALWAYS"/>
+                <Button fx:id="passwordToggleBtn" onAction="#togglePasswordVisibility"
+                       style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 5;"
+                       text="👁"/>
+            </HBox>
+
+            <!-- PASSWORD REQUIREMENTS (shown only when typing) -->
+            <VBox fx:id="passwordRequirementsBox" spacing="10" style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-padding: 15;" visible="false" managed="false">
+                <Label text="Exigences du mot de passe:" style="-fx-font-weight: bold; -fx-text-fill: #34495e; -fx-font-size: 13px;"/>
+                <VBox spacing="5">
+                    <Label fx:id="lengthReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• 8+ caractères" />
+                    <Label fx:id="upperReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Majuscule" />
+                    <Label fx:id="numberReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Chiffre" />
+                    <Label fx:id="specialReq" style="-fx-text-fill: #6c757d; -fx-font-size: 12px;" text="• Caractère spécial" />
+                </VBox>
+            </VBox>
+
+            <TextField fx:id="paysField" promptText="Pays" styleClass="input"/>
+            <TextField fx:id="cinField" promptText="CIN (pour Client)" styleClass="input" visible="false"/>
+            <TextField fx:id="matriculeField" promptText="Matricule (pour Admin)" styleClass="input" visible="false"/>
+
+            <!-- IMAGE UPLOAD -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Image:" styleClass="image-label"/>
+                <Button fx:id="chooseImageBtn" text="Choisir une Image" styleClass="image-btn" onAction="#chooseImage"/>
+            </HBox>
+
+            <!-- SPACE -->
+            <Region prefHeight="15"/>
+
+            <!-- BUTTONS -->
+            <HBox spacing="15">
+                <Button text="Mettre à jour l'Utilisateur" styleClass="login-btn" onAction="#updateUser"/>
+                <Button text="Annuler" styleClass="signup-btn" onAction="#cancel"/>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- RIGHT IMAGE -->
+    <ImageView fitWidth="680" fitHeight="700" preserveRatio="false" smooth="true" HBox.hgrow="ALWAYS">
+        <image>
+            <Image url="@../../images/plane.jpg"/>
+        </image>
+    </ImageView>
+
+</HBox>

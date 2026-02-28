@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox prefHeight="800.0" prefWidth="1400.0" styleClass="root-background" stylesheets="@../../css/dashboard.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.PlaNova.controllers.UserManagementController">
+    <!-- Sidebar -->
+    <VBox prefWidth="250.0" minWidth="250.0" maxWidth="250.0" spacing="10" styleClass="sidebar">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20"/>
+        </padding>
+        <children>
+            <Label prefHeight="70.0" prefWidth="180.0" styleClass="logo-text" text="Planova">
+                <graphic>
+                    <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../../images/logo.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Label>
+
+            <!-- Scrollable Menu Section -->
+            <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                       style="-fx-background-color: transparent; -fx-background: transparent;">
+                <content>
+                    <VBox spacing="6" style="-fx-background-color: transparent;">
+                        <padding>
+                            <Insets top="20"/>
+                        </padding>
+                        <children>
+                            <Button fx:id="overviewBtn" maxWidth="Infinity" onAction="#handleOverview" styleClass="menu-button" text="Aperçu">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/dashboard-layout.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button-active" text="Gestion Utilisateurs">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/user-group-man-man.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Destinations">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/compass.png"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Billets">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/ticket.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Hôtels" onAction="#handleHotels">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="@../../images/hotel.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Chambres" onAction="#handleChambres">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/bed.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Excursions">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/mountain.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <!-- Transport Section -->
+                            <Button fx:id="transportPubliqueBtn" maxWidth="Infinity" styleClass="menu-button" text="Transport Publique" onAction="#handleTransportPublique">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/bus.png"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button fx:id="transportPriveeBtn" maxWidth="Infinity" styleClass="menu-button" text="Transport Privée" onAction="#handleTransportPrivee">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/taxi.png"/>
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Articles de Blog">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/fluency/48/blog.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Forum Communauté">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/color/48/conference-call.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+
+                            <Button maxWidth="Infinity" styleClass="menu-button" text="Activités">
+                                <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0">
+                                        <image>
+                                            <Image url="https://img.icons8.com/color/48/activity-feed.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Button>
+                        </children>
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <VBox spacing="5">
+                <children>
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Paramètres">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0">
+                                <image>
+                                    <Image url="https://img.icons8.com/fluency/48/settings.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                        <font>
+                            <Font size="12.0"/>
+                        </font>
+                    </Button>
+                    <Button maxWidth="Infinity" styleClass="menu-button" text="Déconnexion" onAction="#handleLogout">
+                        <graphic>
+                            <ImageView fitHeight="20.0" fitWidth="20.0">
+                                <image>
+                                    <Image url="https://img.icons8.com/fluency/48/logout-rounded.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                        <font>
+                            <Font size="12.0"/>
+                        </font>
+                    </Button>
+                </children>
+            </VBox>
+        </children>
+    </VBox>
+
+    <!-- Main Content Area with proper sizing -->
+    <VBox spacing="25" style="-fx-background-color: #f5f5f5;" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets top="25" left="40" right="40" bottom="25"/>
+        </padding>
+
+        <!-- Header Section - Fixed at top -->
+        <VBox spacing="25">
+            <!-- Header -->
+            <HBox fx:id="headerSection" spacing="25" alignment="CENTER_LEFT">
+                <VBox>
+                    <Label text="Gestion des Utilisateurs" styleClass="dashboard-title"/>
+                    <Label text="Gérer et surveiller les comptes d'utilisateurs" styleClass="welcome-text"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="headerSearchField" promptText="Rechercher quelque chose..." styleClass="search-field"
+                          prefWidth="300.0" maxWidth="300.0"/>
+            </HBox>
+
+            <!-- Stats Cards -->
+            <HBox spacing="25" prefHeight="120.0">
+                <VBox styleClass="info-card" HBox.hgrow="ALWAYS" prefHeight="120.0">
+                    <Label text="Total Utilisateurs" styleClass="card-title"/>
+                    <Label fx:id="totalUsersLabel" text="8" styleClass="card-value"/>
+                </VBox>
+
+                <VBox styleClass="info-card" HBox.hgrow="ALWAYS" prefHeight="120.0">
+                    <Label text="Utilisateurs Actifs" styleClass="card-title"/>
+                    <Label fx:id="activeUsersLabel" text="6" styleClass="card-value"/>
+                </VBox>
+
+                <VBox styleClass="info-card" HBox.hgrow="ALWAYS" prefHeight="120.0">
+                    <Label text="Utilisateurs Bloqués" styleClass="card-title"/>
+                    <Label fx:id="blockedUsersLabel" text="2" styleClass="card-value"/>
+                </VBox>
+            </HBox>
+
+            <!-- Actions Bar -->
+            <HBox fx:id="actionsBar" spacing="20" alignment="CENTER_LEFT" styleClass="actions-bar"
+                  prefHeight="50.0" minHeight="50.0">
+                <Button text="+ Ajouter Nouvel Utilisateur" styleClass="new-entry-button" onAction="#addNewUser"
+                       prefHeight="45.0" minHeight="45.0"/>
+                <TextField fx:id="searchField" promptText="Rechercher utilisateur par nom ou email..."
+                          styleClass="search-field" prefWidth="350.0" prefHeight="45.0"/>
+                <ComboBox fx:id="countryFilter" promptText="Tous les Pays" styleClass="country-combo"
+                         prefWidth="200.0" prefHeight="45.0"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+
+        <!-- Scrollable User List Area -->
+        <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                   style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;"
+                   prefViewportHeight="500.0" minHeight="400.0">
+            <content>
+                <VBox fx:id="userContainer" spacing="15" styleClass="user-container"
+                     style="-fx-background-color: transparent;">
+                    <padding>
+                        <Insets bottom="20" left="15" right="15" top="15"/>
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </VBox>
+</HBox>
