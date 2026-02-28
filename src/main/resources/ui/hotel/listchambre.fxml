@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="760.0" prefWidth="1040.0"
+      style="-fx-background-color: #f0f4f8;"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.PlaNova.controllers.listChambreController">
+
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="15"
+          style="-fx-background-color: white; -fx-padding: 18 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 3);">
+        <VBox>
+            <Label text="Gestion des Chambres"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Label text="Affichage en cartes avec QR Code integre"
+                   style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="ajouterBtn" text="+ Ajouter une chambre"
+                style="-fx-background-color: linear-gradient(to right, #2A3B4C, #1e2c3a); -fx-text-fill: white; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 11 20; -fx-font-size: 12px;"
+                onAction="#handleAjouterChambre"/>
+    </HBox>
+
+    <!-- STATS RAPIDES -->
+    <HBox spacing="12" style="-fx-padding: 15 25 5 25;">
+        <VBox prefWidth="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);">
+            <Label text="TOTAL" style="-fx-font-size: 9px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+            <Label fx:id="totalChambresLabel" text="0"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2A3B4C;"/>
+            <Label text="Chambres" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <VBox prefWidth="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);">
+            <Label text="DISPONIBLES" style="-fx-font-size: 9px; -fx-text-fill: #10b981; -fx-font-weight: bold;"/>
+            <Label fx:id="disponiblesLabel" text="0"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+        </VBox>
+        <VBox prefWidth="150" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);">
+            <Label text="OCCUPEES" style="-fx-font-size: 9px; -fx-text-fill: #ef4444; -fx-font-weight: bold;"/>
+            <Label fx:id="occupeesLabel" text="0"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #ef4444;"/>
+        </VBox>
+        <VBox prefWidth="180" alignment="CENTER"
+              style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);">
+            <Label text="PRIX MOYEN" style="-fx-font-size: 9px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
+            <Label fx:id="prixMoyenLabel" text="—"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #8b5cf6;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <!-- FILTRES -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+          style="-fx-padding: 10 25; -fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 1 0;">
+        <TextField fx:id="searchField" promptText="Rechercher une chambre..."
+                   prefHeight="38" prefWidth="220"
+                   style="-fx-background-radius: 8; -fx-background-color: #f1f5f9; -fx-border-color: transparent; -fx-padding: 0 12; -fx-font-size: 12px;"/>
+        <ComboBox fx:id="hotelFilter" prefHeight="38" prefWidth="200"
+                  promptText="Tous les hotels"
+                  style="-fx-background-radius: 8;"/>
+        <ComboBox fx:id="typeFilter" prefHeight="38" prefWidth="160"
+                  promptText="Tous les types"
+                  style="-fx-background-radius: 8;"/>
+        <ComboBox fx:id="statutFilter" prefHeight="38" prefWidth="160"
+                  promptText="Tous les statuts"
+                  style="-fx-background-radius: 8;"/>
+        <Button text="Filtrer" onAction="#handleRechercher"
+                style="-fx-background-color: #0DA2E7; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 9 18;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="statsLabel" text="" style="-fx-text-fill: #64748b; -fx-font-size: 11px;"/>
+    </HBox>
+
+    <!-- CARDS SCROLL -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-border-width: 0; -fx-background: #f0f4f8;">
+        <FlowPane fx:id="chambresContainer" hgap="15" vgap="15"
+                  style="-fx-padding: 20; -fx-background-color: #f0f4f8;"
+                  prefWrapLength="900"/>
+    </ScrollPane>
+
+    <!-- PAGINATION -->
+    <HBox alignment="CENTER" spacing="15"
+          style="-fx-padding: 12 25; -fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
+        <Button text="Precedent" onAction="#handlePreviousPage"
+                style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-padding: 8 16;"/>
+        <Label text="Page" style="-fx-text-fill: #64748b;"/>
+        <Label fx:id="pageLabel" text="1"
+               style="-fx-text-fill: #1e293b; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <Button text="Suivant" onAction="#handleNextPage"
+                style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-padding: 8 16;"/>
+    </HBox>
+
+</VBox>

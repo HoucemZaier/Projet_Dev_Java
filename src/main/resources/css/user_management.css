@@ -1,0 +1,99 @@
+.root {
+    -fx-font-family: "Segoe UI";
+}
+
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #1e215d, #2a2f8f);
+}
+
+.logo-text {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #cfd4ff;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.menu-button-active {
+    -fx-background-color: #6c63ff;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+
+.dashboard-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.welcome-text {
+    -fx-text-fill: #888;
+}
+
+.search-field {
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+}
+
+.info-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08),10,0,0,3);
+}
+
+.card-title {
+    -fx-text-fill: #888;
+}
+
+.card-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.actions-bar {
+    -fx-background-color: white;
+    -fx-padding: 10;
+    -fx-background-radius: 15;
+}
+
+.new-entry-button {
+    -fx-background-color: #6c63ff;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+}
+
+.table-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 10;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.badge-client {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #1e88e5;
+    -fx-padding: 5 10;
+    -fx-background-radius: 12;
+}
+
+.badge-guide {
+    -fx-background-color: #ede7f6;
+    -fx-text-fill: #6a1b9a;
+    -fx-padding: 5 10;
+    -fx-background-radius: 12;
+}
+
+.badge-admin {
+    -fx-background-color: #ffebee;
+    -fx-text-fill: #c62828;
+    -fx-padding: 5 10;
+    -fx-background-radius: 12;
+}

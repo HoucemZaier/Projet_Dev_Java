@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane fitToWidth="true" fitToHeight="true"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.PlaNova.controllers.detailsChambreController"
+            style="-fx-background-color: transparent; -fx-border-width: 0;">
+
+    <VBox spacing="25" style="-fx-background-color: #f8fafd; -fx-padding: 30;">
+
+        <!-- En-tête avec titre et bouton fermer -->
+        <BorderPane>
+            <left>
+                <VBox spacing="8">
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Rectangle arcHeight="8.0" arcWidth="8.0"
+                                   fill="linear-gradient(from 0% 0% to 100% 100%, #3A4C5D, #2A3B4C)"
+                                   height="32.0" width="6.0" />
+                        <Label fx:id="chambreNumberLabel" text="Chambre N° 123">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </HBox>
+                    <Label fx:id="chambreTypeLabel" text="Type de chambre"
+                           style="-fx-text-fill: #64748b;">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                </VBox>
+            </left>
+            <right>
+                <Button text="✕" onAction="#handleClose"
+                        style="-fx-background-color: #f1f5f9; -fx-text-fill: #64748b; -fx-background-radius: 20; -fx-font-size: 16; -fx-cursor: hand; -fx-padding: 8 15;" />
+            </right>
+        </BorderPane>
+
+        <!-- Statut -->
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-background-color: white; -fx-padding: 15 20; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                <Circle fx:id="statutIndicator" radius="8" fill="#10b981" />
+                <Label fx:id="statutLabel" text="Disponible" style="-fx-font-weight: 600;">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </HBox>
+        </HBox>
+
+        <!-- Informations Hôtel -->
+        <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+            <Label text="INFORMATIONS HÔTEL" style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D;">
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Label>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="🏨" style="-fx-font-size: 18;" />
+                <Label fx:id="hotelNameLabel" text="Nom de l'hôtel"
+                       style="-fx-font-weight: 600; -fx-text-fill: #1e293b;" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="ID Hôtel:" style="-fx-text-fill: #64748b;" />
+                <Label fx:id="hotelIdLabel" text="1" style="-fx-font-weight: 500;" />
+            </HBox>
+        </VBox>
+
+        <!-- Informations Chambre -->
+        <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+            <Label text="DÉTAILS DE LA CHAMBRE" style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D;">
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Label>
+
+            <GridPane hgap="20" vgap="12">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="40" />
+                    <ColumnConstraints percentWidth="60" />
+                </columnConstraints>
+
+                <Label text="Type :" style="-fx-text-fill: #64748b;" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <Label fx:id="typeChambreLabel" text="Type de chambre"
+                       style="-fx-font-weight: 600;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                <Label text="Capacité :" style="-fx-text-fill: #64748b;" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <Label fx:id="capaciteLabel" text="2 personnes"
+                       style="-fx-font-weight: 600;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                <Label text="Prix/nuit :" style="-fx-text-fill: #64748b;" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Label fx:id="prixLabel" text="150.00 €"
+                       style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Label text="Statut :" style="-fx-text-fill: #64748b;" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <Label fx:id="statutDetailLabel" text="Disponible"
+                       style="-fx-font-weight: 600;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            </GridPane>
+        </VBox>
+
+        <!-- Équipements -->
+        <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+            <Label text="ÉQUIPEMENTS" style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D;">
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Label>
+
+            <!-- Utiliser un FlowPane pour afficher les équipements sous forme de tags -->
+            <FlowPane fx:id="equipementContainer" hgap="10" vgap="10">
+                <!-- Les équipements seront ajoutés dynamiquement ici -->
+            </FlowPane>
+        </VBox>
+
+        <!-- Description -->
+        <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+            <Label text="DESCRIPTION" style="-fx-font-weight: 700; -fx-text-fill: #3A4C5D;">
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Label>
+
+            <Label fx:id="descriptionLabel" text="Description de la chambre..."
+                   wrapText="true" style="-fx-line-spacing: 5; -fx-text-fill: #334155;" />
+        </VBox>
+
+        <!-- Pied de page avec l'ID Chambre -->
+        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+            <Label text="ID Chambre:" style="-fx-text-fill: #64748b;" />
+            <Label fx:id="idChambreLabel" text="1" style="-fx-font-weight: 600; -fx-text-fill: #3A4C5D;" />
+        </HBox>
+    </VBox>
+</ScrollPane>

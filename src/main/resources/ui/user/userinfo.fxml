@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+
+<VBox prefWidth="500" prefHeight="700" spacing="20" styleClass="user-info-root"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.PlaNova.controllers.UserInfoController"
+      stylesheets="@../../css/login.css"
+      style="-fx-padding: 30; -fx-background-color: #f8f9fa;">
+
+    <padding>
+        <Insets top="0" left="0" right="0" bottom="0"/>
+    </padding>
+
+    <!-- Header with Avatar -->
+    <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+        <ImageView fx:id="userImageView" fitWidth="90" fitHeight="90" preserveRatio="true" styleClass="user-avatar-large" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);"/>
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <Label fx:id="nameLabel" styleClass="user-name-large" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label fx:id="roleLabel" styleClass="user-role-large" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+            <Label fx:id="emailLabel" styleClass="user-email" style="-fx-font-size: 12px; -fx-text-fill: #95a5a6;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Separator -->
+    <Separator style="-fx-padding: 0;"/>
+
+    <!-- User Details with Cards -->
+    <VBox spacing="12" style="-fx-padding: 0;">
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 3, 0, 0, 1);">
+            <Label text="📍" style="-fx-font-size: 16px;"/>
+            <VBox spacing="3">
+                <Label text="Pays" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                <Label fx:id="countryLabel" styleClass="info-value" style="-fx-font-size: 13px; -fx-text-fill: #2c3e50;"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 3, 0, 0, 1);">
+            <Label text="🆔" style="-fx-font-size: 16px;"/>
+            <VBox spacing="3">
+                <Label text="CIN" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                <Label fx:id="cinLabel" styleClass="info-value" style="-fx-font-size: 13px; -fx-text-fill: #2c3e50;"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 3, 0, 0, 1);">
+            <Label text="👔" style="-fx-font-size: 16px;"/>
+            <VBox spacing="3">
+                <Label text="Matricule" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6; -fx-font-weight: bold;"/>
+                <Label fx:id="matriculeLabel" styleClass="info-value" style="-fx-font-size: 13px; -fx-text-fill: #2c3e50;"/>
+            </VBox>
+        </HBox>
+
+    </VBox>
+
+    <!-- Close Button -->
+    <HBox alignment="CENTER" VBox.vgrow="ALWAYS" style="-fx-padding: 20 0 0 0;">
+        <Button text="Fermer" styleClass="close-btn" onAction="#closeWindow" style="-fx-padding: 10 30 10 30; -fx-font-size: 13px; -fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;"/>
+    </HBox>
+
+</VBox>

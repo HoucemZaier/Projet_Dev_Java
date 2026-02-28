@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.PlaNova.controllers.EmailConfigDialogController"
+            prefHeight="400.0" prefWidth="500.0"
+            style="-fx-background-color: #667eea;">
+
+    <children>
+        <!-- Conteneur principal -->
+        <VBox spacing="25"
+              AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20"
+              AnchorPane.rightAnchor="20" AnchorPane.bottomAnchor="20"
+              style="-fx-background-color: white;
+                     -fx-background-radius: 15;
+                     -fx-padding: 30;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0.3, 0, 5);">
+
+            <!-- En-tête -->
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="🔧"
+                       style="-fx-font-size: 32; -fx-text-fill: #667eea;" />
+                <Label text="Configuration Email"
+                       style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #2d3748;" />
+                <Label text="Configurez les paramètres pour l'envoi d'emails de confirmation"
+                       style="-fx-font-size: 13; -fx-text-fill: #718096; -fx-wrap-text: true;"
+                       textAlignment="CENTER"/>
+            </VBox>
+
+            <!-- Instructions -->
+            <VBox spacing="8" style="-fx-background-color: #f0f9ff; -fx-padding: 15; -fx-background-radius: 8;">
+                <Label text="📧 Instructions importantes:"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #0369a1;" />
+                <Label text="1. Utilisez un compte Gmail"
+                       style="-fx-font-size: 12; -fx-text-fill: #475569;" />
+                <Label text="2. Activez l'authentification en deux étapes"
+                       style="-fx-font-size: 12; -fx-text-fill: #475569;" />
+                <Label text="3. Générez un 'mot de passe d'application' dans les paramètres Google"
+                       style="-fx-font-size: 12; -fx-text-fill: #475569;" />
+                <Label text="4. Utilisez ce mot de passe d'application (pas votre mot de passe normal)"
+                       style="-fx-font-size: 12; -fx-text-fill: #475569;" />
+            </VBox>
+
+            <!-- Champ Email -->
+            <VBox spacing="8">
+                <Label text="Email de l'application"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3748;" />
+                <TextField fx:id="txtEmail"
+                           promptText="planova.transport@gmail.com"
+                           style="-fx-background-radius: 8;
+                                  -fx-border-color: #cbd5e0;
+                                  -fx-border-width: 1.5;
+                                  -fx-padding: 12;
+                                  -fx-font-size: 14;" />
+            </VBox>
+
+            <!-- Champ Mot de passe -->
+            <VBox spacing="8">
+                <Label text="Mot de passe d'application Gmail"
+                       style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3748;" />
+                <PasswordField fx:id="txtPassword"
+                               promptText="Entrez le mot de passe d'application"
+                               style="-fx-background-radius: 8;
+                                     -fx-border-color: #cbd5e0;
+                                     -fx-border-width: 1.5;
+                                     -fx-padding: 12;
+                                     -fx-font-size: 14;" />
+                <Label fx:id="lblPasswordHint"
+                       text="💡 Ce n'est PAS votre mot de passe Gmail habituel"
+                       style="-fx-text-fill: #6366f1; -fx-font-size: 11;" />
+            </VBox>
+
+            <!-- Messages -->
+            <Label fx:id="lblMessage"
+                   text=""
+                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-wrap-text: true;" />
+
+            <!-- Boutons -->
+            <HBox spacing="15" alignment="CENTER">
+                <Button fx:id="btnTester"
+                        text="Tester la connexion"
+                        prefWidth="140"
+                        style="-fx-background-color: #10b981;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 8;
+                               -fx-padding: 12;
+                               -fx-cursor: hand;" />
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <Button fx:id="btnAnnuler"
+                        text="Annuler"
+                        prefWidth="100"
+                        style="-fx-background-color: #e2e8f0;
+                               -fx-text-fill: #4a5568;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 8;
+                               -fx-padding: 12;
+                               -fx-cursor: hand;" />
+
+                <Button fx:id="btnSauvegarder"
+                        text="Sauvegarder"
+                        prefWidth="120"
+                        style="-fx-background-color: #3b82f6;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 8;
+                               -fx-padding: 12;
+                               -fx-cursor: hand;" />
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

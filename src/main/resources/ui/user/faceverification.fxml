@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.PlaNova.controllers.FaceVerificationController"
+           stylesheets="@../../css/faceVerification.css"
+           style="-fx-background-color: rgba(0,0,0,0.8);">
+    <VBox alignment="CENTER" spacing="25.0" styleClass="face-verification-container">
+        <!-- Header -->
+        <VBox alignment="CENTER" spacing="15.0">
+            <!-- Logo -->
+            <ImageView fitWidth="60" fitHeight="60">
+                <image>
+                    <Image url="@../../images/logo.png"/>
+                </image>
+            </ImageView>
+
+            <Text fill="white" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI', 'SF Pro Display';" text="Vérification Face ID" />
+            <Text fill="#e8eaf6" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 16px; -fx-text-alignment: center; -fx-font-family: 'Segoe UI', 'SF Pro Text';" text="Positionnez votre visage devant la caméra" textAlignment="CENTER" wrappingWidth="350.0" />
+        </VBox>
+
+        <!-- iPhone-style Face ID Animation -->
+        <VBox spacing="20" alignment="CENTER" styleClass="face-verification-animation">
+            <StackPane prefWidth="200" prefHeight="200">
+                <!-- Outer scanning ring -->
+                <Circle fx:id="outerRing" radius="90" fill="TRANSPARENT"
+                        stroke="rgba(255,255,255,0.2)" strokeWidth="2"
+                        opacity="0.6" styleClass="scan-ring-outer"/>
+
+                <!-- Middle scanning ring -->
+                <Circle fx:id="middleRing" radius="70" fill="TRANSPARENT"
+                        stroke="rgba(255,255,255,0.4)" strokeWidth="3"
+                        opacity="0.7" styleClass="scan-ring-middle"/>
+
+                <!-- Inner scanning ring -->
+                <Circle fx:id="innerRing" radius="50" fill="TRANSPARENT"
+                        stroke="rgba(255,255,255,0.6)" strokeWidth="4"
+                        opacity="0.8" styleClass="scan-ring-inner"/>
+
+                <!-- Core Face ID circle with gradient -->
+                <Circle fx:id="scanCircle" radius="35" styleClass="scan-circle">
+                    <fill>
+                        <RadialGradient radius="1.0" centerX="0.5" centerY="0.5">
+                            <stops>
+                                <Stop color="rgba(74,144,226,0.8)" offset="0"/>
+                                <Stop color="rgba(103,126,234,0.6)" offset="0.7"/>
+                                <Stop color="rgba(118,75,162,0.4)" offset="1"/>
+                            </stops>
+                        </RadialGradient>
+                    </fill>
+                    <stroke>
+                        <LinearGradient startX="0" startY="0" endX="1" endY="1">
+                            <stops>
+                                <Stop color="#4A90E2" offset="0"/>
+                                <Stop color="#667eea" offset="1"/>
+                            </stops>
+                        </LinearGradient>
+                    </stroke>
+                    <strokeWidth>3</strokeWidth>
+                </Circle>
+
+                <!-- Scanning beam effect -->
+                <Circle fx:id="scanBeam" radius="35" fill="TRANSPARENT"
+                        stroke="rgba(74,144,226,0.8)" strokeWidth="2"
+                        strokeDashArray="5,5" opacity="0" styleClass="scan-beam"/>
+
+                <!-- Face ID icon -->
+                <StackPane>
+                    <!-- Modern Face ID grid pattern -->
+                    <VBox spacing="3" alignment="CENTER" opacity="0.9">
+                        <HBox spacing="3" alignment="CENTER">
+                            <Circle radius="2" fill="rgba(255,255,255,0.8)"/>
+                            <Circle radius="2" fill="rgba(255,255,255,0.6)"/>
+                            <Circle radius="2" fill="rgba(255,255,255,0.8)"/>
+                        </HBox>
+                        <HBox spacing="3" alignment="CENTER">
+                            <Circle radius="2" fill="rgba(255,255,255,0.6)"/>
+                            <Circle radius="3" fill="rgba(255,255,255,1.0)"/>
+                            <Circle radius="2" fill="rgba(255,255,255,0.6)"/>
+                        </HBox>
+                        <HBox spacing="3" alignment="CENTER">
+                            <Circle radius="2" fill="rgba(255,255,255,0.8)"/>
+                            <Circle radius="2" fill="rgba(255,255,255,0.6)"/>
+                            <Circle radius="2" fill="rgba(255,255,255,0.8)"/>
+                        </HBox>
+                    </VBox>
+                </StackPane>
+
+                <!-- Success/Error overlay -->
+                <Circle fx:id="statusOverlay" radius="35" fill="TRANSPARENT"
+                        opacity="0" styleClass="status-overlay"/>
+
+                <!-- Pulse effect circles -->
+                <Circle fx:id="pulseCircle1" radius="35" fill="TRANSPARENT"
+                        stroke="rgba(74,144,226,0.3)" strokeWidth="2"
+                        opacity="0" styleClass="pulse-circle"/>
+                <Circle fx:id="pulseCircle2" radius="35" fill="TRANSPARENT"
+                        stroke="rgba(74,144,226,0.2)" strokeWidth="2"
+                        opacity="0" styleClass="pulse-circle"/>
+            </StackPane>
+
+            <!-- Status and Progress -->
+            <VBox alignment="CENTER" spacing="15.0">
+                <HBox alignment="CENTER" spacing="15.0">
+                    <ProgressIndicator fx:id="verificationProgress" maxHeight="30.0" maxWidth="30.0" visible="false" styleClass="progress"/>
+                    <Label fx:id="statusLabel" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI', 'SF Pro Display';" text="Prêt pour la vérification" />
+                </HBox>
+                <Text fx:id="instructionLabel" style="-fx-text-fill: #e8eaf6; -fx-font-size: 14px; -fx-text-alignment: center; -fx-font-family: 'Segoe UI', 'SF Pro Text';" text="Regardez directement la caméra" textAlignment="CENTER" wrappingWidth="300.0" />
+            </VBox>
+        </VBox>
+
+        <!-- Action Buttons -->
+        <HBox alignment="CENTER" spacing="20.0">
+            <Button fx:id="startVerificationBtn" mnemonicParsing="false" onAction="#handleStartVerification"
+                    styleClass="face-id-btn" text="🆔 Vérifier Face ID">
+                <font>
+                    <Font name="System Bold" size="14"/>
+                </font>
+            </Button>
+
+            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#handleCancel"
+                    styleClass="secondary-btn" text="❌ Annuler">
+                <font>
+                    <Font name="System" size="14"/>
+                </font>
+            </Button>
+        </HBox>
+
+        <!-- Security Note -->
+        <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 15; -fx-padding: 15;">
+            <HBox alignment="CENTER" spacing="8.0">
+                <Text fill="#81c784" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="🔒" />
+                <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Segoe UI';" text="Connexion Sécurisée" />
+            </HBox>
+            <Text style="-fx-font-size: 12px; -fx-text-fill: #e8eaf6; -fx-text-alignment: center; -fx-font-family: 'Segoe UI';" text="Votre visage est traité localement et en toute sécurité" textAlignment="CENTER" wrappingWidth="350.0" />
+        </VBox>
+
+        <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+        </padding>
+    </VBox>
+</StackPane>

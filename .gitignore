@@ -36,3 +36,13 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Environment Variables
+.env
+
+# Project specific
+*.sql
+*.log
+compile_errors*.txt
+email_config.properties
+integrate/

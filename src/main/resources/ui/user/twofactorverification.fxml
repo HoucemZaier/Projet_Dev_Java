@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.PlaNova.controllers.TwoFactorVerificationController"
+      prefWidth="500" prefHeight="600"
+      styleClass="verification-container"
+      spacing="20"
+      alignment="CENTER"
+      stylesheets="@../../css/twoFactorVerification.css">
+
+    <!-- Header -->
+    <VBox spacing="10" alignment="CENTER">
+        <ImageView fitWidth="60" fitHeight="60">
+            <image>
+                <Image url="@../../images/logo.png"/>
+            </image>
+        </ImageView>
+
+        <Text text="Vérification 2FA" fill="#2C3E50" styleClass="title-text">
+            <font>
+                <Font name="System Bold" size="24"/>
+            </font>
+        </Text>
+
+        <Text text="Sélectionnez votre méthode d'authentification"
+              fill="#7F8C8D" styleClass="subtitle-text">
+            <font>
+                <Font name="System" size="14"/>
+            </font>
+        </Text>
+    </VBox>
+
+    <!-- Authentication Methods -->
+    <VBox fx:id="methodSelectionSection" spacing="15" maxWidth="400">
+
+        <!-- Face ID Option -->
+        <Button fx:id="faceIdBtn" onAction="#useFaceId"
+                styleClass="auth-method-btn" maxWidth="Infinity">
+            <graphic>
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Circle radius="20" fill="#3498DB" styleClass="method-icon"/>
+
+                    <VBox spacing="2">
+                        <Text text="Reconnaissance Faciale" fill="WHITE" styleClass="method-title">
+                            <font>
+                                <Font name="System Bold" size="14"/>
+                            </font>
+                        </Text>
+                        <Text text="Authentification rapide avec votre visage"
+                              fill="rgba(255,255,255,0.8)" styleClass="method-description">
+                            <font>
+                                <Font size="11"/>
+                            </font>
+                        </Text>
+                    </VBox>
+                </HBox>
+            </graphic>
+        </Button>
+
+        <!-- TOTP Option -->
+        <Button fx:id="totpBtn" onAction="#useTotp"
+                styleClass="auth-method-btn" maxWidth="Infinity">
+            <graphic>
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Circle radius="20" fill="#E74C3C" styleClass="method-icon"/>
+
+                    <VBox spacing="2">
+                        <Text text="Microsoft Authenticator" fill="WHITE" styleClass="method-title">
+                            <font>
+                                <Font name="System Bold" size="14"/>
+                            </font>
+                        </Text>
+                        <Text text="Code de sécurité de votre application"
+                              fill="rgba(255,255,255,0.8)" styleClass="method-description">
+                            <font>
+                                <Font size="11"/>
+                            </font>
+                        </Text>
+                    </VBox>
+                </HBox>
+            </graphic>
+        </Button>
+
+    </VBox>
+
+    <!-- TOTP Input Section (Initially Hidden) -->
+    <VBox fx:id="totpInputSection" spacing="15" alignment="CENTER"
+          styleClass="input-section" visible="false" managed="false">
+
+        <Text text="Entrez le code de Microsoft Authenticator"
+              fill="#2C3E50" styleClass="input-title">
+            <font>
+                <Font name="System Bold" size="16"/>
+            </font>
+        </Text>
+
+        <VBox spacing="10" alignment="CENTER">
+            <TextField fx:id="totpCodeField"
+                       promptText="000000"
+                       styleClass="totp-input"
+                       maxWidth="150"/>
+
+            <Text fx:id="totpMessage" styleClass="message-text">
+                <font>
+                    <Font size="12"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <HBox spacing="15" alignment="CENTER">
+            <Button fx:id="verifyTotpBtn" text="Vérifier"
+                    onAction="#verifyTotp"
+                    styleClass="verify-btn">
+                <font>
+                    <Font name="System Bold" size="12"/>
+                </font>
+            </Button>
+
+            <Button fx:id="backBtn" text="Retour"
+                    onAction="#showMethodSelection"
+                    styleClass="back-btn">
+                <font>
+                    <Font name="System" size="12"/>
+                </font>
+            </Button>
+        </HBox>
+
+    </VBox>
+
+    <!-- Status Section -->
+    <VBox spacing="10" alignment="CENTER">
+        <Text fx:id="statusText" fill="#7F8C8D" styleClass="status-text">
+            <font>
+                <Font size="12"/>
+            </font>
+        </Text>
+
+        <ProgressIndicator fx:id="progressIndicator"
+                           visible="false"
+                           styleClass="progress"
+                           maxWidth="30" maxHeight="30"/>
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button fx:id="cancelBtn" text="Annuler"
+                onAction="#cancelVerification"
+                styleClass="cancel-btn">
+            <font>
+                <Font name="System Bold" size="12"/>
+            </font>
+        </Button>
+    </HBox>
+
+</VBox>
