@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 26, 2026 at 10:50 AM
+-- Generation Time: Feb 28, 2026 at 07:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -106,14 +106,16 @@ CREATE TABLE `billet` (
 INSERT INTO `billet` (`id_billet`, `db`, `idv`, `num_place`, `id_destination`, `id_transport_pub`, `id_transport_priv`) VALUES
 (1, 'Paris CDG', 'Chania', 'A12', 1, 1, 1),
 (2, 'Lyon', 'Venise', 'B7', 2, 3, 2),
-(3, 'Marseille', 'Gizeh', 'C3', 3, 4, 3),
 (4, 'Paris CDG', 'Torshavn', 'D15', 4, 6, 4),
 (5, 'Nice', 'Heraklion', 'A2', 5, 7, 5),
 (6, 'Bordeaux', 'Rethymno', 'B9', 6, 8, 6),
-(7, 'Paris CDG', 'Phuket', 'C22', 7, 9, 7),
 (8, 'Geneve', 'Chamonix', 'A5', 8, 10, 8),
 (9, 'Toulouse', 'Chania', 'B3', 1, 2, 1),
-(10, 'Bruxelles', 'Venise', 'D8', 2, 3, 2);
+(10, 'Bruxelles', 'Venise', 'D8', 2, 3, 2),
+(12, 'User Location', 'Pyramides de Gizeh', 'S62', 3, NULL, NULL),
+(13, 'User Location', 'Venise Canal Grande', 'S52', 2, NULL, NULL),
+(14, 'User Location', 'Chania Old Town', 'S38', 1, NULL, 1),
+(15, 'User Location', 'Rethymno Vieille Ville', 'S6', 6, 8, NULL);
 
 -- --------------------------------------------------------
 
@@ -137,22 +139,21 @@ CREATE TABLE `chambre` (
 INSERT INTO `chambre` (`id_chambre`, `type_chambre`, `capacite`, `prix_chambre`, `statut_chambre`, `id_hotel`) VALUES
 (1, 'Simple', 1, 80.00, 'disponible', 1),
 (2, 'Double', 2, 130.00, 'disponible', 1),
-(3, 'Suite', 2, 250.00, 'reservee', 1),
+(3, 'Suite', 2, 255.00, 'reservee', 1),
 (4, 'Simple', 1, 150.00, 'disponible', 2),
 (5, 'Double', 2, 220.00, 'disponible', 2),
 (6, 'Suite', 3, 480.00, 'disponible', 2),
 (7, 'Double', 2, 160.00, 'disponible', 3),
 (8, 'Suite', 4, 320.00, 'reservee', 3),
-(9, 'Simple', 1, 70.00, 'disponible', 4),
 (10, 'Double', 2, 110.00, 'disponible', 4),
 (11, 'Double', 2, 140.00, 'disponible', 5),
 (12, 'Suite', 2, 290.00, 'disponible', 5),
-(13, 'Simple', 1, 65.00, 'disponible', 6),
 (14, 'Double', 2, 105.00, 'reservee', 6),
 (15, 'Suite', 3, 350.00, 'disponible', 7),
 (16, 'Double', 2, 180.00, 'disponible', 7),
 (17, 'Simple', 1, 55.00, 'disponible', 8),
-(18, 'Double', 2, 90.00, 'disponible', 8);
+(18, 'Double', 2, 90.00, 'disponible', 8),
+(19, 'Deluxe', 10, 180.00, 'Disponible', 4);
 
 -- --------------------------------------------------------
 
@@ -207,7 +208,8 @@ INSERT INTO `destination` (`id_destination`, `nom_destination`, `pays`, `image`)
 (6, 'Rethymno Vieille Ville', 'Grece', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/pexels-alexravvas-20727529.jpg'),
 (7, 'Plage Tropicale Phuket', 'Thailande', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/pexels-suzukii-xingfu-67659-872831.jpg'),
 (8, 'Camping Mont Blanc', 'France', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/pexels-cliford-mervil-988071-2398220.jpg'),
-(9, 'ariana', 'tunisia', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/pexels-leeloothefirst-5227440.jpg');
+(9, 'ariana', 'tunisia', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/pexels-leeloothefirst-5227440.jpg'),
+(11, 'mednine', 'tunisia', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/pexels-cliford-mervil-988071-2398220.jpg');
 
 -- --------------------------------------------------------
 
@@ -341,7 +343,9 @@ INSERT INTO `hotel` (`id_hotel`, `nom_hotel`, `adresse`, `ville`, `nombre_etoile
 (5, 'Creta Sun Resort', 'Platanias Beach Road', 'Heraklion', 4, 'Resort face a la mer Mediterranee.', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/hotels/h5.jpg', 5),
 (6, 'Hotel Fortezza', 'Plateia Rimondi 5', 'Rethymno', 3, 'Boutique hotel dans la vieille ville ottomane.', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/hotels/h6.jpg', 6),
 (7, 'Tropical Palms Hotel', 'Beach Road 101', 'Phuket', 5, 'Resort 5 etoiles en bord de mer tropicale.', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/hotels/h7.jpg', 7),
-(8, 'Chalet Alpin', 'Route des Cimes 3', 'Chamonix', 3, 'Chalet authentique pour amateurs de randonnee.', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/hotels/h8.jpg', 8);
+(8, 'Chalet Alpin', 'Route des Cimes 3', 'Chamonix', 3, 'Chalet authentique pour amateurs de randonnee.', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/hotels/h8.jpg', 8),
+(10, 'sfdgdsfgdsfg', 'sdfgdsgfsdfg', 'sdfgdsfgd', 2, 'sdfgsdfgsdfgsdfgsdfgdsgdsfg', '/home/wacel/intgration_1/intgration_1/GIT_Transport/src/main/resources/images/bus3.png', 6),
+(11, 'sdfgsdfgdsf', 'sdfgdsfgdsfgsdfgdsf', 'gsdgfsdfgds', 2, 'sdfgsdfgsfdgfdsgfdsgdsfgfdsg', '/home/wacel/intgration_1/intgration_1/GIT_Transport/src/main/resources/images/bus3.png', 6);
 
 -- --------------------------------------------------------
 
@@ -389,35 +393,29 @@ CREATE TABLE `reservation` (
   `date_debut` date NOT NULL,
   `date_fin` date NOT NULL,
   `prix_total` decimal(10,2) NOT NULL,
-  `status` varchar(20) DEFAULT 'en_attente'
+  `status` varchar(20) DEFAULT 'en_attente',
+  `id_activite` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `reservation`
 --
 
-INSERT INTO `reservation` (`id_reservation`, `id_utilisateur`, `id_destination`, `id_hotel`, `id_chambre`, `transport_type`, `id_transport`, `date_debut`, `date_fin`, `prix_total`, `status`) VALUES
-(1, 1, 1, 1, 2, 'public', 1, '2026-04-10', '2026-04-15', 1200.00, 'confirmee'),
-(2, 2, 2, 2, 5, 'public', 3, '2026-05-01', '2026-05-07', 1650.00, 'confirmee'),
-(3, 3, 3, 3, 7, 'prive', 3, '2026-06-15', '2026-06-22', 1890.00, 'en_attente'),
-(4, 4, 4, 4, 9, 'public', 6, '2026-07-01', '2026-07-10', 1820.00, 'confirmee'),
-(5, 5, 5, 5, 11, 'public', 7, '2026-04-20', '2026-04-26', 980.00, 'confirmee'),
-(6, 6, 6, 6, 13, 'prive', 6, '2026-05-15', '2026-05-20', 870.00, 'annulee'),
-(7, 7, 7, 7, 15, 'prive', 7, '2026-08-01', '2026-08-10', 2780.00, 'confirmee'),
-(8, 8, 8, 8, 17, 'public', 10, '2026-07-15', '2026-07-20', 730.00, 'en_attente'),
-(9, 9, 1, 1, 1, 'public', 2, '2026-04-10', '2026-04-15', 950.00, 'confirmee'),
-(10, 10, 2, 2, 6, 'prive', 2, '2026-05-01', '2026-05-07', 2100.00, 'en_attente'),
-(15, 1, 3, 3, 3, 'public', 5, '2026-02-19', '2026-02-21', 405.00, 'en_attente'),
-(16, 1, 3, 3, 2, 'prive', 3, '2026-02-17', '2026-02-19', 550.00, 'en_attente'),
-(17, 1, 5, 5, 3, 'prive', 5, '2026-02-19', '2026-03-14', 4680.00, 'en_attente'),
-(18, 1, 4, 4, 3, 'prive', 4, '2026-02-19', '2026-02-21', 400.00, 'en_attente'),
-(19, 1, 4, 4, 3, 'public', 6, '2026-02-26', '2026-03-01', 485.00, 'en_attente'),
-(20, 1, 4, 4, 3, 'public', 6, '2026-02-18', '2026-02-23', 785.00, 'en_attente'),
-(21, 1, 4, 4, 2, 'prive', 4, '2026-02-19', '2026-02-27', 1300.00, 'en_attente'),
-(22, 1, 3, 3, 2, 'public', 4, '2026-02-18', '2026-02-24', 1380.00, 'en_attente'),
-(23, 1, 2, 2, NULL, 'public', 3, '2026-02-10', '2026-02-17', 1762.00, 'en_attente'),
-(24, 1, 4, 4, 2, NULL, NULL, '2026-02-12', '2026-02-27', 2250.00, 'en_attente'),
-(25, 1, 5, 5, 3, NULL, NULL, '2026-02-20', '2026-02-27', 1400.00, 'en_attente');
+INSERT INTO `reservation` (`id_reservation`, `id_utilisateur`, `id_destination`, `id_hotel`, `id_chambre`, `transport_type`, `id_transport`, `date_debut`, `date_fin`, `prix_total`, `status`, `id_activite`) VALUES
+(1, 1, 1, 1, 2, 'public', 1, '2026-04-10', '2026-04-15', 1200.00, 'confirmee', 1),
+(2, 2, 2, 2, 5, 'public', 3, '2026-05-01', '2026-05-07', 1650.00, 'confirmee', 2),
+(3, 3, 3, 3, 7, 'prive', 3, '2026-06-15', '2026-06-22', 1890.00, 'en_attente', 3),
+(50, 1, 3, 3, 2, 'prive', 3, '2026-02-12', '2026-02-28', 3350.00, 'Payé', NULL),
+(51, 1, 4, 4, 2, 'prive', 4, '2026-02-13', '2026-02-28', 2350.00, 'Payé', NULL),
+(52, 1, 3, 3, NULL, 'prive', 3, '2026-02-19', '2026-02-28', 1950.00, 'Payé', NULL),
+(53, 1, 3, 3, 3, 'prive', 3, '2026-02-13', '2026-02-26', 2750.00, 'Payé', NULL),
+(54, 1, 3, 3, 3, 'prive', 3, '2026-02-19', '2026-02-26', 1550.00, 'Payé', NULL),
+(55, 1, 5, 5, 2, 'prive', 5, '2026-02-03', '2026-02-06', 680.00, 'Payé', NULL),
+(56, 1, 5, 5, 2, 'prive', 5, '2026-02-17', '2026-02-24', 1480.00, 'Payé', NULL),
+(57, 1, 3, 3, 3, 'prive', 3, '2026-02-16', '2026-02-20', 950.00, 'Payé', NULL),
+(58, 1, 2, 2, 3, 'public', 3, '2026-02-11', '2026-02-21', 2512.00, 'Payé', NULL),
+(59, 1, 1, 1, 2, 'prive', 1, '2026-02-17', '2026-02-20', 730.00, 'Payé', NULL),
+(60, 1, 6, 11, 3, 'public', 8, '2026-02-18', '2026-02-21', 306.00, 'Payé', NULL);
 
 -- --------------------------------------------------------
 
@@ -440,14 +438,15 @@ CREATE TABLE `transport_prive` (
 --
 
 INSERT INTO `transport_prive` (`id_transport_priv`, `marque`, `etat`, `complement`, `prix_Lac`, `image`, `id_destination`) VALUES
-(1, 'Mercedes Sprinter', 'Excellent', 'Van 8 places climatise, chauffeur prive', 120.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp1.jpg', 1),
+(1, 'Mercedes Sprinter', 'Excellenttttt', 'Van 8 places climatise, chauffeur prive', 130.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp1.jpg', 1),
 (2, 'BMW 5 Series', 'Bon', 'Berline confort, chauffeur en costume', 90.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp2.jpg', 2),
 (3, 'Toyota Land Cruiser', 'Excellent', '4x4 ideal pour le desert et les sites', 150.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp3.jpg', 3),
 (4, 'Volvo XC90', 'Bon', 'SUV premium pour routes de montagne', 100.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp4.jpg', 4),
 (5, 'Renault Trafic', 'Correct', 'Minibus 9 places pour groupes', 80.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp5.jpg', 5),
 (6, 'Fiat 500', 'Excellent', 'Citadine parfaite pour les ruelles', 50.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp6.jpg', 6),
 (7, 'Rolls-Royce Ghost', 'Excellent', 'Limousine de luxe transfert aeroport', 300.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp7.jpg', 7),
-(8, 'Peugeot 3008', 'Bon', 'SUV confortable pour randonneurs', 75.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp8.jpg', 8);
+(8, 'Peugeot 3008', 'Bon', 'SUV confortable pour randonneurs', 75.00, 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tp8.jpg', 8),
+(9, 'fghjfghj', 'Disponible', NULL, 500.00, '/home/wacel/intgration_1/intgration_1/GIT_Transport/src/main/resources/images/vip 1.jpg', 4);
 
 -- --------------------------------------------------------
 
@@ -469,7 +468,7 @@ CREATE TABLE `transport_publique` (
 --
 
 INSERT INTO `transport_publique` (`id_transport_pub`, `type`, `tarif`, `horraire`, `image`, `id_destination`) VALUES
-(1, 'Bus', 8.00, '08:00-22:00 / toutes les 30min', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub1.jpg', 1),
+(1, 'Bus', 9.00, '08:00-23:00 / toutes les 30min', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub1.jpg', 1),
 (2, 'Bateau', 15.00, '09:00-18:00 / toutes les heures', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub2.jpg', 1),
 (3, 'Vaporetto', 12.00, '06:00-24:00 / toutes les 12min', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub3.jpg', 2),
 (4, 'Avion', 180.00, 'Departs quotidiens 07:00 et 14:00', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub4.jpg', 3),
@@ -477,8 +476,8 @@ INSERT INTO `transport_publique` (`id_transport_pub`, `type`, `tarif`, `horraire
 (6, 'Ferry', 35.00, 'Quotidien 10:00 / 3h de traversee', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub6.jpg', 4),
 (7, 'Bus', 3.50, '06:30-23:00 / toutes les 20min', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub7.jpg', 5),
 (8, 'Taxi partage', 6.00, 'Sur demande 24h/24', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub8.jpg', 6),
-(9, 'Navette', 20.00, 'Aeroport-hotel 4 fois par jour', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub9.jpg', 7),
-(10, 'Train', 25.00, 'TGV 3 allers/jour Paris-Chamonix', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub10.jpg', 8);
+(10, 'Train', 25.00, 'TGV 3 allers/jour Paris-Chamonix', 'file:/home/wacel/pidev/PlaNova/src/main/resources/images/transport/tpub10.jpg', 8),
+(12, 'Bus', 45.00, '08:22 - 09:22', '/home/wacel/intgration_1/intgration_1/GIT_Transport/src/main/resources/images/vip 1.jpg', 5);
 
 -- --------------------------------------------------------
 
@@ -622,7 +621,8 @@ ALTER TABLE `reservation`
   ADD PRIMARY KEY (`id_reservation`),
   ADD KEY `id_utilisateur` (`id_utilisateur`),
   ADD KEY `id_destination` (`id_destination`),
-  ADD KEY `fk_res_chambre` (`id_chambre`);
+  ADD KEY `fk_res_chambre` (`id_chambre`),
+  ADD KEY `reservation_ibfk_activite` (`id_activite`);
 
 --
 -- Indexes for table `transport_prive`
@@ -658,19 +658,19 @@ ALTER TABLE `activite`
 -- AUTO_INCREMENT for table `billet`
 --
 ALTER TABLE `billet`
-  MODIFY `id_billet` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_billet` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `chambre`
 --
 ALTER TABLE `chambre`
-  MODIFY `id_chambre` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_chambre` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `destination`
 --
 ALTER TABLE `destination`
-  MODIFY `id_destination` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_destination` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `excursion`
@@ -688,7 +688,7 @@ ALTER TABLE `forum`
 -- AUTO_INCREMENT for table `hotel`
 --
 ALTER TABLE `hotel`
-  MODIFY `id_hotel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_hotel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `post`
@@ -700,19 +700,19 @@ ALTER TABLE `post`
 -- AUTO_INCREMENT for table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `id_reservation` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id_reservation` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `transport_prive`
 --
 ALTER TABLE `transport_prive`
-  MODIFY `id_transport_priv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_transport_priv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `transport_publique`
 --
 ALTER TABLE `transport_publique`
-  MODIFY `id_transport_pub` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_transport_pub` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `utilisateur`
@@ -794,7 +794,8 @@ ALTER TABLE `post`
 ALTER TABLE `reservation`
   ADD CONSTRAINT `fk_res_chambre` FOREIGN KEY (`id_chambre`) REFERENCES `chambre` (`id_chambre`),
   ADD CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`id_utilisateur`) REFERENCES `utilisateur` (`id_utilisateur`),
-  ADD CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`id_destination`) REFERENCES `destination` (`id_destination`);
+  ADD CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`id_destination`) REFERENCES `destination` (`id_destination`),
+  ADD CONSTRAINT `reservation_ibfk_activite` FOREIGN KEY (`id_activite`) REFERENCES `activite` (`id_activite`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `transport_prive`

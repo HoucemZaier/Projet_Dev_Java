@@ -14,13 +14,14 @@ public class Reservation {
     private LocalDate dateFin;
     private double prixTotal;
     private String status;
+    private Integer idActivite; // Nullable
 
     public Reservation() {
     }
 
     public Reservation(int idReservation, int idUtilisateur, int idDestination, Integer idHotel, Integer idChambre,
             String transportType, Integer idTransport, LocalDate dateDebut, LocalDate dateFin,
-            double prixTotal, String status) {
+            double prixTotal, String status, Integer idActivite) {
         this.idReservation = idReservation;
         this.idUtilisateur = idUtilisateur;
         this.idDestination = idDestination;
@@ -32,11 +33,12 @@ public class Reservation {
         this.dateFin = dateFin;
         this.prixTotal = prixTotal;
         this.status = status;
+        this.idActivite = idActivite;
     }
 
     public Reservation(int idUtilisateur, int idDestination, Integer idHotel, Integer idChambre,
             String transportType, Integer idTransport, LocalDate dateDebut, LocalDate dateFin,
-            double prixTotal, String status) {
+            double prixTotal, String status, Integer idActivite) {
         this.idUtilisateur = idUtilisateur;
         this.idDestination = idDestination;
         this.idHotel = idHotel;
@@ -47,6 +49,7 @@ public class Reservation {
         this.dateFin = dateFin;
         this.prixTotal = prixTotal;
         this.status = status;
+        this.idActivite = idActivite;
     }
 
     // Getters and Setters
@@ -136,6 +139,14 @@ public class Reservation {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getIdActivite() {
+        return idActivite;
+    }
+
+    public void setIdActivite(Integer idActivite) {
+        this.idActivite = idActivite;
     }
 
     @Override

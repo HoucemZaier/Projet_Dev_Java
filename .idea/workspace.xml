@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="3a5e3e30-5dfc-4b9e-938f-1c2b610fed12" name="Changes" comment="" />
+    <list default="true" id="3a5e3e30-5dfc-4b9e-938f-1c2b610fed12" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/PlaNova/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/PlaNova/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/Mainfx.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/AiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/AiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/StripeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/StripeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/WeatherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/WeatherService.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/Projet_Dev_Java" />
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_/home/wacel/pidev" value="39bxl1Dvx8k32aU1cqi7LVCpXnl" />
+    </persistenceIdMap>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="39bxl1Dvx8k32aU1cqi7LVCpXnl" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -20,14 +39,48 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Maven.PlaNova [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "gestion__user",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "gestion__destination",
+    "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/wacel/pidev",
-    "settings.editor.selected.configurable": "preferences.JavaFX"
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.JavaFX",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="pidev" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="pidev" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="3a5e3e30-5dfc-4b9e-938f-1c2b610fed12" name="Changes" comment="" />
@@ -35,7 +88,19 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1770978719687</updated>
+      <workItem from="1772226088264" duration="2396000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

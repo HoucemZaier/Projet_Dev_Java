@@ -134,6 +134,10 @@
                                 <VBox.margin><Insets top="5" /></VBox.margin>
                             </ComboBox>
                             
+                            <ComboBox fx:id="activiteComboBox" maxWidth="Infinity" promptText="Select Activity (Optional)" styleClass="glass-combo-box">
+                                <VBox.margin><Insets top="5" /></VBox.margin>
+                            </ComboBox>
+                            
                             <Button maxWidth="Infinity" onAction="#onChooseTransportClick" styleClass="glass-button" text="Choose Transportation">
                                 <VBox.margin><Insets top="5" /></VBox.margin>
                             </Button>

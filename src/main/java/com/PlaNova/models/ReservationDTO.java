@@ -11,6 +11,11 @@ public class ReservationDTO {
     private Integer roomId;
     private String roomType;
 
+    // Activity choice
+    private Integer activiteId;
+    private String activiteName;
+    private double activitePrice;
+
     // Data from UI Selection (Client Input)
     private LocalDate startDate;
     private LocalDate endDate;
@@ -35,7 +40,7 @@ public class ReservationDTO {
             return 0.0;
         long days = Math.max(1, java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate));
         double hotelPart = (hotelPricePerNight != null) ? (hotelPricePerNight * days) : 0.0;
-        return hotelPart + transportCost;
+        return hotelPart + transportCost + activitePrice;
     }
 
     public Integer getDestinationId() {
@@ -116,5 +121,29 @@ public class ReservationDTO {
 
     public void setTransportCost(double transportCost) {
         this.transportCost = transportCost;
+    }
+
+    public Integer getActiviteId() {
+        return activiteId;
+    }
+
+    public void setActiviteId(Integer activiteId) {
+        this.activiteId = activiteId;
+    }
+
+    public String getActiviteName() {
+        return activiteName;
+    }
+
+    public void setActiviteName(String activiteName) {
+        this.activiteName = activiteName;
+    }
+
+    public double getActivitePrice() {
+        return activitePrice;
+    }
+
+    public void setActivitePrice(double activitePrice) {
+        this.activitePrice = activitePrice;
     }
 }

@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Main extends Application {
+public class Mainfx extends Application {
 
     public static void main(String[] args) {
         System.setProperty("glass.gtk.uiScale", "1.0");

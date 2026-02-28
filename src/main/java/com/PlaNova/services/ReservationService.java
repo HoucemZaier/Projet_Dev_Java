@@ -23,7 +23,7 @@ public class ReservationService implements Iservice<Reservation> {
     @Override
     public void add(Reservation r) throws SQLDataException {
         checkConnection();
-        String sql = "INSERT INTO reservation (id_utilisateur, id_destination, id_hotel, id_chambre, transport_type, id_transport, date_debut, date_fin, prix_total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO reservation (id_utilisateur, id_destination, id_hotel, id_chambre, transport_type, id_transport, date_debut, date_fin, prix_total, status, id_activite) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, r.getIdUtilisateur());
             ps.setInt(2, r.getIdDestination());
@@ -57,6 +57,12 @@ public class ReservationService implements Iservice<Reservation> {
                 ps.setString(10, "en_attente");
             }
 
+            if (r.getIdActivite() != null) {
+                ps.setInt(11, r.getIdActivite());
+            } else {
+                ps.setNull(11, Types.INTEGER);
+            }
+
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -84,7 +90,7 @@ public class ReservationService implements Iservice<Reservation> {
     @Override
     public void modify(Reservation r) throws SQLDataException {
         checkConnection();
-        String sql = "UPDATE reservation SET id_utilisateur = ?, id_destination = ?, id_hotel = ?, id_chambre = ?, transport_type = ?, id_transport = ?, date_debut = ?, date_fin = ?, prix_total = ?, status = ? WHERE id_reservation = ?";
+        String sql = "UPDATE reservation SET id_utilisateur = ?, id_destination = ?, id_hotel = ?, id_chambre = ?, transport_type = ?, id_transport = ?, date_debut = ?, date_fin = ?, prix_total = ?, status = ?, id_activite = ? WHERE id_reservation = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, r.getIdUtilisateur());
             ps.setInt(2, r.getIdDestination());
@@ -112,7 +118,12 @@ public class ReservationService implements Iservice<Reservation> {
             ps.setDate(8, Date.valueOf(r.getDateFin()));
             ps.setDouble(9, r.getPrixTotal());
             ps.setString(10, r.getStatus());
-            ps.setInt(11, r.getIdReservation());
+            if (r.getIdActivite() != null) {
+                ps.setInt(11, r.getIdActivite());
+            } else {
+                ps.setNull(11, Types.INTEGER);
+            }
+            ps.setInt(12, r.getIdReservation());
 
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -151,6 +162,9 @@ public class ReservationService implements Iservice<Reservation> {
                 r.setDateFin(rs.getDate("date_fin").toLocalDate());
                 r.setPrixTotal(rs.getDouble("prix_total"));
                 r.setStatus(rs.getString("status"));
+                int activiteId = rs.getInt("id_activite");
+                if (!rs.wasNull())
+                    r.setIdActivite(activiteId);
 
                 list.add(r);
             }

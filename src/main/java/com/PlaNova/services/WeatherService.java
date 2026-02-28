@@ -24,16 +24,18 @@ public class WeatherService {
     /**
      * 
      * 
-     * @param city 
-     * @return 
+     * @param city
+     * @return
      */
     public CompletableFuture<String> getWeather(String city) {
         if (city == null || city.trim().isEmpty()) {
             return CompletableFuture.completedFuture("No weather data available.");
         }
 
+        String actualCity = extractCityName(city);
+
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + city.replace(" ", "%20")))
+                .uri(URI.create(BASE_URL + actualCity.replace(" ", "%20")))
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -48,5 +50,28 @@ public class WeatherService {
                         return "Weather data unavailable for " + city;
                     }
                 }).exceptionally(ex -> "Weather service error: " + ex.getMessage());
+    }
+
+    private String extractCityName(String destinationName) {
+        String lower = destinationName.toLowerCase();
+        if (lower.contains("chania"))
+            return "Chania";
+        if (lower.contains("venise") || lower.contains("venice"))
+            return "Venice";
+        if (lower.contains("gizeh") || lower.contains("giza"))
+            return "Giza";
+        if (lower.contains("feroe") || lower.contains("faroe"))
+            return "Torshavn";
+        if (lower.contains("crete") || lower.contains("heraklion"))
+            return "Heraklion";
+        if (lower.contains("rethymno"))
+            return "Rethymno";
+        if (lower.contains("phuket"))
+            return "Phuket";
+        if (lower.contains("mont blanc") || lower.contains("chamonix"))
+            return "Chamonix";
+        if (lower.contains("tunis") || lower.contains("ariana"))
+            return "Ariana";
+        return destinationName.split(" ")[0];
     }
 }

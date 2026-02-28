@@ -1,0 +1,35 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for org.example:PlaNova:jar:1.0-SNAPSHOT
+[WARNING] 'build.plugins.plugin.(groupId:artifactId)' must be unique but found duplicate declaration of plugin org.openjfx:javafx-maven-plugin @ line 79, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] ------------------------< org.example:PlaNova >-------------------------
+[INFO] Building PlaNova 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] 6 problems were encountered while building the effective model for org.openjfx:javafx-controls:jar:20 during dependency collection step for project (use -X to see details)
+[WARNING] 6 problems were encountered while building the effective model for org.openjfx:javafx-controls:jar:20.0.2 during dependency collection step for project (use -X to see details)
+[WARNING] The artifact mysql:mysql-connector-java:jar:8.0.33 has been relocated to com.mysql:mysql-connector-j:jar:8.0.33: MySQL Connector/J artifacts moved to reverse-DNS compliant Maven 2+ coordinates.
+[INFO] 
+[INFO] --- exec:3.6.3:java (default-cli) @ PlaNova ---
+Feb 28, 2026 6:28:55 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @47c5577d'
+Connected to database successfully
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::allocateMemory has been called by com.sun.marlin.OffHeapArray (file:/home/wacel/.m2/repository/org/openjfx/javafx-graphics/20.0.2/javafx-graphics-20.0.2-linux.jar)
+WARNING: Please consider reporting this to the maintainers of class com.sun.marlin.OffHeapArray
+WARNING: sun.misc.Unsafe::allocateMemory will be removed in a future release
+[WARNING] thread Thread[#72,mysql-cj-abandoned-connection-cleanup,5,com.PlaNova.Mainfx] was interrupted but is still alive after waiting at least 15000msecs
+[WARNING] thread Thread[#72,mysql-cj-abandoned-connection-cleanup,5,com.PlaNova.Mainfx] will linger despite being asked to die via interruption
+[WARNING] NOTE: 1 thread(s) did not finish despite being asked to via interruption. This is not a problem with exec:java, it is a problem with the running code. Although not serious, it should be remedied.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  50.571 s
+[INFO] Finished at: 2026-02-28T06:29:45+01:00
+[INFO] ------------------------------------------------------------------------

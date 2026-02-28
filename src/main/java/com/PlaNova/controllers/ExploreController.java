@@ -4,6 +4,7 @@ import com.PlaNova.models.Destination;
 import com.PlaNova.models.Hotel;
 import com.PlaNova.models.Reservation;
 import com.PlaNova.models.ReservationDTO;
+import com.PlaNova.models.Activite;
 import com.PlaNova.services.DestinationService;
 import com.PlaNova.services.HotelService;
 import com.PlaNova.services.ReservationService;
@@ -12,6 +13,9 @@ import com.PlaNova.services.AiService;
 import com.PlaNova.services.VoiceService;
 import com.PlaNova.services.PdfExportService;
 import com.PlaNova.services.WeatherService;
+import com.PlaNova.services.ActiviteService;
+import com.PlaNova.models.Billet;
+import com.PlaNova.services.BilletService;
 import com.PlaNova.utils.SessionManager;
 import javafx.stage.FileChooser;
 import javafx.fxml.FXML;
@@ -70,6 +74,8 @@ public class ExploreController {
     private ComboBox<Hotel> hotelComboBox;
     @FXML
     private ComboBox<String> roomTypeComboBox;
+    @FXML
+    private ComboBox<Activite> activiteComboBox;
 
     @FXML
     private TextField aiMoodField;
@@ -108,6 +114,7 @@ public class ExploreController {
     private DestinationService destinationService;
     private ReservationService reservationService;
     private HotelService hotelService;
+    private ActiviteService activiteService;
     private Destination currentSelectedDestination;
 
     @FXML
@@ -115,6 +122,7 @@ public class ExploreController {
         destinationService = new DestinationService();
         reservationService = new ReservationService();
         hotelService = new HotelService();
+        activiteService = new ActiviteService();
         aiService = new AiService();
         voiceService = new VoiceService();
         weatherService = new WeatherService();
@@ -152,7 +160,7 @@ public class ExploreController {
                         .findFirst().orElse(null);
 
                 if (d != null) {
-                    updateDetails(d, null); 
+                    updateDetails(d, null);
 
                     checkinDatePicker.setValue(panier.getStartDate());
                     checkoutDatePicker.setValue(panier.getEndDate());
@@ -214,6 +222,8 @@ public class ExploreController {
         String imagePath = d.getImage();
         if (imagePath == null || imagePath.isEmpty()) {
             imagePath = "/images/pexels-maksim-smirnov-27565989-32234331.jpg";
+        } else if (imagePath.contains("images/")) {
+            imagePath = "/images/" + imagePath.substring(imagePath.lastIndexOf("images/") + 7);
         } else if (!imagePath.startsWith("/") && !imagePath.startsWith("http") && !imagePath.startsWith("file:")) {
             imagePath = "/images/" + imagePath;
         }
@@ -228,7 +238,7 @@ public class ExploreController {
             imageView.setImage(image);
         } catch (Exception e) {
             try {
-                Image placeholder = new Image(getClass().getResource("/images/logo.PNG").toExternalForm());
+                Image placeholder = new Image(getClass().getResource("/images/logo.png").toExternalForm());
                 imageView.setImage(placeholder);
             } catch (Exception ignored) {
             }
@@ -286,7 +296,7 @@ public class ExploreController {
             detailImageView.setImage(img);
         } else {
             try {
-                Image placeholder = new Image(getClass().getResource("/images/logo.PNG").toExternalForm());
+                Image placeholder = new Image(getClass().getResource("/images/logo.png").toExternalForm());
                 detailImageView.setImage(placeholder);
             } catch (Exception ignored) {
             }
@@ -295,6 +305,7 @@ public class ExploreController {
         checkoutDatePicker.setValue(null);
         roomTypeComboBox.getSelectionModel().clearSelection();
         hotelComboBox.getItems().clear();
+        activiteComboBox.getItems().clear();
 
         try {
             List<Hotel> availableHotels = hotelService.getHotelsByDestinationOrVille(d.getIdDestination(),
@@ -309,6 +320,20 @@ public class ExploreController {
             }
         } catch (SQLDataException e) {
             System.err.println("Failed to fetch hotels: " + e.getMessage());
+        }
+
+        try {
+            List<Activite> availableActivites = activiteService.getActivitesByDestination(d.getIdDestination());
+            if (availableActivites.isEmpty()) {
+                activiteComboBox.setPromptText("No activities available here");
+                activiteComboBox.setDisable(true);
+            } else {
+                activiteComboBox.getItems().addAll(availableActivites);
+                activiteComboBox.setPromptText("Select Activity (Optional)");
+                activiteComboBox.setDisable(false);
+            }
+        } catch (SQLDataException e) {
+            System.err.println("Failed to fetch activities: " + e.getMessage());
         }
 
         String desc = "Country: " + d.getPays() + "\n\n" +
@@ -380,8 +405,7 @@ public class ExploreController {
         panier.setEndDate(checkoutDatePicker.getValue());
 
         panier.setHotelId(selectedHotel.getIdHotel());
-        panier.setHotelPricePerNight(Math.max(50.0, 50.0 * selectedHotel.getNombreEtoile())); 
-                                                                                              
+        panier.setHotelPricePerNight(Math.max(50.0, 50.0 * selectedHotel.getNombreEtoile()));
 
         String selectedRoom = roomTypeComboBox.getValue();
         if (selectedRoom != null) {
@@ -399,6 +423,17 @@ public class ExploreController {
             panier.setRoomId(null);
         }
 
+        Activite selectedActivite = activiteComboBox.getValue();
+        if (selectedActivite != null) {
+            panier.setActiviteId(selectedActivite.getIdActivite());
+            panier.setActiviteName(selectedActivite.getNom());
+            panier.setActivitePrice(selectedActivite.getPrix());
+        } else {
+            panier.setActiviteId(null);
+            panier.setActiviteName("None");
+            panier.setActivitePrice(0.0);
+        }
+
         panier.setTransportType(SessionManager.getCurrentReservation().getTransportType());
         panier.setTransportCost(SessionManager.getCurrentReservation().getTransportCost());
         panier.setTransportId(SessionManager.getCurrentReservation().getTransportId());
@@ -410,6 +445,7 @@ public class ExploreController {
                 "Dates: " + panier.getStartDate() + " to " + panier.getEndDate() + "\n" +
                 "Hotel Rate: €" + panier.getHotelPricePerNight() + " / night\n" +
                 "Room Type: " + panier.getRoomType() + "\n" +
+                "Activity: " + panier.getActiviteName() + " (€" + panier.getActivitePrice() + ")\n" +
                 "Transport: " + panier.getTransportType() + "\n" +
                 "----------------------------------------\n" +
                 "Total Amount: €" + total + "\n\n" +
@@ -428,6 +464,7 @@ public class ExploreController {
                     String transport = panier.getTransportType();
                     res.setTransportType(transport != null && transport.equals("Not selected") ? null : transport);
                     res.setIdTransport(panier.getTransportId());
+                    res.setIdActivite(panier.getActiviteId());
 
                     res.setDateDebut(panier.getStartDate());
                     res.setDateFin(panier.getEndDate());
@@ -444,7 +481,7 @@ public class ExploreController {
                             System.out.println("[DEBUG] >> PAYMENT SUCCESS SIGNAL RECEIVED FROM BROWSER <<");
 
                             try {
-                                reservationService.add(res);
+                                finalizeReservation(panier, res);
                                 int finalId = res.getIdReservation();
                                 System.out.println("[DEBUG] Database save successful. Generated ID: " + finalId);
 
@@ -459,17 +496,6 @@ public class ExploreController {
                                 try (OutputStream os = exchange.getResponseBody()) {
                                     os.write(response.getBytes());
                                 }
-
-                                Platform.runLater(() -> {
-                                    showOverlay("Booking Confirmed!",
-                                            "Payment received! Your reservation has been successfully booked.",
-                                            false, null);
-
-                                    roomTypeComboBox.getSelectionModel().clearSelection();
-                                    hotelComboBox.getSelectionModel().clearSelection();
-                                    SessionManager.clearSession();
-                                    closeInspectorDrawer();
-                                });
 
                             } catch (Exception e) {
                                 System.err.println("[ERROR] Database save failed after payment: " + e.getMessage());
@@ -530,15 +556,7 @@ public class ExploreController {
                                         System.out.println("[DEBUG] Fallback Manual Save triggered by user.");
                                         new Thread(() -> {
                                             try {
-                                                reservationService.add(res);
-                                                Platform.runLater(() -> {
-                                                    showOverlay("Booking Confirmed!",
-                                                            "Your reservation has been saved manually.", false, null);
-                                                    roomTypeComboBox.getSelectionModel().clearSelection();
-                                                    hotelComboBox.getSelectionModel().clearSelection();
-                                                    SessionManager.clearSession();
-                                                    closeInspectorDrawer();
-                                                });
+                                                finalizeReservation(panier, res);
                                             } catch (Exception ex) {
                                                 Platform.runLater(() -> showOverlay("Error",
                                                         "Manual save failed: " + ex.getMessage(), false, null));
@@ -744,5 +762,65 @@ public class ExploreController {
         } catch (java.io.IOException e) {
             showAlert(AlertType.ERROR, "Loader Error", "Could not load Transportation view: " + e.getMessage());
         }
+    }
+
+    private void finalizeReservation(ReservationDTO panier, Reservation res) throws Exception {
+        reservationService.add(res);
+
+        BilletService billetService = new BilletService();
+        Billet b = new Billet();
+        b.setDb("User Location");
+        b.setIdv(panier.getDestinationName());
+        b.setNumPlace("S" + (int) (Math.random() * 100));
+        b.setIdDestination(panier.getDestinationId());
+        String tType = panier.getTransportType();
+        int tId = panier.getTransportId() != null ? panier.getTransportId() : 0;
+        b.setIdTransportPub("public".equals(tType) ? tId : 0);
+        b.setIdTransportPriv("prive".equals(tType) ? tId : 0);
+        billetService.add(b);
+
+        String pdfContent = "BILLET RESERVATION\n\n" +
+                "Departure: " + b.getDb() + "\n" +
+                "Arrival: " + b.getIdv() + "\n" +
+                "Seat Number: " + b.getNumPlace() + "\n" +
+                "Destination: " + panier.getDestinationName() + "\n" +
+                "Activity: " + panier.getActiviteName() + "\n" +
+                "Transport Info: " + (tType != null ? tType : "None") + "\n\n" +
+                "Payment Details: \n" +
+                "Total Price: EUR " + res.getPrixTotal() + "\nStatus: Paid\n" +
+                "Payment verified and successful via Stripe API.";
+
+        Platform.runLater(() -> {
+            try {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save Billet PDF");
+                fileChooser
+                        .setInitialFileName("Billet_" + panier.getDestinationName().replaceAll("\\s+", "_") + ".pdf");
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+                File file = fileChooser.showSaveDialog(overlayContainer.getScene().getWindow());
+                if (file != null) {
+                    pdfExportService.exportBilletPdf("Billet Confirmation", pdfContent, file);
+                    showOverlay("Booking Confirmed!",
+                            "Your reservation has been booked and your billet was saved successfully.\nEnjoy your trip to "
+                                    + panier.getDestinationName() + "!",
+                            false, null);
+                } else {
+                    showOverlay("Booking Confirmed!",
+                            "Payment received! Your reservation has been successfully booked.\n(Billet PDF was not saved)",
+                            false, null);
+                }
+            } catch (Exception e) {
+                System.err.println("Error saving PDF: " + e.getMessage());
+                showOverlay("Booking Confirmed!",
+                        "Payment received! Database updated, but PDF creation failed.",
+                        false, null);
+            }
+
+            roomTypeComboBox.getSelectionModel().clearSelection();
+            hotelComboBox.getSelectionModel().clearSelection();
+            activiteComboBox.getSelectionModel().clearSelection();
+            SessionManager.clearSession();
+            closeInspectorDrawer();
+        });
     }
 }

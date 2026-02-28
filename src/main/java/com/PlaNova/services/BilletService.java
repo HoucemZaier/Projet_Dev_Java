@@ -29,8 +29,16 @@ public class BilletService implements Iservice<Billet> {
             ps.setString(2, b.getIdv());
             ps.setString(3, b.getNumPlace());
             ps.setInt(4, b.getIdDestination());
-            ps.setInt(5, b.getIdTransportPub());
-            ps.setInt(6, b.getIdTransportPriv());
+            if (b.getIdTransportPub() > 0) {
+                ps.setInt(5, b.getIdTransportPub());
+            } else {
+                ps.setNull(5, Types.INTEGER);
+            }
+            if (b.getIdTransportPriv() > 0) {
+                ps.setInt(6, b.getIdTransportPriv());
+            } else {
+                ps.setNull(6, Types.INTEGER);
+            }
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new SQLDataException(e.getMessage());
@@ -58,8 +66,16 @@ public class BilletService implements Iservice<Billet> {
             ps.setString(2, b.getIdv());
             ps.setString(3, b.getNumPlace());
             ps.setInt(4, b.getIdDestination());
-            ps.setInt(5, b.getIdTransportPub());
-            ps.setInt(6, b.getIdTransportPriv());
+            if (b.getIdTransportPub() > 0) {
+                ps.setInt(5, b.getIdTransportPub());
+            } else {
+                ps.setNull(5, Types.INTEGER);
+            }
+            if (b.getIdTransportPriv() > 0) {
+                ps.setInt(6, b.getIdTransportPriv());
+            } else {
+                ps.setNull(6, Types.INTEGER);
+            }
             ps.setInt(7, b.getIdBillet());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -73,17 +89,16 @@ public class BilletService implements Iservice<Billet> {
         List<Billet> list = new ArrayList<>();
         String sql = "SELECT * FROM billet";
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+                ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 Billet b = new Billet(
-                    rs.getInt("id_billet"),
-                    rs.getString("db"),
-                    rs.getString("idv"),
-                    rs.getString("num_place"),
-                    rs.getInt("id_destination"),
-                    rs.getInt("id_transport_pub"),
-                    rs.getInt("id_transport_priv")
-                );
+                        rs.getInt("id_billet"),
+                        rs.getString("db"),
+                        rs.getString("idv"),
+                        rs.getString("num_place"),
+                        rs.getInt("id_destination"),
+                        rs.getInt("id_transport_pub"),
+                        rs.getInt("id_transport_priv"));
                 list.add(b);
             }
         } catch (SQLException e) {
@@ -105,14 +120,13 @@ public class BilletService implements Iservice<Billet> {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Billet b = new Billet(
-                    rs.getInt("id_billet"),
-                    rs.getString("db"),
-                    rs.getString("idv"),
-                    rs.getString("num_place"),
-                    rs.getInt("id_destination"),
-                    rs.getInt("id_transport_pub"),
-                    rs.getInt("id_transport_priv")
-                );
+                        rs.getInt("id_billet"),
+                        rs.getString("db"),
+                        rs.getString("idv"),
+                        rs.getString("num_place"),
+                        rs.getInt("id_destination"),
+                        rs.getInt("id_transport_pub"),
+                        rs.getInt("id_transport_priv"));
                 list.add(b);
             }
         } catch (SQLException e) {
