@@ -1,5 +1,6 @@
 package com.PlaNova.services;
 
+import com.PlaNova.utils.EnvConfig;
 import com.stripe.Stripe;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -7,7 +8,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 public class StripeService {
 
         public StripeService() {
-                Stripe.apiKey = "API_KEY";
+                Stripe.apiKey = EnvConfig.get("STRIPE_API_KEY");
         }
 
         public String createCheckoutSession(String destinationName, double amount) throws Exception {

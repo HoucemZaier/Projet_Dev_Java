@@ -1,7 +1,12 @@
 package com.PlaNova.services;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Properties;
+
+import com.PlaNova.utils.EnvConfig;
 
 public class EmailConfigService {
     private static final String CONFIG_FILE = "email_config.properties";
@@ -28,11 +33,11 @@ public class EmailConfigService {
     }
 
     private void setDefaultConfig() {
-        properties.setProperty("smtp.host", "smtp.gmail.com");
-        properties.setProperty("smtp.port", "587");
-        properties.setProperty("email.username", "houcem.engineering@gmail.com");
-        properties.setProperty("email.password", "iyft zvux oxvk zedcz");
-        properties.setProperty("email.from", "PlaNova Transport <houcem.engineering@gmail.com>");
+        properties.setProperty("smtp.host", EnvConfig.get("EMAIL_SMTP_HOST", "smtp.gmail.com"));
+        properties.setProperty("smtp.port", EnvConfig.get("EMAIL_SMTP_PORT", "587"));
+        properties.setProperty("email.username", EnvConfig.get("EMAIL_USERNAME", ""));
+        properties.setProperty("email.password", EnvConfig.get("EMAIL_PASSWORD", ""));
+        properties.setProperty("email.from", EnvConfig.get("EMAIL_FROM", ""));
     }
 
     public void saveConfig() {

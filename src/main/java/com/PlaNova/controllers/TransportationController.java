@@ -1,28 +1,41 @@
 package com.PlaNova.controllers;
 
+import java.io.IOException;
+import java.sql.SQLDataException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 import com.PlaNova.models.ReservationDTO;
 import com.PlaNova.models.TransportPrive;
 import com.PlaNova.models.TransportPublique;
+import com.PlaNova.services.PexelsService;
 import com.PlaNova.services.ServiceTransportPrive;
 import com.PlaNova.services.ServiceTransportPublique;
 import com.PlaNova.utils.SessionManager;
+
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-
-import java.io.IOException;
-import java.sql.SQLDataException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TransportationController {
 
@@ -41,6 +54,7 @@ public class TransportationController {
     private ObservableList<TransportPrive> privateList = FXCollections.observableArrayList();
     private ObservableList<TransportPublique> publicList = FXCollections.observableArrayList();
 
+    private PexelsService pexelsService = new PexelsService();
     private boolean showPrivate = true;
 
     @FXML
@@ -66,12 +80,51 @@ public class TransportationController {
     }
 
     private void loadData() {
-        try {
-            privateList.setAll(privateService.show());
-            publicList.setAll(publicService.show());
-        } catch (SQLDataException e) {
-            System.err.println("Failed to load transport data: " + e.getMessage());
-        }
+        CompletableFuture.runAsync(() -> {
+            try {
+                List<TransportPrive> privates = privateService.show();
+                List<TransportPublique> publics = publicService.show();
+
+                List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+                // Auto-fill private transport images
+                for (TransportPrive tp : privates) {
+                    if (tp.getImage_path() == null || tp.getImage_path().isEmpty() || !tp.getImage_path().startsWith("http")) {
+                        String query = tp.getMarque() + " car luxury";
+                        futures.add(pexelsService.findBestImage(query).thenAccept(url -> {
+                            if (url != null) {
+                                tp.setImage_path(url);
+                                try { privateService.modify(tp); } catch (Exception ignored) {}
+                            }
+                        }));
+                    }
+                }
+
+                // Auto-fill public transport images
+                for (TransportPublique tp : publics) {
+                    if (tp.getImage_path() == null || tp.getImage_path().isEmpty() || !tp.getImage_path().startsWith("http")) {
+                        String query = tp.getType() + " transport";
+                        futures.add(pexelsService.findBestImage(query).thenAccept(url -> {
+                            if (url != null) {
+                                tp.setImage_path(url);
+                                try { publicService.modify(tp); } catch (Exception ignored) {}
+                            }
+                        }));
+                    }
+                }
+
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
+                    Platform.runLater(() -> {
+                        privateList.setAll(privates);
+                        publicList.setAll(publics);
+                        updateDisplay();
+                    });
+                });
+
+            } catch (SQLDataException e) {
+                System.err.println("Failed to load transport data: " + e.getMessage());
+            }
+        });
     }
 
     private void updateDisplay() {
@@ -138,13 +191,20 @@ public class TransportationController {
 
         ImageView iv = new ImageView();
         try {
-            if (tp.getImage_path() != null && !tp.getImage_path().isEmpty()) {
-                iv.setImage(new Image(tp.getImage_path()));
+            String path = tp.getImage_path();
+            if (path != null && !path.isEmpty()) {
+                if (path.startsWith("http")) {
+                    iv.setImage(new Image(path, 250, 140, true, true, true));
+                } else {
+                    iv.setImage(new Image(getClass().getResource(path).toExternalForm(), 250, 140, true, true, true));
+                }
             } else {
-                iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm()));
+                iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm(), 250, 140, true, true, true));
             }
         } catch (Exception e) {
-            iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm()));
+            try {
+                iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm(), 250, 140, true, true, true));
+            } catch (Exception ignored) {}
         }
         iv.setFitWidth(250);
         iv.setFitHeight(140);
@@ -196,13 +256,20 @@ public class TransportationController {
 
         ImageView iv = new ImageView();
         try {
-            if (tp.getImage_path() != null && !tp.getImage_path().isEmpty()) {
-                iv.setImage(new Image(tp.getImage_path()));
+            String path = tp.getImage_path();
+            if (path != null && !path.isEmpty()) {
+                if (path.startsWith("http")) {
+                    iv.setImage(new Image(path, 250, 140, true, true, true));
+                } else {
+                    iv.setImage(new Image(getClass().getResource(path).toExternalForm(), 250, 140, true, true, true));
+                }
             } else {
-                iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm()));
+                iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm(), 250, 140, true, true, true));
             }
         } catch (Exception e) {
-            iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm()));
+            try {
+                iv.setImage(new Image(getClass().getResource("/images/logo.PNG").toExternalForm(), 250, 140, true, true, true));
+            } catch (Exception ignored) {}
         }
         iv.setFitWidth(250);
         iv.setFitHeight(140);

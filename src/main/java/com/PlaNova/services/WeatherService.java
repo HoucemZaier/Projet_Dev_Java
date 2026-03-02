@@ -1,15 +1,17 @@
 package com.PlaNova.services;
 
-import com.google.gson.JsonObject;
-import com.google.gson.Gson;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
+import com.PlaNova.utils.EnvConfig;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 public class WeatherService {
-    private static final String API_KEY = "API_KEY";
+    private static final String API_KEY = EnvConfig.get("WEATHER_API_KEY");
     private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&appid="
             + API_KEY + "&q=";
 

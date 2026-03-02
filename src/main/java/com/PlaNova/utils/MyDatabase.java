@@ -4,9 +4,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MyDatabase {
-    private final String URl = "jdbc:mysql://localhost:3306/pidev";
-    private final String USERNAME = "root";
-    private final String PASSWORD = "";
+    private final String URl = EnvConfig.get("DB_URL", "jdbc:mysql://localhost:3306/pidev");
+    private final String USERNAME = EnvConfig.get("DB_USERNAME", "root");
+    private final String PASSWORD = EnvConfig.get("DB_PASSWORD", "");
     private Connection connection;
     private  static MyDatabase instance ;
 

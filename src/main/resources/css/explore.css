@@ -242,3 +242,147 @@
 .glass-combo-box .combo-box-popup .list-cell:hover {
     -fx-background-color: #4B1D7A;
 }
+
+/* ═══════════════════════════════════════════════════════
+   NIGHT MODE
+   ═══════════════════════════════════════════════════════ */
+.night-mode {
+    -fx-background-color: linear-gradient(to bottom right, #0d1b2a 0%, #1b2838 50%, #0a0f1a 100%);
+}
+
+.night-mode .glass-navbar {
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.night-mode .glass-sidebar {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.night-mode .nature-card {
+    -fx-background-color: rgba(30, 40, 60, 0.9);
+}
+
+.night-mode .card-title {
+    -fx-text-fill: #7ec8e3;
+}
+
+.night-mode .card-info {
+    -fx-text-fill: #a0c4ff;
+}
+
+.night-mode .glass-drawer-enhanced {
+    -fx-background-color: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.night-mode .glass-search {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+}
+
+.night-mode .glass-combo-box {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+}
+
+.night-mode .glass-button {
+    -fx-background-color: rgba(30, 145, 214, 0.6);
+}
+
+.night-mode .glass-button:hover {
+    -fx-background-color: rgba(30, 145, 214, 0.85);
+}
+
+/* ═══════════════════════════════════════════════════════
+   PAGINATION
+   ═══════════════════════════════════════════════════════ */
+.page-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 18;
+    -fx-padding: 6 16;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+}
+
+.page-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+}
+
+.page-btn:disabled {
+    -fx-opacity: 0.35;
+    -fx-cursor: default;
+}
+
+.page-num-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 15;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+}
+
+.page-num-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}
+
+.page-num-btn-active {
+    -fx-background-color: #1E91D6;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 15;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-cursor: hand;
+    -fx-border-color: white;
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(30, 145, 214, 0.6), 8, 0, 0, 0);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CARD ANIMATIONS & HOVER ENHANCEMENTS
+   ═══════════════════════════════════════════════════════ */
+.nature-card {
+    -fx-background-color: rgba(255, 255, 255, 0.85);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 10, 0, 0, 4);
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+.nature-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(30, 145, 214, 0.4), 20, 0, 0, 8);
+    -fx-translate-y: -8;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* ═══════════════════════════════════════════════════════
+   NIGHT MODE — NEW ELEMENTS
+   ═══════════════════════════════════════════════════════ */
+.night-mode .page-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.night-mode .page-num-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
+.night-mode .nature-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(30, 145, 214, 0.3), 20, 0, 0, 8);
+}

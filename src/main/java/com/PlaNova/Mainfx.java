@@ -1,13 +1,13 @@
 package com.PlaNova;
 
+import java.io.IOException;
+
 import atlantafx.base.theme.NordLight;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Mainfx extends Application {
 
@@ -16,6 +16,9 @@ public class Mainfx extends Application {
         System.setProperty("glass.gtk.uiScale.enabled", "false");
         System.setProperty("prism.allowhidpi", "false");
         System.setProperty("sun.java2d.uiScale", "1.0");
+
+        // Allow JavaFX Image to load from Pexels/Cloudflare CDN
+        System.setProperty("http.agent", "Mozilla/5.0 PlaNova/1.0");
 
         launch(args);
     }

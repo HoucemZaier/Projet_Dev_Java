@@ -20,8 +20,10 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 
-<StackPane xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.PlaNova.controllers.ExploreController">
-    <BorderPane prefHeight="800" prefWidth="1280" styleClass="root-pane" stylesheets="@../css/explore.css">
+<StackPane xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.PlaNova.controllers.ExploreController">
+    <BorderPane prefHeight="800" prefWidth="1280" styleClass="root-pane"
+        stylesheets="@../css/explore.css">
         <!-- Top: Transparent Navbar -->
         <top>
             <HBox alignment="CENTER_LEFT" spacing="20" styleClass="glass-navbar">
@@ -30,14 +32,22 @@
                         <Image url="@../images/logo.PNG" />
                     </image>
                 </ImageView>
-                <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" text="PlaNova" />
+                <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"
+                    text="PlaNova" />
 
                 <!-- Spacer -->
                 <Region HBox.hgrow="ALWAYS" />
 
                 <!-- User Profile as Clickable Button -->
                 <HBox alignment="CENTER" spacing="12">
-                    <Label style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" text="John Doe" />
+                    <Button fx:id="nightModeBtn" onAction="#toggleNightMode"
+                        style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 5 10;"
+                        text="🌙" />
+                    <Button fx:id="gridToggleBtn" onAction="#toggleGridSize"
+                        style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 5 10;"
+                        text="⊞" />
+                    <Label style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;"
+                        text="John Doe" />
                     <Button styleClass="profile-button">
                         <graphic>
                             <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
@@ -59,126 +69,299 @@
                 </padding>
 
                 <!-- Interactable buttons -->
-                <Button styleClass="sidebar-button" text="🏠" />
-                <Button styleClass="sidebar-button" text="🔍" />
-                <Button styleClass="sidebar-button" text="📑" />
-                <Button styleClass="sidebar-button" text="❤️" />
-                
+                <Button fx:id="homeSidebarBtn" onAction="#handleHome" styleClass="sidebar-button"
+                    text="🏠" />
+                <Button fx:id="favSidebarBtn" onAction="#toggleFavoritesFilter"
+                    styleClass="sidebar-button" text="❤️" />
+
                 <Region VBox.vgrow="ALWAYS" />
-                
-                <Button styleClass="sidebar-button" text="⚙" />
+
             </VBox>
         </left>
 
         <center>
-            <SplitPane fx:id="mainSplitPane" dividerPositions="0.75" style="-fx-background-color: transparent; -fx-padding: 0;" styleClass="glass-split-pane">
+            <SplitPane fx:id="mainSplitPane" dividerPositions="0.75"
+                style="-fx-background-color: transparent; -fx-padding: 0;"
+                styleClass="glass-split-pane">
                 <items>
-                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED">
+                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+                        style="-fx-background-color: transparent; -fx-background: transparent;"
+                        vbarPolicy="AS_NEEDED">
                         <VBox spacing="30" style="-fx-padding: 40 50;">
                             <HBox alignment="CENTER_LEFT" spacing="20">
-                                <Label style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 2);" text="Explore Destinations" />
+                                <Label fx:id="greetingLabel"
+                                    style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 2);"
+                                    text="Explore Destinations" />
                                 <Region HBox.hgrow="ALWAYS" />
                                 <!-- AI Magic Planner Bar -->
-                                <HBox alignment="CENTER" spacing="10" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 25; -fx-padding: 5 15; -fx-border-color: rgba(30, 145, 214, 0.5); -fx-border-radius: 25; -fx-border-width: 1;">
-                                    <TextField fx:id="aiMoodField" prefWidth="250" promptText="Tell AI how you feel..." style="-fx-background-color: transparent; -fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.5); -fx-border-width: 0;" />
-                                    <Button fx:id="voiceBtn" onAction="#onVoiceSearchClick" style="-fx-background-color: transparent; -fx-cursor: hand;" text="🎙️" />
-                                    <Button onAction="#onAiPlanClick" style="-fx-background-color: #1E91D6; -fx-text-fill: white; -fx-background-radius: 15; -fx-font-weight: bold; -fx-padding: 5 12;" text="AI Plan" />
+                                <HBox alignment="CENTER" spacing="10"
+                                    style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 25; -fx-padding: 5 15; -fx-border-color: rgba(30, 145, 214, 0.5); -fx-border-radius: 25; -fx-border-width: 1;">
+                                    <TextField fx:id="aiMoodField" prefWidth="250"
+                                        promptText="Tell AI how you feel..."
+                                        style="-fx-background-color: transparent; -fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.5); -fx-border-width: 0;" />
+                                    <Button fx:id="voiceBtn" onAction="#onVoiceSearchClick"
+                                        style="-fx-background-color: transparent; -fx-cursor: hand;"
+                                        text="🎙️" />
+                                    <Button onAction="#onAiPlanClick"
+                                        style="-fx-background-color: #1E91D6; -fx-text-fill: white; -fx-background-radius: 15; -fx-font-weight: bold; -fx-padding: 5 12;"
+                                        text="AI Plan" />
+                                    <Button onAction="#handleAiImageMatch"
+                                        style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 15; -fx-font-weight: bold; -fx-padding: 5 12; -fx-cursor: hand;"
+                                        text="🧠 AI Match" />
+                                    <Button onAction="#handleLucky"
+                                        style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-background-radius: 15; -fx-font-weight: bold; -fx-padding: 5 12; -fx-cursor: hand;"
+                                        text="🎲 Lucky" />
                                 </HBox>
-                                <ComboBox fx:id="countryFilterComboBox" prefWidth="150" promptText="Country" styleClass="glass-combo-box" />
-                                <TextField fx:id="searchField" prefWidth="250" promptText="Search getaways..." styleClass="glass-search" />
+                                <ComboBox fx:id="countryFilterComboBox" prefWidth="150"
+                                    promptText="Country" styleClass="glass-combo-box" />
+                                <TextField fx:id="searchField" prefWidth="250"
+                                    promptText="Search getaways..." styleClass="glass-search" />
                             </HBox>
 
-                            <FlowPane fx:id="destinationsFlowPane" alignment="TOP_LEFT" hgap="25" vgap="25">
+                            <!-- Destination count + view info -->
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <Label fx:id="destCountLabel"
+                                    style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 14px; -fx-font-weight: bold;"
+                                    text="0 destinations" />
+                                <ComboBox fx:id="sortComboBox" prefWidth="140"
+                                    promptText="Sort by..." styleClass="glass-combo-box"
+                                    style="-fx-font-size: 12px;" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label
+                                    style="-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 12px;"
+                                    text="Per page:" />
+                                <ComboBox fx:id="perPageComboBox" prefWidth="70"
+                                    styleClass="glass-combo-box" style="-fx-font-size: 12px;" />
+                                <Label fx:id="pageInfoLabel"
+                                    style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 13px;"
+                                    text="" />
+                            </HBox>
+
+                            <FlowPane fx:id="destinationsFlowPane" alignment="TOP_LEFT" hgap="25"
+                                vgap="25">
                                 <!-- Cards will be dynamically added here -->
                             </FlowPane>
+
+                            <!-- Pagination Bar -->
+                            <HBox fx:id="paginationBar" alignment="CENTER" spacing="8"
+                                style="-fx-padding: 15 0 5 0;">
+                                <Button fx:id="prevPageBtn" onAction="#prevPage"
+                                    styleClass="page-btn" text="◀ Prev" />
+                                <HBox fx:id="pageNumbersBox" alignment="CENTER" spacing="4" />
+                                <Button fx:id="nextPageBtn" onAction="#nextPage"
+                                    styleClass="page-btn" text="Next ▶" />
+                            </HBox>
                         </VBox>
                     </ScrollPane>
 
                     <!-- Right: Sliding Inspector Drawer -->
-                    <VBox fx:id="inspectorDrawer" alignment="TOP_CENTER" minWidth="250" prefWidth="350" spacing="10" styleClass="glass-drawer,glass-drawer-enhanced">
-                        <HBox alignment="TOP_RIGHT">
-                            <Button onAction="#closeInspectorDrawer" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-background-radius: 15; -fx-cursor: hand;" text="X" />
-                        </HBox>
-                        <padding>
-                            <Insets bottom="30" left="20" right="20" top="15" />
-                        </padding>
+                    <ScrollPane fx:id="inspectorScrollPane" fitToWidth="true" hbarPolicy="NEVER"
+                        vbarPolicy="AS_NEEDED"
+                        style="-fx-background: transparent; -fx-background-color: transparent; -fx-padding: 0;"
+                        minWidth="300" prefWidth="360">
+                        <VBox fx:id="inspectorDrawer" alignment="TOP_LEFT" minWidth="300"
+                            prefWidth="360" spacing="0"
+                            styleClass="glass-drawer,glass-drawer-enhanced">
 
-                        <Label fx:id="detailTitleLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" text="Select a Destination" textAlignment="CENTER" wrapText="true" />
-                        
-                        <Label fx:id="weatherLabel" style="-fx-text-fill: #1E91D6; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 0 0 10 0;" text="" />
-                        
-                        <ImageView fx:id="detailImageView" fitHeight="200" fitWidth="310" preserveRatio="false" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 4); -fx-background-radius: 10;">
-                             <image>
-                                <Image url="@../images/logo.PNG" />
-                            </image>
-                            <clip>
-                                <Rectangle arcHeight="20" arcWidth="20" height="200" width="310" />
-                            </clip>
-                        </ImageView>
-                        
-                        <Label fx:id="detailDescLabel" style="-fx-text-fill: white; -fx-font-size: 14px;" text="Click 'View Details' on any card to learn more about the destination!" wrapText="true" />
+                            <!-- Header band -->
+                            <VBox spacing="6"
+                                style="-fx-background-color: rgba(0,0,0,0.25); -fx-padding: 16 20 14 20;">
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label fx:id="detailTitleLabel"
+                                        style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; -fx-wrap-text: true;"
+                                        text="Select a Destination" wrapText="true"
+                                        HBox.hgrow="ALWAYS" maxWidth="270" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button onAction="#closeInspectorDrawer"
+                                        style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-background-color: rgba(255,255,255,0.18); -fx-text-fill: white; -fx-background-radius: 20; -fx-cursor: hand; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 20; -fx-border-width: 1;"
+                                        text="✕" />
+                                </HBox>
+                                <Label fx:id="weatherLabel"
+                                    style="-fx-text-fill: #7ecfff; -fx-font-size: 13px; -fx-font-weight: bold;"
+                                    text="" />
+                            </VBox>
 
-                        <!-- Selection Form -->
-                        <VBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10 0 0 0;">
-                            <Label style="-fx-text-fill: white; -fx-font-weight: bold;" text="Check-in Date:" />
-                            <DatePicker fx:id="checkinDatePicker" maxWidth="Infinity" promptText="Select Start Date" styleClass="glass-datepicker" />
-                            
-                            <Label style="-fx-text-fill: white; -fx-font-weight: bold;" text="Check-out Date:" />
-                            <DatePicker fx:id="checkoutDatePicker" maxWidth="Infinity" promptText="Select End Date" styleClass="glass-datepicker" />
-                            
-                            <ComboBox fx:id="hotelComboBox" maxWidth="Infinity" promptText="Select Hotel" styleClass="glass-combo-box">
-                                <VBox.margin><Insets top="10" /></VBox.margin>
-                            </ComboBox>
-                            
-                            <ComboBox fx:id="roomTypeComboBox" maxWidth="Infinity" promptText="Select Room Type" styleClass="glass-combo-box">
-                                <VBox.margin><Insets top="5" /></VBox.margin>
-                            </ComboBox>
-                            
-                            <ComboBox fx:id="activiteComboBox" maxWidth="Infinity" promptText="Select Activity (Optional)" styleClass="glass-combo-box">
-                                <VBox.margin><Insets top="5" /></VBox.margin>
-                            </ComboBox>
-                            
-                            <Button maxWidth="Infinity" onAction="#onChooseTransportClick" styleClass="glass-button" text="Choose Transportation">
-                                <VBox.margin><Insets top="5" /></VBox.margin>
-                            </Button>
+                            <!-- Main image -->
+                            <StackPane style="-fx-padding: 0;">
+                                <ImageView fx:id="detailImageView" fitHeight="210" fitWidth="360"
+                                    preserveRatio="false" smooth="true">
+                                    <image>
+                                        <Image url="@../images/logo.PNG" />
+                                    </image>
+                                    <clip>
+                                        <Rectangle arcHeight="0" arcWidth="0" height="210"
+                                            width="360" />
+                                    </clip>
+                                </ImageView>
+                                <!-- Fullscreen button overlay on main image -->
+                                <Button onAction="#openMainImageFullscreen"
+                                    style="-fx-background-color: rgba(0,0,0,0.45); -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 4 8; -fx-border-color: rgba(255,255,255,0.4); -fx-border-radius: 20; -fx-border-width: 1;"
+                                    text="⛶" StackPane.alignment="BOTTOM_RIGHT">
+                                    <StackPane.margin>
+                                        <Insets bottom="10" right="10" />
+                                    </StackPane.margin>
+                                </Button>
+                            </StackPane>
+
+                            <!-- Description section -->
+                            <VBox spacing="8"
+                                style="-fx-padding: 16 20 10 20; -fx-background-color: rgba(255,255,255,0.05);">
+                                <Label fx:id="detailDescLabel"
+                                    style="-fx-text-fill: rgba(255,255,255,0.88); -fx-font-size: 13px; -fx-line-spacing: 3;"
+                                    text="Click 'View Details' on any card."
+                                    wrapText="true" />
+                            </VBox>
+
+                            <!-- Divider -->
+                            <Region
+                                style="-fx-background-color: rgba(255,255,255,0.12); -fx-pref-height: 1; -fx-min-height: 1;" />
+
+                            <!-- Photo Gallery section -->
+                            <VBox spacing="8" style="-fx-padding: 14 20 10 20;">
+                                <Label fx:id="galleryLabel"
+                                    style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 11px; -fx-font-weight: bold; -fx-letter-spacing: 1px;"
+                                    text="" />
+                                <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED"
+                                    style="-fx-background: transparent; -fx-background-color: transparent; -fx-padding: 0;"
+                                    vbarPolicy="NEVER">
+                                    <HBox fx:id="galleryPane" spacing="8" style="-fx-padding: 4 0;" />
+                                </ScrollPane>
+                            </VBox>
+
+                            <!-- Divider -->
+                            <Region
+                                style="-fx-background-color: rgba(255,255,255,0.12); -fx-pref-height: 1; -fx-min-height: 1;" />
+
+                            <!-- Booking form section -->
+                            <VBox spacing="10" style="-fx-padding: 16 20 20 20;">
+                                <Label
+                                    style="-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 10px; -fx-font-weight: bold; -fx-letter-spacing: 1px;"
+                                    text="BOOK YOUR STAY" />
+
+                                <HBox spacing="10">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label
+                                            style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12px; -fx-font-weight: bold;"
+                                            text="Check-in" />
+                                        <DatePicker fx:id="checkinDatePicker" maxWidth="Infinity"
+                                            promptText="Start Date" styleClass="glass-datepicker" />
+                                    </VBox>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label
+                                            style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12px; -fx-font-weight: bold;"
+                                            text="Check-out" />
+                                        <DatePicker fx:id="checkoutDatePicker" maxWidth="Infinity"
+                                            promptText="End Date" styleClass="glass-datepicker" />
+                                    </VBox>
+                                </HBox>
+
+                                <Label
+                                    style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 4 0 0 0;"
+                                    text="Hotel" />
+                                <ComboBox fx:id="hotelComboBox" maxWidth="Infinity"
+                                    promptText="Select Hotel" styleClass="glass-combo-box" />
+
+                                <HBox spacing="10">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label
+                                            style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12px; -fx-font-weight: bold;"
+                                            text="Room Type" />
+                                        <ComboBox fx:id="roomTypeComboBox" maxWidth="Infinity"
+                                            promptText="Room Type" styleClass="glass-combo-box" />
+                                    </VBox>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label
+                                            style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12px; -fx-font-weight: bold;"
+                                            text="Activity" />
+                                        <ComboBox fx:id="activiteComboBox" maxWidth="Infinity"
+                                            promptText="Optional" styleClass="glass-combo-box" />
+                                    </VBox>
+                                </HBox>
+
+                                <Button maxWidth="Infinity" onAction="#onChooseTransportClick"
+                                    styleClass="glass-button"
+                                    style="-fx-background-color: rgba(255,255,255,0.15); -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 10; -fx-border-width: 1; -fx-font-size: 13px;"
+                                    text="🚌  Choose Transportation" />
+
+                                <Button maxWidth="Infinity" onAction="#onReserveClick"
+                                    style="-fx-background-color: linear-gradient(to right, #1E91D6, #4B1D7A); -fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(30,145,214,0.5), 10, 0, 0, 3);"
+                                    styleClass="glass-button" text="✈  Reserve Now" />
+                            </VBox>
                         </VBox>
-
-                        <Region VBox.vgrow="ALWAYS" />
-
-                        <Button maxWidth="Infinity" onAction="#onReserveClick" style="-fx-background-color: #1E91D6; -fx-font-size: 16px;" styleClass="glass-button" text="Reserve">
-                            <VBox.margin><Insets top="10" /></VBox.margin>
-                        </Button>
-
-                        <Region VBox.vgrow="ALWAYS" />
-                    </VBox>
+                    </ScrollPane>
                 </items>
             </SplitPane>
         </center>
     </BorderPane>
 
+    <!-- Scroll-to-top FAB -->
+    <Button fx:id="scrollTopBtn" onAction="#scrollToTop"
+        style="-fx-background-color: rgba(30,145,214,0.85); -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-background-radius: 30; -fx-min-width: 50; -fx-min-height: 50; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 4);"
+        text="▲" visible="false" StackPane.alignment="BOTTOM_RIGHT">
+        <StackPane.margin>
+            <Insets bottom="30" right="30" />
+        </StackPane.margin>
+    </Button>
+
+    <!-- Fullscreen Image Overlay -->
+    <StackPane fx:id="fullscreenOverlay"
+        style="-fx-background-color: rgba(0,0,0,0.92);"
+        visible="false" onMouseClicked="#closeFullscreen">
+        <ImageView fx:id="fullscreenImageView"
+            fitWidth="1100" fitHeight="720"
+            preserveRatio="true" smooth="true" />
+        <Button onAction="#closeFullscreen"
+            style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-background-radius: 25; -fx-cursor: hand; -fx-padding: 5 12; -fx-border-color: rgba(255,255,255,0.4); -fx-border-radius: 25; -fx-border-width: 1;"
+            text="✕" StackPane.alignment="TOP_RIGHT">
+            <StackPane.margin>
+                <Insets top="20" right="20" />
+            </StackPane.margin>
+        </Button>
+        <Label style="-fx-text-fill: rgba(255,255,255,0.4); -fx-font-size: 12px;"
+            text="Click anywhere to close" StackPane.alignment="BOTTOM_CENTER">
+            <StackPane.margin>
+                <Insets bottom="20" />
+            </StackPane.margin>
+        </Label>
+    </StackPane>
+
     <!-- Overlay Layer (Initially Hidden) -->
-    <StackPane fx:id="overlayContainer" style="-fx-background-color: rgba(0,0,0,0.7);" visible="false">
-        <VBox alignment="CENTER" maxWidth="500" maxHeight="400" spacing="20" style="-fx-background-color: linear-gradient(to bottom right, #1E91D6 0%, #4B1D7A 100%); -fx-background-radius: 20; -fx-border-color: rgba(255,255,255,0.4); -fx-border-radius: 20; -fx-border-width: 2; -fx-padding: 30;">
-            <Label fx:id="overlayTitle" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" text="Message Title" />
-            
+    <StackPane fx:id="overlayContainer" style="-fx-background-color: rgba(0,0,0,0.7);"
+        visible="false">
+        <VBox alignment="CENTER" maxWidth="500" maxHeight="400" spacing="20"
+            style="-fx-background-color: linear-gradient(to bottom right, #1E91D6 0%, #4B1D7A 100%); -fx-background-radius: 20; -fx-border-color: rgba(255,255,255,0.4); -fx-border-radius: 20; -fx-border-width: 2; -fx-padding: 30;">
+            <Label fx:id="overlayTitle"
+                style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"
+                text="Message Title" />
+
             <StackPane>
                 <!-- Content Label -->
-                <ScrollPane fx:id="overlayScrollPane" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" maxHeight="200">
-                    <Label fx:id="overlayContent" style="-fx-text-fill: white; -fx-font-size: 16px;" text="Detailed message goes here..." wrapText="true" />
+                <ScrollPane fx:id="overlayScrollPane" fitToWidth="true"
+                    style="-fx-background-color: transparent; -fx-background: transparent;"
+                    maxHeight="200">
+                    <Label fx:id="overlayContent" style="-fx-text-fill: white; -fx-font-size: 16px;"
+                        text="Detailed message goes here..." wrapText="true" />
                 </ScrollPane>
-                
+
                 <!-- Loading State (Initially Hidden) -->
                 <VBox fx:id="loadingContainer" alignment="CENTER" spacing="15" visible="false">
-                    <Label text="PLEASE WAIT" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" />
-                    <Label text="Talking to Stripe &amp; Database..." style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px;" />
-                    <Label text="(Please do not close the app)" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 12px;" />
+                    <Label text="PLEASE WAIT"
+                        style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" />
+                    <Label text="Talking to Stripe &amp; Database..."
+                        style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px;" />
+                    <Label text="(Please do not close the app)"
+                        style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 12px;" />
                 </VBox>
             </StackPane>
 
             <HBox fx:id="overlayButtonBox" alignment="CENTER" spacing="20">
-                <Button fx:id="overlayCancelBtn" onAction="#hideOverlay" styleClass="glass-button" style="-fx-background-color: rgba(255,255,255,0.2);" text="Cancel" visible="false" />
-                <Button fx:id="exportPdfBtn" onAction="#onExportPdfClick" styleClass="glass-button" style="-fx-background-color: #4B1D7A;" text="Export PDF" visible="false" />
-                <Button fx:id="overlayConfirmBtn" onAction="#handleOverlayConfirm" styleClass="glass-button" style="-fx-background-color: #1E91D6;" text="OK" />
+                <Button fx:id="overlayCancelBtn" onAction="#hideOverlay" styleClass="glass-button"
+                    style="-fx-background-color: rgba(255,255,255,0.2);" text="Cancel"
+                    visible="false" />
+                <Button fx:id="exportPdfBtn" onAction="#onExportPdfClick" styleClass="glass-button"
+                    style="-fx-background-color: #4B1D7A;" text="Export PDF" visible="false" />
+                <Button fx:id="overlayConfirmBtn" onAction="#handleOverlayConfirm"
+                    styleClass="glass-button" style="-fx-background-color: #1E91D6;" text="OK" />
             </HBox>
         </VBox>
     </StackPane>

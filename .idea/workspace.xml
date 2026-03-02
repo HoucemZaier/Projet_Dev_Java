@@ -5,12 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3a5e3e30-5dfc-4b9e-938f-1c2b610fed12" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/PlaNova/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/PlaNova/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/DbTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/CloudinaryService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/PexelsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/Mainfx.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/Mainfx.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/Mainfx.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/controllers/DestinationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/controllers/DestinationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/controllers/ExploreController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/controllers/ExploreController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/controllers/TransportationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/controllers/TransportationController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/AiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/AiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/EmailConfigService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/EmailConfigService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/PdfExportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/PdfExportService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/StripeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/StripeService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/WeatherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/services/WeatherService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/PlaNova/utils/MyDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/PlaNova/utils/MyDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/css/explore.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/css/explore.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/ui/Destinations.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/ui/Destinations.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/ui/explore.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/ui/explore.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,30 +50,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.PlaNova [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "gestion__destination",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/wacel/pidev",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.JavaFX",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.PlaNova [org.openjfx:javafx-maven-plugin:0.0.8:run].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;gestion__destination&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/wacel/pidev&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.JavaFX&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="pidev" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="pidev" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="pidev" />
       <method v="2">
@@ -89,6 +113,11 @@
       <option name="presentableId" value="Default" />
       <updated>1770978719687</updated>
       <workItem from="1772226088264" duration="2396000" />
+      <workItem from="1772302677675" duration="282000" />
+      <workItem from="1772305462698" duration="37000" />
+      <workItem from="1772310059472" duration="23000" />
+      <workItem from="1772310306080" duration="16000" />
+      <workItem from="1772413348333" duration="1323000" />
     </task>
     <servers />
   </component>
